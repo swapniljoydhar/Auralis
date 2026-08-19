@@ -592,6 +592,7 @@ constructor(context: Context, attrs: AttributeSet? = null, @AttrRes defStyleAttr
         popupShapeAlphaAnimation = popupAlphaSpring.alpha(popupView, 0f)
     }
 
+    @SuppressLint("WrongConstant")
     private fun createPopupTextView(context: Context): MaterialTextView =
         MaterialTextView(context).apply {
             TextViewCompat.setTextAppearance(
