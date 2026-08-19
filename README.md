@@ -1,6 +1,6 @@
 <p align="center"><img src="fastlane/metadata/android/en-US/images/icon.png" width="150"></p>
-<h1 align="center"><b>Auxio</b></h1>
-<h4 align="center">A simple, rational music player for Android.</h4>
+<h1 align="center"><b>Tonalore</b></h1>
+<h4 align="center">A private, local-first music and audiobook player for Android.</h4>
 <p align="center">
     <a href="https://github.com/oxygencobalt/Auxio/releases/tag/v4.1.5">
         <img alt="Latest Version" src="https://img.shields.io/static/v1?label=tag&message=v4.1.5&color=64B5F6&style=flat">
@@ -26,9 +26,9 @@
 
 ## About
 
-Auxio is a local music player with a fast, reliable UI/UX without the many useless features present in other music players. Built off of modern media playback libraries, Auxio has superior library support and listening quality compared to other apps that use outdated Android functionality. In short, **It plays music.**
+Tonalore is a native Android audio player derived from [Auxio](https://github.com/OxygenCobalt/Auxio). This fork preserves Auxio’s local-first Music experience while building a separate Audiobooks experience for supported local audio formats. It is designed to remain private, fluent, and focused rather than becoming a cloud service or an all-purpose media platform.
 
-**The default branch is the development version of the repository. For a stable version, see the master branch.**
+**The default branch is the development version of this fork. The application ID remains unchanged during the initial rebrand to preserve installation and data compatibility.**
 
 ## Screenshots
 
@@ -74,7 +74,7 @@ precise/original dates, sort tags, and more
 
 ## Donate
 
-You can support Auxio's development through [my Github Sponsors page](https://github.com/sponsors/OxygenCobalt). Get the ability to prioritize features and have your profile added to the README, Release Changelogs, and even the app itself!
+This fork is derived from Auxio and remains subject to the original project’s GPLv3 license and attribution requirements. You can support the upstream Auxio project through [OxygenCobalt’s GitHub Sponsors page](https://github.com/sponsors/OxygenCobalt). Get the ability to prioritize features and have your profile added to the README, Release Changelogs, and even the app itself!
 
 <h3 align="center">Legendary supporters:</h3>
 <p align="center">

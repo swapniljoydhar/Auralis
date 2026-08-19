@@ -233,6 +233,12 @@ interface PlaybackStateManager {
      */
     fun seekTo(positionMs: Long)
 
+    /** Move the current position by an audiobook skip interval. */
+    fun seekBy(offsetMs: Long)
+
+    /** Set the current playback speed. */
+    fun playbackSpeed(speed: Float)
+
     fun endSession()
 
     /**
@@ -572,6 +578,17 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
         val stateHolder = stateHolder ?: return
         L.d("Seeking to ${positionMs}ms")
         stateHolder.seekTo(positionMs)
+    }
+
+    @Synchronized
+    override fun seekBy(offsetMs: Long) {
+        val stateHolder = stateHolder ?: return
+        stateHolder.seekTo((progression.calculateElapsedPositionMs() + offsetMs).coerceAtLeast(0L))
+    }
+
+    @Synchronized
+    override fun playbackSpeed(speed: Float) {
+        stateHolder?.playbackSpeed(speed)
     }
 
     @Synchronized

@@ -38,6 +38,9 @@ class CoverProvider : ContentProvider() {
             return null
         }
         val id = uri.lastPathSegment ?: return null
+        if (id.contains("..")) {
+            return null
+        }
         return runBlocking {
             when (val result = SettingCovers.immutable(requireNotNull(context)).obtain(id)) {
                 is CoverResult.Hit -> result.cover.fd()

@@ -116,6 +116,11 @@ private constructor(
         val music =
             when (val uid = MediaSessionUID.fromString(mediaId)) {
                 is MediaSessionUID.Tab -> return uid.node.toMediaItem(context)
+                is MediaSessionUID.Audiobook ->
+                    return homeGenerator
+                        .audiobooks()
+                        .firstOrNull { it.key == uid.key }
+                        ?.toMediaItem(context)
                 is MediaSessionUID.SingleItem ->
                     musicRepository.find(uid.uid)?.let { musicRepository.find(it.uid) }
                 null -> null
@@ -182,6 +187,9 @@ private constructor(
             is MediaSessionUID.SingleItem -> {
                 getChildMediaItems(mediaSessionUID.uid)
             }
+            is MediaSessionUID.Audiobook -> {
+                getChildMediaItems(mediaSessionUID.key)
+            }
             null -> {
                 return null
             }
@@ -210,8 +218,15 @@ private constructor(
                     MusicType.ARTISTS -> homeGenerator.artists().map { it.toMediaItem(context) }
                     MusicType.GENRES -> homeGenerator.genres().map { it.toMediaItem(context) }
                     MusicType.PLAYLISTS -> homeGenerator.playlists().map { it.toMediaItem(context) }
+                    MusicType.AUDIOBOOKS ->
+                        homeGenerator.audiobooks().map { it.toMediaItem(context) }
                 }
         }
+
+    private fun getChildMediaItems(key: String): List<MediaItem>? {
+        val book = homeGenerator.audiobooks().firstOrNull { it.key == key } ?: return null
+        return book.chapters.map { it.song.toMediaItem(context) }
+    }
 
     private fun getChildMediaItems(uid: Music.UID): List<MediaItem>? {
         val detail = detailGenerator.any(uid) ?: return null

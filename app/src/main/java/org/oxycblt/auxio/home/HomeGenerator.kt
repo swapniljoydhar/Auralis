@@ -19,6 +19,8 @@
 package org.oxycblt.auxio.home
 
 import javax.inject.Inject
+import org.oxycblt.auxio.audiobooks.AudiobookBook
+import org.oxycblt.auxio.audiobooks.AudiobookRepository
 import org.oxycblt.auxio.home.tabs.Tab
 import org.oxycblt.auxio.list.ListSettings
 import org.oxycblt.auxio.list.adapter.UpdateInstructions
@@ -48,6 +50,8 @@ interface HomeGenerator {
 
     fun playlists(): List<Playlist>
 
+    fun audiobooks(): List<AudiobookBook>
+
     fun tabs(): List<MusicType>
 
     interface Invalidator {
@@ -69,9 +73,16 @@ constructor(
     private val homeSettings: HomeSettings,
     private val listSettings: ListSettings,
     private val musicRepository: MusicRepository,
+    private val audiobookRepository: AudiobookRepository,
 ) : HomeGenerator.Factory {
     override fun create(invalidator: HomeGenerator.Invalidator): HomeGenerator =
-        HomeGeneratorImpl(invalidator, homeSettings, listSettings, musicRepository)
+        HomeGeneratorImpl(
+            invalidator,
+            homeSettings,
+            listSettings,
+            musicRepository,
+            audiobookRepository,
+        )
 }
 
 private class HomeGeneratorImpl(
@@ -79,6 +90,7 @@ private class HomeGeneratorImpl(
     private val homeSettings: HomeSettings,
     private val listSettings: ListSettings,
     private val musicRepository: MusicRepository,
+    private val audiobookRepository: AudiobookRepository,
 ) : HomeGenerator, HomeSettings.Listener, ListSettings.Listener, MusicRepository.UpdateListener {
     override fun attach() {
         homeSettings.registerListener(this)
@@ -134,6 +146,7 @@ private class HomeGeneratorImpl(
             invalidator.invalidateMusic(MusicType.ALBUMS, UpdateInstructions.Diff)
             invalidator.invalidateMusic(MusicType.ARTISTS, UpdateInstructions.Diff)
             invalidator.invalidateMusic(MusicType.GENRES, UpdateInstructions.Diff)
+            invalidator.invalidateMusic(MusicType.AUDIOBOOKS, UpdateInstructions.Replace(0))
         }
 
         if (changes.userLibrary && library != null) {
@@ -172,6 +185,9 @@ private class HomeGeneratorImpl(
     override fun playlists() =
         musicRepository.library?.let { listSettings.playlistSort.playlists(it.playlists) }
             ?: emptyList()
+
+    override fun audiobooks() =
+        musicRepository.library?.let { audiobookRepository.books() } ?: emptyList()
 
     override fun tabs() = homeSettings.homeTabs.filterIsInstance<Tab.Visible>().map { it.type }
 }

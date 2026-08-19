@@ -6,4 +6,8 @@
         android:icon="@drawable/ic_config_24"
         android:title="@string/lbl_equalizer"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_audiobook_controls"
+        android:title="@string/lbl_audiobook_controls"
+        app:showAsAction="never" />
 </menu>

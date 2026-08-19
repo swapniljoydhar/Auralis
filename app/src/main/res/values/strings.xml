@@ -3,7 +3,7 @@
     <!-- Info namespace | App labels -->
     <eat-comment />
 
-    <string name="info_app_desc">A simple, rational music player for android.</string>
+    <string name="info_app_desc">A private, local-first player for music and audiobooks on Android.</string>
 
     <!-- Label Namespace | Static Labels -->
     <eat-comment />
@@ -83,6 +83,7 @@
 
     <string name="lbl_playlist">Playlist</string>
     <string name="lbl_playlists">Playlists</string>
+    <string name="lbl_audiobooks">Audiobooks</string>
     <string name="lbl_new_playlist">New playlist</string>
     <string name="lbl_empty_playlist">Empty playlist</string>
     <string name="lbl_imported_playlist">Imported playlist</string>
@@ -119,6 +120,18 @@
 
     <string name="lbl_playback">Now playing</string>
     <string name="lbl_equalizer">Equalizer</string>
+    <string name="lbl_audiobook_controls">Audiobook controls</string>
+    <string name="lbl_skip_back_30">Back 30 seconds</string>
+    <string name="lbl_skip_forward_30">Forward 30 seconds</string>
+    <string name="lbl_speed_075">Speed 0.75×</string>
+    <string name="lbl_speed_100">Speed 1.0×</string>
+    <string name="lbl_speed_125">Speed 1.25×</string>
+    <string name="lbl_speed_150">Speed 1.5×</string>
+    <string name="lbl_speed_200">Speed 2.0×</string>
+    <string name="lbl_sleep_15">Sleep in 15 minutes</string>
+    <string name="lbl_sleep_30">Sleep in 30 minutes</string>
+    <string name="lbl_sleep_60">Sleep in 60 minutes</string>
+    <string name="lbl_sleep_cancel">Cancel sleep timer</string>
     <string name="lbl_play">Play</string>
     <string name="lbl_shuffle">Shuffle</string>
 
@@ -215,6 +228,7 @@
     <string name="lng_empty_artists">Your artists will show up here.</string>
     <string name="lng_empty_genres">Your genres will show up here.</string>
     <string name="lng_empty_playlists">Your playlists will show up here.</string>
+    <string name="lng_empty_audiobooks">Your audiobooks will show up here.</string>
     <string name="lng_file_picker">Load music from the folders that you select. Slower, but more reliable. Requires the vanilla file manager app to be installed.</string>
     <string name="lng_system_database">Load music that the Android OS automatically detects. Faster, but less reliable. No support for filesystem-dependent features like cover.jpg.</string>
     <string name="lng_grant_storage_anyway">Granting external storage permissions can fix issues on some devices.</string>

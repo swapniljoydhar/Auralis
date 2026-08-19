@@ -43,6 +43,9 @@
             android:id="@+id/show_playlist"
             app:destination="@id/playlist_detail_fragment" />
         <action
+            android:id="@+id/show_audiobook"
+            app:destination="@id/audiobook_detail_fragment" />
+        <action
             android:id="@+id/open_song_menu"
             app:destination="@id/song_menu_dialog" />
         <action
@@ -90,6 +93,15 @@
         <action
             android:id="@+id/choose_locations"
             app:destination="@id/music_locations_dialog" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/audiobook_detail_fragment"
+        android:name="org.oxycblt.auxio.audiobooks.AudiobookDetailFragment"
+        android:label="audiobook_detail_fragment">
+        <argument
+            android:name="bookKey"
+            app:argType="string" />
     </fragment>
 
     <dialog

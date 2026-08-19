@@ -4,4 +4,7 @@
     <exclude
         domain="database"
         path="music_cache.db" />
+    <exclude
+        domain="database"
+        path="playback_persistence.db" />
 </full-backup-content>

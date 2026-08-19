@@ -19,6 +19,7 @@
 package org.oxycblt.auxio.playback
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.media.audiofx.AudioEffect
@@ -35,14 +36,18 @@ import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.math.abs
 import org.oxycblt.auxio.R
+import org.oxycblt.auxio.audiobooks.AudiobookClassifier
+import org.oxycblt.auxio.audiobooks.AudiobookPlaybackController
 import org.oxycblt.auxio.databinding.FragmentPlaybackPanelBinding
 import org.oxycblt.auxio.detail.DetailViewModel
 import org.oxycblt.auxio.list.ListViewModel
 import org.oxycblt.auxio.music.resolve
 import org.oxycblt.auxio.music.resolveNames
 import org.oxycblt.auxio.playback.queue.QueueViewModel
+import org.oxycblt.auxio.playback.state.PlaybackStateManager
 import org.oxycblt.auxio.playback.state.RepeatMode
 import org.oxycblt.auxio.playback.ui.StyledSeekBar
 import org.oxycblt.auxio.playback.ui.stepper.Direction
@@ -80,6 +85,8 @@ class PlaybackPanelFragment :
     private val detailModel: DetailViewModel by activityViewModels()
     private val listModel: ListViewModel by activityViewModels()
     private val queueModel: QueueViewModel by viewModels()
+    @Inject lateinit var playbackManager: PlaybackStateManager
+    @Inject lateinit var audiobookPlaybackController: AudiobookPlaybackController
     private var equalizerLauncher: ActivityResultLauncher<Intent>? = null
     private var userAwarePagerCallback: UserAwarePagerCallback? = null
     private var currentPagerPosition = 0
@@ -229,6 +236,11 @@ class PlaybackPanelFragment :
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_audiobook_controls) {
+            showAudiobookControls()
+            return true
+        }
+
         if (item.itemId == R.id.action_open_equalizer) {
             // Launch the system equalizer app, if possible.
             L.d("Launching equalizer")
@@ -269,6 +281,43 @@ class PlaybackPanelFragment :
         binding.playbackArtist.text = song.artists.resolveNames(context)
         binding.playbackAlbum?.text = song.album.name.resolve(context)
         binding.playbackSeekBar?.durationDs = song.durationMs.msToDs()
+        binding.playbackToolbar.menu.findItem(R.id.action_audiobook_controls)?.isVisible =
+            AudiobookClassifier.isAudiobook(song)
+    }
+
+    private fun showAudiobookControls() {
+        val labels =
+            arrayOf(
+                getString(R.string.lbl_skip_back_30),
+                getString(R.string.lbl_skip_forward_30),
+                getString(R.string.lbl_speed_075),
+                getString(R.string.lbl_speed_100),
+                getString(R.string.lbl_speed_125),
+                getString(R.string.lbl_speed_150),
+                getString(R.string.lbl_speed_200),
+                getString(R.string.lbl_sleep_15),
+                getString(R.string.lbl_sleep_30),
+                getString(R.string.lbl_sleep_60),
+                getString(R.string.lbl_sleep_cancel),
+            )
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.lbl_audiobook_controls)
+            .setItems(labels) { _, which ->
+                when (which) {
+                    0 -> playbackManager.seekBy(-30_000L)
+                    1 -> playbackManager.seekBy(30_000L)
+                    2 -> playbackManager.playbackSpeed(0.75f)
+                    3 -> playbackManager.playbackSpeed(1.0f)
+                    4 -> playbackManager.playbackSpeed(1.25f)
+                    5 -> playbackManager.playbackSpeed(1.5f)
+                    6 -> playbackManager.playbackSpeed(2.0f)
+                    7 -> audiobookPlaybackController.scheduleSleepTimer(15 * 60_000L)
+                    8 -> audiobookPlaybackController.scheduleSleepTimer(30 * 60_000L)
+                    9 -> audiobookPlaybackController.scheduleSleepTimer(60 * 60_000L)
+                    10 -> audiobookPlaybackController.cancelSleepTimer()
+                }
+            }
+            .show()
     }
 
     private fun updateParent(parent: MusicParent?) {

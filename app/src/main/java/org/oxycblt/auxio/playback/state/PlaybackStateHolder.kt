@@ -68,6 +68,9 @@ interface PlaybackStateHolder {
      */
     fun seekTo(positionMs: Long)
 
+    /** Update the playback speed for audiobook playback. */
+    fun playbackSpeed(speed: Float)
+
     /**
      * Update the repeat mode of the audio player.
      *

@@ -23,6 +23,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.oxycblt.auxio.audiobooks.AudiobookBook
 import org.oxycblt.auxio.home.tabs.Tab
 import org.oxycblt.auxio.list.ListSettings
 import org.oxycblt.auxio.list.adapter.UpdateInstructions
@@ -120,6 +121,16 @@ constructor(
     val playlistList: StateFlow<List<Playlist>>
         get() = _playlistList
 
+    private val _audiobookList = MutableStateFlow(listOf<AudiobookBook>())
+    /** Audiobook books derived from the indexed Music library. */
+    val audiobookList: StateFlow<List<AudiobookBook>>
+        get() = _audiobookList
+
+    private val _audiobookInstructions = MutableEvent<UpdateInstructions>()
+    /** Update instructions for the Audiobooks tab. */
+    val audiobookInstructions: Event<UpdateInstructions>
+        get() = _audiobookInstructions
+
     private val _empty = MutableStateFlow(false)
     val empty: StateFlow<Boolean>
         get() = _empty
@@ -201,6 +212,10 @@ constructor(
             MusicType.PLAYLISTS -> {
                 _playlistInstructions.put(instructions)
                 _playlistList.value = homeGenerator.playlists()
+            }
+            MusicType.AUDIOBOOKS -> {
+                _audiobookInstructions.put(instructions)
+                _audiobookList.value = homeGenerator.audiobooks()
             }
         }
     }

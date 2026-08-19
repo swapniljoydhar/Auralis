@@ -44,6 +44,7 @@ import org.oxycblt.auxio.detail.DetailViewModel
 import org.oxycblt.auxio.detail.Show
 import org.oxycblt.auxio.home.list.AlbumListFragment
 import org.oxycblt.auxio.home.list.ArtistListFragment
+import org.oxycblt.auxio.home.list.AudiobookListFragment
 import org.oxycblt.auxio.home.list.GenreListFragment
 import org.oxycblt.auxio.home.list.PlaylistListFragment
 import org.oxycblt.auxio.home.list.SongListFragment
@@ -207,6 +208,9 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
             // Handle sort menu
             R.id.action_sort -> {
                 // Junk click event when opening the menu
+                if (homeModel.currentTabType.value == MusicType.AUDIOBOOKS) {
+                    return true
+                }
                 val directions =
                     when (homeModel.currentTabType.value) {
                         MusicType.SONGS -> HomeFragmentDirections.sortSongs()
@@ -214,6 +218,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                         MusicType.ARTISTS -> HomeFragmentDirections.sortArtists()
                         MusicType.GENRES -> HomeFragmentDirections.sortGenres()
                         MusicType.PLAYLISTS -> HomeFragmentDirections.sortPlaylists()
+                        MusicType.AUDIOBOOKS -> error("Audiobooks do not use Music sorting")
                     }
                 findNavController().navigateSafe(directions)
                 true
@@ -266,6 +271,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 MusicType.ARTISTS -> R.id.home_artist_recycler
                 MusicType.GENRES -> R.id.home_genre_recycler
                 MusicType.PLAYLISTS -> R.id.home_playlist_recycler
+                MusicType.AUDIOBOOKS -> R.id.home_audiobook_recycler
             }
     }
 
@@ -488,6 +494,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 MusicType.ARTISTS -> ArtistListFragment()
                 MusicType.GENRES -> GenreListFragment()
                 MusicType.PLAYLISTS -> PlaylistListFragment()
+                MusicType.AUDIOBOOKS -> AudiobookListFragment()
             }
     }
 }

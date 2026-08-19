@@ -156,10 +156,10 @@ class Accent private constructor(val index: Int) {
         /** The default accent. */
         val DEFAULT =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                // Use dynamic coloring on devices that support it.
-                accentThemes.lastIndex
+                // Tonalore is the default product skin; dynamic colors remain selectable.
+                5
             } else {
-                // Use blue everywhere else.
+                // Use Tonalore everywhere else.
                 5
             }
 

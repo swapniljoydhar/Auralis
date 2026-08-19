@@ -1,4 +1,4 @@
-Auxio is a local music player with a fast, reliable UI/UX without the many useless features present in other music players. Built off of modern media playback libraries, Auxio has superior library support and listening quality compared to other apps that use outdated Android functionality. In short, <b>It plays music.</b>
+Tonalore is a private, local-first audio player for Android, derived from Auxio and designed for a focused native listening experience.
 
 <b>Features</b>
 
@@ -13,12 +13,15 @@ Auxio is a local music player with a fast, reliable UI/UX without the many usele
 - Playback state persistence
 - Android Auto support
 - Automatic gapless playback
-- Full ReplayGain support (On MP3, FLAC, OGG, OPUS, and MP4 files)
-- External equalizer support (ex. Wavelet)
+- Full ReplayGain support on MP3, FLAC, OGG, OPUS, and MP4 files
+- External equalizer support
 - Edge-to-edge
 - Embedded covers support
 - Search functionality
 - Headset autoplay
 - Stylish widgets that automatically adapt to their size
 - Completely private and offline
-- No rounded album covers (if you want them)
+
+This fork keeps the existing Music experience intact while the native Audiobooks experience is developed as a separate product mode for supported local audio formats.
+
+Tonalore remains subject to the original Auxio project’s GPLv3 license and attribution requirements.

@@ -45,8 +45,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import org.oxycblt.auxio.audiobooks.AudiobookCatalog
+import org.oxycblt.auxio.audiobooks.AudiobookClassifier
+import org.oxycblt.auxio.audiobooks.AudiobookProgressRepository
 import org.oxycblt.auxio.image.ImageSettings
 import org.oxycblt.auxio.music.MusicRepository
 import org.oxycblt.auxio.playback.PlaybackSettings
@@ -71,6 +75,7 @@ class ExoPlaybackStateHolder(
     private val player: ExoPlayer,
     private val playbackManager: PlaybackStateManager,
     private val persistenceRepository: PersistenceRepository,
+    private val audiobookProgressRepository: AudiobookProgressRepository,
     private val playbackSettings: PlaybackSettings,
     private val commandFactory: PlaybackCommand.Factory,
     private val replayGainProcessor: ReplayGainAudioProcessor,
@@ -87,6 +92,7 @@ class ExoPlaybackStateHolder(
     private val restoreScope = CoroutineScope(Dispatchers.IO + saveJob)
     private var currentSaveJob: Job? = null
     private var openAudioEffectSession = false
+    private val pendingAudiobookProgress = mutableListOf<AudiobookProgressSnapshot>()
 
     var sessionOngoing = false
         private set
@@ -101,6 +107,11 @@ class ExoPlaybackStateHolder(
     }
 
     fun release() {
+        currentSaveJob?.cancel()
+        runBlocking(Dispatchers.IO) {
+            savePendingAudiobookProgress()
+            saveAudiobookProgress()
+        }
         saveJob.cancel()
         playbackManager.unregisterStateHolder(this)
         musicRepository.removeUpdateListener(this)
@@ -233,6 +244,11 @@ class ExoPlaybackStateHolder(
         // Ack handled w/ExoPlayer events
     }
 
+    override fun playbackSpeed(speed: Float) {
+        player.setPlaybackSpeed(speed.coerceIn(0.5f, 3.0f))
+        deferSave()
+    }
+
     override fun repeatMode(repeatMode: RepeatMode) {
         player.repeatMode =
             when (repeatMode) {
@@ -257,7 +273,8 @@ class ExoPlaybackStateHolder(
             player.setShuffleOrder(BetterShuffleOrder(command.queue.size, startIndex ?: -1))
         }
         val target = startIndex ?: player.currentTimeline.getFirstWindowIndex(command.shuffled)
-        player.seekTo(target, C.TIME_UNSET)
+        val startPosition = command.startPositionMs.takeIf { it > 0L } ?: C.TIME_UNSET
+        player.seekTo(target, startPosition)
         player.prepare()
         player.play()
         playbackManager.ack(this, StateAck.NewPlayback)
@@ -478,11 +495,14 @@ class ExoPlaybackStateHolder(
                 broadcastAudioEffectAction(AudioEffect.ACTION_OPEN_AUDIO_EFFECT_CONTROL_SESSION)
                 openAudioEffectSession = true
             }
-        } else if (openAudioEffectSession) {
-            // Make sure to close the audio session when we stop playback.
-            L.d("Closing audio effect session")
-            broadcastAudioEffectAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)
-            openAudioEffectSession = false
+        } else {
+            saveJob { saveAudiobookProgress() }
+            if (openAudioEffectSession) {
+                // Make sure to close the audio session when we stop playback.
+                L.d("Closing audio effect session")
+                broadcastAudioEffectAction(AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION)
+                openAudioEffectSession = false
+            }
         }
     }
 
@@ -500,6 +520,22 @@ class ExoPlaybackStateHolder(
 
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
             playbackManager.ack(this, StateAck.IndexMoved)
+            deferSave()
+        }
+    }
+
+    override fun onPositionDiscontinuity(
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        reason: Int,
+    ) {
+        super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+
+        if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) {
+            synchronized(pendingAudiobookProgress) {
+                pendingAudiobookProgress +=
+                    AudiobookProgressSnapshot(oldPosition.mediaItem, oldPosition.positionMs)
+            }
             deferSave()
         }
     }
@@ -567,6 +603,8 @@ class ExoPlaybackStateHolder(
             if (sessionOngoing) {
                 persistenceRepository.saveState(playbackManager.toSavedState())
             }
+            savePendingAudiobookProgress()
+            saveAudiobookProgress()
             withContext(Dispatchers.Main) { cb() }
         }
     }
@@ -580,8 +618,37 @@ class ExoPlaybackStateHolder(
             if (sessionOngoing) {
                 persistenceRepository.saveState(playbackManager.toSavedState())
             }
+            savePendingAudiobookProgress()
+            saveAudiobookProgress()
         }
     }
+
+    private suspend fun savePendingAudiobookProgress() {
+        while (true) {
+            val snapshot =
+                synchronized(pendingAudiobookProgress) {
+                    pendingAudiobookProgress.removeFirstOrNull()
+                } ?: return
+            saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs)
+        }
+    }
+
+    private suspend fun saveAudiobookProgress(
+        mediaItem: MediaItem? = player.currentMediaItem,
+        positionMs: Long = player.currentPosition,
+    ) {
+        val song = mediaItem?.song ?: return
+        if (!AudiobookClassifier.isAudiobook(song)) return
+
+        audiobookProgressRepository.save(
+            bookKey = AudiobookCatalog.bookKey(song),
+            chapterUid = song.uid,
+            positionMs = positionMs,
+            durationMs = song.durationMs,
+        )
+    }
+
+    private data class AudiobookProgressSnapshot(val mediaItem: MediaItem?, val positionMs: Long)
 
     private fun saveJob(block: suspend () -> Unit) {
         currentSaveJob?.let {
@@ -647,6 +714,7 @@ class ExoPlaybackStateHolder(
         @ApplicationContext private val context: Context,
         private val playbackManager: PlaybackStateManager,
         private val persistenceRepository: PersistenceRepository,
+        private val audiobookProgressRepository: AudiobookProgressRepository,
         private val playbackSettings: PlaybackSettings,
         private val commandFactory: PlaybackCommand.Factory,
         private val mediaSourceFactory: MediaSource.Factory,
@@ -692,6 +760,7 @@ class ExoPlaybackStateHolder(
                 exoPlayer,
                 playbackManager,
                 persistenceRepository,
+                audiobookProgressRepository,
                 playbackSettings,
                 commandFactory,
                 replayGainProcessor,

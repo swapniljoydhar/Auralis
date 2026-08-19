@@ -37,8 +37,14 @@ import org.oxycblt.musikr.Music
  * @author Alexander Capehart
  */
 @Database(
-    entities = [PlaybackState::class, QueueHeapItem::class, QueueShuffledMappingItem::class],
-    version = 38,
+    entities =
+        [
+            PlaybackState::class,
+            QueueHeapItem::class,
+            QueueShuffledMappingItem::class,
+            AudiobookProgressEntity::class,
+        ],
+    version = 39,
     exportSchema = false,
 )
 @TypeConverters(Music.UID.TypeConverters::class)
@@ -57,6 +63,9 @@ abstract class PersistenceDatabase : RoomDatabase() {
      */
     abstract fun queueDao(): QueueDao
 
+    /** Get the DAO for durable, per-book audiobook progress. */
+    abstract fun audiobookProgressDao(): AudiobookProgressDao
+
     companion object {
         val MIGRATION_27_32 =
             Migration(27, 32) {
@@ -64,6 +73,23 @@ abstract class PersistenceDatabase : RoomDatabase() {
                 it.execSQL("ALTER TABLE playback_state RENAME TO PlaybackState")
                 it.execSQL("ALTER TABLE queue_heap RENAME TO QueueHeapItem")
                 it.execSQL("ALTER TABLE queue_mapping RENAME TO QueueMappingItem")
+            }
+
+        /** Adds audiobook progress without touching the existing Music playback tables. */
+        val MIGRATION_38_39 =
+            Migration(38, 39) {
+                it.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS AudiobookProgressEntity (
+                        chapterUid TEXT NOT NULL PRIMARY KEY,
+                        bookKey TEXT NOT NULL,
+                        positionMs INTEGER NOT NULL,
+                        completed INTEGER NOT NULL,
+                        updatedMs INTEGER NOT NULL
+                    )
+                    """
+                        .trimIndent()
+                )
             }
     }
 }
@@ -151,3 +177,28 @@ data class PlaybackState(
 @Entity data class QueueHeapItem(@PrimaryKey val id: Int, val uid: Music.UID)
 
 @Entity data class QueueShuffledMappingItem(@PrimaryKey val id: Int, val index: Int)
+
+/** One durable resume record per audiobook chapter/file. */
+@Entity
+data class AudiobookProgressEntity(
+    @PrimaryKey val chapterUid: String,
+    val bookKey: String,
+    val positionMs: Long,
+    val completed: Boolean,
+    val updatedMs: Long,
+)
+
+@Dao
+interface AudiobookProgressDao {
+    @Query("SELECT * FROM AudiobookProgressEntity WHERE bookKey = :bookKey ORDER BY updatedMs DESC")
+    suspend fun getForBook(bookKey: String): List<AudiobookProgressEntity>
+
+    @Query("SELECT * FROM AudiobookProgressEntity WHERE chapterUid = :chapterUid LIMIT 1")
+    suspend fun getForChapter(chapterUid: String): AudiobookProgressEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(progress: AudiobookProgressEntity)
+
+    @Query("DELETE FROM AudiobookProgressEntity WHERE bookKey = :bookKey")
+    suspend fun deleteForBook(bookKey: String)
+}

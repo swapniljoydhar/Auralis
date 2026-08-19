@@ -47,6 +47,9 @@ interface PlaybackCommand {
     val queue: List<Song>
     /** Whether to shuffle or not. * */
     val shuffled: Boolean
+    /** Optional initial position for audiobook resume; Music commands keep the default zero. */
+    val startPositionMs: Long
+        get() = 0L
 
     interface Factory {
         fun song(song: Song, shuffle: ShuffleMode): PlaybackCommand?
@@ -63,7 +66,12 @@ interface PlaybackCommand {
 
         fun all(shuffle: ShuffleMode): PlaybackCommand?
 
-        fun songs(songs: List<Song>, shuffle: ShuffleMode): PlaybackCommand?
+        fun songs(
+            songs: List<Song>,
+            shuffle: ShuffleMode,
+            startSong: Song? = null,
+            startPositionMs: Long = 0L,
+        ): PlaybackCommand?
 
         fun album(album: Album, shuffle: ShuffleMode): PlaybackCommand?
 
@@ -94,6 +102,7 @@ constructor(
         override val parent: MusicParent?,
         override val queue: List<Song>,
         override val shuffled: Boolean,
+        override val startPositionMs: Long = 0L,
     ) : PlaybackCommand {
         // Only show queue count to reduce memory use
         override fun toString() =
@@ -119,8 +128,12 @@ constructor(
 
     override fun all(shuffle: ShuffleMode) = newCommand(null, shuffle)
 
-    override fun songs(songs: List<Song>, shuffle: ShuffleMode) =
-        newCommand(null, null, songs, shuffle)
+    override fun songs(
+        songs: List<Song>,
+        shuffle: ShuffleMode,
+        startSong: Song?,
+        startPositionMs: Long,
+    ) = newCommand(startSong, null, songs, shuffle, startPositionMs)
 
     override fun album(album: Album, shuffle: ShuffleMode) =
         newCommand(null, album, listSettings.albumSongSort, shuffle)
@@ -175,7 +188,7 @@ constructor(
         if (queue.isEmpty() || (song != null && song !in queue)) {
             return null
         }
-        return newCommand(song, parent, sort.songs(queue), shuffle)
+        return PlaybackCommandImpl(song, parent, sort.songs(queue), isShuffled(shuffle))
     }
 
     private fun newCommand(
@@ -183,8 +196,9 @@ constructor(
         parent: MusicParent?,
         queue: List<Song>,
         shuffle: ShuffleMode,
+        startPositionMs: Long = 0L,
     ): PlaybackCommand {
-        return PlaybackCommandImpl(song, parent, queue, isShuffled(shuffle))
+        return PlaybackCommandImpl(song, parent, queue, isShuffled(shuffle), startPositionMs)
     }
 
     private fun isShuffled(shuffle: ShuffleMode) =

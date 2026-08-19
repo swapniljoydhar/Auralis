@@ -28,6 +28,7 @@ import androidx.annotation.StringRes
 import androidx.media.utils.MediaConstants
 import org.oxycblt.auxio.BuildConfig
 import org.oxycblt.auxio.R
+import org.oxycblt.auxio.audiobooks.AudiobookBook
 import org.oxycblt.auxio.image.CoverProvider
 import org.oxycblt.auxio.music.resolve
 import org.oxycblt.auxio.music.resolveNames
@@ -51,11 +52,16 @@ sealed interface MediaSessionUID {
         override fun toString() = "$MICRO_ID_ITEM$uid"
     }
 
+    data class Audiobook(val key: String) : MediaSessionUID {
+        override fun toString() = "$MICRO_ID_AUDIOBOOK$key"
+    }
+
     companion object {
         const val ID_CATEGORY = BuildConfig.APPLICATION_ID + ".category"
         const val MICRO_ID_CATEGORY = "mc"
         const val ID_ITEM = BuildConfig.APPLICATION_ID + ".item"
         const val MICRO_ID_ITEM = "mi"
+        const val MICRO_ID_AUDIOBOOK = "mb"
 
         fun fromString(str: String): MediaSessionUID? {
             if (str.startsWith("mc")) {
@@ -69,6 +75,12 @@ sealed interface MediaSessionUID {
                     return null
                 }
                 return SingleItem(UID.fromString(str.substring(2 until str.length)) ?: return null)
+            }
+            if (str.startsWith(MICRO_ID_AUDIOBOOK)) {
+                if (str.length < 3) {
+                    return null
+                }
+                return Audiobook(str.substring(2 until str.length))
             }
             val parts = str.split(":", limit = 2)
             if (parts.size != 2) {
@@ -143,6 +155,23 @@ fun Song.toMediaDescription(context: Context, vararg sugar: Sugar): MediaDescrip
 
 fun Song.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
     return MediaItem(toMediaDescription(context, *sugar), MediaItem.FLAG_PLAYABLE)
+}
+
+fun AudiobookBook.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
+    val description =
+        MediaDescriptionCompat.Builder()
+            .setMediaId(MediaSessionUID.Audiobook(key).toString())
+            .setTitle(title)
+            .setSubtitle(author ?: context.getString(R.string.lbl_audiobooks))
+            .setDescription(context.getString(R.string.fmt_number, chapterCount))
+            .setIconUri(
+                chapters.firstOrNull()?.song?.cover?.let {
+                    Uri.withAppendedPath(CoverProvider.CONTENT_URI, it.id)
+                }
+            )
+            .setExtras(makeExtras(context, *sugar))
+            .build()
+    return MediaItem(description, MediaItem.FLAG_BROWSABLE)
 }
 
 fun Album.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {

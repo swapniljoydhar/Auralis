@@ -5,10 +5,16 @@
         <exclude
             domain="database"
             path="music_cache.db" />
+        <exclude
+            domain="database"
+            path="playback_persistence.db" />
     </cloud-backup>
     <device-transfer>
         <exclude
             domain="database"
             path="music_cache.db" />
+        <exclude
+            domain="database"
+            path="playback_persistence.db" />
     </device-transfer>
 </data-extraction-rules>
