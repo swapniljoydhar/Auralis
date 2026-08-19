@@ -3,7 +3,7 @@
     <!-- Info namespace | App labels -->
     <eat-comment />
 
-    <string name="info_app_desc">A private, local-first player for music and audiobooks on Android.</string>
+    <string name="info_app_desc">A simple, rational music player for android.</string>
 
     <!-- Label Namespace | Static Labels -->
     <eat-comment />
