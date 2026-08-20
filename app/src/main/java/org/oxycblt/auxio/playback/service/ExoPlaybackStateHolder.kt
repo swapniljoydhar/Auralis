@@ -108,9 +108,11 @@ class ExoPlaybackStateHolder(
 
     fun release() {
         currentSaveJob?.cancel()
+        val currentMediaItem = player.currentMediaItem
+        val currentPosition = player.currentPosition
         runBlocking(Dispatchers.IO) {
             savePendingAudiobookProgress()
-            saveAudiobookProgress()
+            saveAudiobookProgress(currentMediaItem, currentPosition)
         }
         saveJob.cancel()
         playbackManager.unregisterStateHolder(this)
@@ -496,7 +498,9 @@ class ExoPlaybackStateHolder(
                 openAudioEffectSession = true
             }
         } else {
-            saveJob { saveAudiobookProgress() }
+            val currentMediaItem = player.currentMediaItem
+            val currentPosition = player.currentPosition
+            saveJob { saveAudiobookProgress(currentMediaItem, currentPosition) }
             if (openAudioEffectSession) {
                 // Make sure to close the audio session when we stop playback.
                 L.d("Closing audio effect session")
@@ -599,17 +603,21 @@ class ExoPlaybackStateHolder(
     }
 
     private fun save(cb: () -> Unit) {
+        val currentMediaItem = player.currentMediaItem
+        val currentPosition = player.currentPosition
         saveJob {
             if (sessionOngoing) {
                 persistenceRepository.saveState(playbackManager.toSavedState())
             }
             savePendingAudiobookProgress()
-            saveAudiobookProgress()
+            saveAudiobookProgress(currentMediaItem, currentPosition)
             withContext(Dispatchers.Main) { cb() }
         }
     }
 
     private fun deferSave() {
+        val currentMediaItem = player.currentMediaItem
+        val currentPosition = player.currentPosition
         saveJob {
             L.d("Waiting for save buffer")
             delay(SAVE_BUFFER)
@@ -619,7 +627,7 @@ class ExoPlaybackStateHolder(
                 persistenceRepository.saveState(playbackManager.toSavedState())
             }
             savePendingAudiobookProgress()
-            saveAudiobookProgress()
+            saveAudiobookProgress(currentMediaItem, currentPosition)
         }
     }
 
@@ -633,10 +641,7 @@ class ExoPlaybackStateHolder(
         }
     }
 
-    private suspend fun saveAudiobookProgress(
-        mediaItem: MediaItem? = player.currentMediaItem,
-        positionMs: Long = player.currentPosition,
-    ) {
+    private suspend fun saveAudiobookProgress(mediaItem: MediaItem?, positionMs: Long) {
         val song = mediaItem?.song ?: return
         if (!AudiobookClassifier.isAudiobook(song)) return
 
