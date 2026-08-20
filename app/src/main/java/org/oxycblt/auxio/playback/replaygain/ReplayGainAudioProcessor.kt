@@ -18,6 +18,7 @@
  
 package org.oxycblt.auxio.playback.replaygain
 
+import android.annotation.SuppressLint
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.Player
@@ -44,6 +45,7 @@ import timber.log.Timber as L
  *
  * @author Alexander Capehart (OxygenCobalt)
  */
+@SuppressLint("UnsafeOptInUsageError")
 class ReplayGainAudioProcessor
 @Inject
 constructor(

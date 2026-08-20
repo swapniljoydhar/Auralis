@@ -16,6 +16,7 @@
 
 package com.google.android.material.bottomsheet;
 
+import android.annotation.SuppressLint;
 import com.google.android.material.R;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
@@ -92,6 +93,7 @@ import java.util.Map;
  * window-like. For BottomSheetDialog use {@link BottomSheetDialog#setTitle(int)}, and for
  * BottomSheetDialogFragment use {@link ViewCompat#setAccessibilityPaneTitle(View, CharSequence)}.
  */
+@SuppressLint("RestrictedApi")
 public class BackportBottomSheetBehavior<V extends View> extends CoordinatorLayout.Behavior<V>
     implements MaterialBackHandler {
 

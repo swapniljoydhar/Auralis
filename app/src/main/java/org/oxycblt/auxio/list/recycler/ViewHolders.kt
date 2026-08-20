@@ -89,7 +89,8 @@ class SongViewHolder private constructor(private val binding: ItemSongBinding) :
         val DIFF_CALLBACK =
             object : SimpleDiffCallback<Song>() {
                 override fun areContentsTheSame(oldItem: Song, newItem: Song) =
-                    oldItem.name == newItem.name && oldItem.artists.areNamesTheSame(newItem.artists)
+                    oldItem.name.compareTo(newItem.name) == 0 &&
+                        oldItem.artists.areNamesTheSame(newItem.artists)
             }
     }
 }
@@ -139,9 +140,10 @@ class AlbumViewHolder private constructor(private val binding: ItemParentBinding
         val DIFF_CALLBACK =
             object : SimpleDiffCallback<Album>() {
                 override fun areContentsTheSame(oldItem: Album, newItem: Album) =
-                    oldItem.name == newItem.name &&
+                    oldItem.name.compareTo(newItem.name) == 0 &&
                         oldItem.artists.areNamesTheSame(newItem.artists) &&
-                        oldItem.releaseType == newItem.releaseType
+                        oldItem.releaseType::class == newItem.releaseType::class &&
+                        oldItem.releaseType.refinement == newItem.releaseType.refinement
             }
     }
 }
@@ -205,7 +207,7 @@ class ArtistViewHolder private constructor(private val binding: ItemParentBindin
         val DIFF_CALLBACK =
             object : SimpleDiffCallback<Artist>() {
                 override fun areContentsTheSame(oldItem: Artist, newItem: Artist) =
-                    oldItem.name == newItem.name &&
+                    oldItem.name.compareTo(newItem.name) == 0 &&
                         oldItem.explicitAlbums.size == newItem.explicitAlbums.size &&
                         oldItem.songs.size == newItem.songs.size
             }
@@ -262,7 +264,7 @@ class GenreViewHolder private constructor(private val binding: ItemParentBinding
         val DIFF_CALLBACK =
             object : SimpleDiffCallback<Genre>() {
                 override fun areContentsTheSame(oldItem: Genre, newItem: Genre) =
-                    oldItem.name == newItem.name &&
+                    oldItem.name.compareTo(newItem.name) == 0 &&
                         oldItem.artists.size == newItem.artists.size &&
                         oldItem.songs.size == newItem.songs.size
             }

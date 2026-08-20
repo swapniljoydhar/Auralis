@@ -16,6 +16,7 @@
 
 package com.google.android.material.bottomsheet;
 
+import android.annotation.SuppressLint;
 import com.google.android.material.R;
 
 import static com.google.android.material.color.MaterialColors.isColorLight;
@@ -68,6 +69,7 @@ import com.google.android.material.shape.MaterialShapeDrawable;
  *
  * MODIFICATION: Replace all usages of BottomSheetBehavior with BackportBottomSheetBehavior
  */
+@SuppressLint("RestrictedApi")
 public class BackportBottomSheetDialog extends AppCompatDialog {
 
   private BackportBottomSheetBehavior<FrameLayout> behavior;
