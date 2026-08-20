@@ -133,7 +133,7 @@ private class ArtistAlbumViewHolder private constructor(private val binding: Ite
         val DIFF_CALLBACK =
             object : SimpleDiffCallback<Album>() {
                 override fun areContentsTheSame(oldItem: Album, newItem: Album) =
-                    oldItem.name == newItem.name && oldItem.dates == newItem.dates
+                    oldItem.name.compareTo(newItem.name) == 0 && oldItem.dates == newItem.dates
             }
     }
 }
@@ -185,7 +185,8 @@ private class ArtistSongViewHolder private constructor(private val binding: Item
         val DIFF_CALLBACK =
             object : SimpleDiffCallback<Song>() {
                 override fun areContentsTheSame(oldItem: Song, newItem: Song) =
-                    oldItem.name == newItem.name && oldItem.album.name == newItem.album.name
+                    oldItem.name.compareTo(newItem.name) == 0 &&
+                        oldItem.album.name.compareTo(newItem.album.name) == 0
             }
     }
 }
