@@ -84,7 +84,7 @@ private constructor(private val binding: ItemPickerChoiceBinding) :
         val DIFF_CALLBACK =
             object : SimpleDiffCallback<Genre>() {
                 override fun areContentsTheSame(oldItem: Genre, newItem: Genre) =
-                    oldItem.name == newItem.name
+                    oldItem.name.compareTo(newItem.name) == 0
             }
     }
 }
