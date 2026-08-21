@@ -45,6 +45,14 @@ constructor(private val playbackManager: PlaybackStateManager) {
             }
     }
 
+    fun scheduleSleepAtChapterEnd() {
+        val song = playbackManager.currentSong ?: return
+        val remainingMs =
+            (song.durationMs - playbackManager.progression.calculateElapsedPositionMs())
+                .coerceAtLeast(0L)
+        scheduleSleepTimer(remainingMs)
+    }
+
     fun cancelSleepTimer() {
         sleepTimerJob?.cancel()
         sleepTimerJob = null

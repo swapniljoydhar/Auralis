@@ -45,10 +45,10 @@ were too small
 - New tablet-friendly detail UI
 
 ## What's Improved
-- Auxio can now load 3rd-party SAF folders (ex. RSAF)
-  - Note: Third-party foldes are considered by Auxio to be more like "SD Cards" internally, so playlist importing may not work well
+- Auralis can now load 3rd-party SAF folders (ex. RSAF)
+  - Note: Third-party foldes are considered by Auralis to be more like "SD Cards" internally, so playlist importing may not work well
 - Genre subheads are now hidden in the artist view when it is entirely unknown genre
-- Auxio's playback notification now shows both shuffle/repeat
+- Auralis's playback notification now shows both shuffle/repeat
   - Notification will disappear after inactivity instead of requiring a manual close
 - Made taglib parsing more reliable (thanks @lepre-zhang!)
 - Featured artists now show up on an album's songs
@@ -273,7 +273,7 @@ persist long-term
 ## 3.5.3
 
 #### What's New
-- Basic Tasker integration for safely starting Auxio's service
+- Basic Tasker integration for safely starting Auralis's service
 
 #### What's Improved
 - Added support for informal singular-spaced tags like `album artist` in
@@ -701,7 +701,7 @@ audio focus was lost
 - Fixed toolbar flickering when fast-scrolling in the home UI
 
 #### What's Changed
-- Ignore MediaStore tags is now Auxio's default and unchangeable behavior. The option has been removed.
+- Ignore MediaStore tags is now Auralis's default and unchangeable behavior. The option has been removed.
 - "Use alternate notification action" is now "Custom notification action"
 - "Show covers" and "Ignore MediaStore covers" have been unified into "Album covers"
 
@@ -741,7 +741,7 @@ audio focus was lost
     - Fix issue where widget covers would not load
     - Use new media notification panel style
     - Add predictive back navigation
-- Auxio has a new, more refined icon style
+- Auralis has a new, more refined icon style
 - Added a way to access the system equalizer from the playback menu
 
 #### What's Improved
@@ -824,7 +824,7 @@ in startup
 
 #### What's New
 - Massively overhauled how music is loaded [#72]:
-	- Auxio can now reload music without requiring a restart
+	- Auralis can now reload music without requiring a restart
 	- Added a new option to reload music when device files change
 - Added a shuffle shortcut
 - Widgets now have a more sleek and consistent button layout
@@ -1045,7 +1045,7 @@ artist they are grouped up in
 to when using gesture navigation
 - Band-aided completely broken layouts in split screen mode
 - Fixed crash in the playback view when a song's duration was 0
-- Fixed issue where apps like GadgetBridge would not detect Auxio
+- Fixed issue where apps like GadgetBridge would not detect Auralis
 
 #### Dev/Meta:
 - ExoPlayer is now a local dependency
@@ -1058,7 +1058,7 @@ to when using gesture navigation
 
 ## v2.0.0
 #### What's New:
-- Auxio has a new look derived from Material 3
+- Auralis has a new look derived from Material 3
 - Material You support on Android 12
 - Library and song view have been merged into a unified view
 - Shuffle can now be accessed everywhere
@@ -1117,7 +1117,7 @@ to when using gesture navigation
 - Fast scroller now truncates more aggressively when there is not enough space
 - Minor improvements to layout hierarchy
 - Detail text/track numbers will no longer shrink
-- Loading screen has been tweaked to line up with the rest of Auxio
+- Loading screen has been tweaked to line up with the rest of Auralis
 
 #### What's Fixed:
 - Fixed issue where the new about screen would be cut off in landscape mode

@@ -1,191 +1,60 @@
-<p align="center"><img src="fastlane/metadata/android/en-US/images/icon.png" width="150"></p>
-<h1 align="center"><b>Auxio</b></h1>
-<h4 align="center">A simple, rational music player for Android.</h4>
+<h1 align="center"><b>Auralis</b></h1>
+<h4 align="center">A private, local-first player for music and audiobooks on Android.</h4>
 <p align="center">
-    <a href="https://github.com/oxygencobalt/Auxio/releases/tag/v4.1.5">
-        <img alt="Latest Version" src="https://img.shields.io/static/v1?label=tag&message=v4.1.5&color=64B5F6&style=flat">
-    </a>
-    <a href="https://github.com/oxygencobalt/Auxio/releases/">
-        <img alt="Releases" src="https://img.shields.io/github/downloads/OxygenCobalt/Auxio/total.svg?color=4B95DE&style=flat">
-    </a>
-    <a href="https://www.gnu.org/licenses/gpl-3.0">
-        <img src="https://img.shields.io/badge/license-GPL%20v3-2B6DBE.svg?style=flat">
-    </a>
     <img alt="Minimum SDK Version" src="https://img.shields.io/badge/API-24%2B-1450A8?style=flat">
-</p>
-<h4 align="center"><a href="/CHANGELOG.md">Changelog</a> | <a href="https://github.com/OxygenCobalt/Auxio/wiki">Wiki</a> | <a href="https://github.com/OxygenCobalt/Auxio#Donate">Donate</a></h4>
-<p align="center">
-    <a href="https://f-droid.org/app/org.oxycblt.auxio"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" width="250"></a>
-    <a href="https://accrescent.app/app/org.oxycblt.auxio">
-        <img alt="Get it on Accrescent" src="https://accrescent.app/badges/get-it-on.png" width="250">
-    </a>
-</p>
-<p align="center">
-    <a href="https://hosted.weblate.org/engage/auxio/"><img height=64 src="https://hosted.weblate.org/widgets/auxio/-/strings/287x66-grey.png" alt="Translation status" /></a>
+    <img alt="License" src="https://img.shields.io/badge/license-GPL%20v3-2B6DBE.svg?style=flat">
 </p>
 
 ## About
 
-Auxio is a local music player with a fast, reliable UI/UX without the many useless features present in other music players. Built off of modern media playback libraries, Auxio has superior library support and listening quality compared to other apps that use outdated Android functionality. In short, **It plays music.**
+Auralis is an offline Android player with two deliberately separated listening spaces. **Music** is organized around songs, albums, artists, genres, playlists, search, queues, and fast everyday playback. **Audiobooks** is organized around books, chapters, resume positions, progress, bookmarks, speed, skip intervals, silence skipping, auto-rewind, and sleep-at-chapter-end behavior.
 
-**The default branch is the development version of the repository. For a stable version, see the master branch.**
+The application reads local media, does not require an account, and keeps library and playback state on the device. The opening hub asks whether the listener wants Music or Audiobooks; each choice opens a focused library projection rather than exposing both experiences in one mixed tab strip. The toolbar still provides a quick way to switch modes.
 
-## Screenshots
+Auralis supports M4B audiobook playback and can classify ordinary MP3 files as audiobook chapters. When MP3 chapters are assigned to Audiobooks, they disappear from the Music projection without deleting or moving the files and reappear as one audiobook grouped by folder. Removing the assignment returns them to Music.
 
-<p align="center">
-    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot0.png" width=250>
-    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot1.png" width=250>
-    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot2.png" width=250>
-    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot3.png" width=250>
-    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot4.png" width=250>
-    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot5.png" width=250>
-</p>
+## Feature areas
 
+### Music
 
-## Features
+Auralis provides local Music indexing, embedded artwork, songs, albums, artists, genres, playlists, search, queue management, shuffle and repeat, playback persistence, gapless playback, ReplayGain, external equalizer integration, Android Auto, headset controls, widgets, and edge-to-edge Material UI.
 
-- Playback based on [Media3 ExoPlayer](https://developer.android.com/guide/topics/media/exoplayer)
-- Snappy UI derived from the latest Material Design guidelines
-- Opinionated UX that prioritizes ease of use over edge cases
-- Customizable behavior
-- Support for disc numbers, multiple artists, release types,
-precise/original dates, sort tags, and more
-- Advanced artist system that unifies artists and album artists
-- SD Card-aware folder management
-- Reliable playlisting functionality
-- Playback state persistence
-- Android Auto support
-- Automatic gapless playback
-- Full ReplayGain support (On MP3, FLAC, OGG, OPUS, and MP4 files)
-- External equalizer support (ex. Wavelet)
-- Edge-to-edge
-- Embedded covers support
-- Search functionality
-- Headset autoplay
-- Stylish widgets that automatically adapt to their size
-- Completely private and offline
-- No rounded album covers (if you want them)
+### Audiobooks
 
-## Permissions
+Audiobooks provide M4B and MP3-chapter playback, cover-led detail pages, chapter durations, completion state, resume-first actions, chapter navigation, visible skip/speed/sleep controls, configurable skip duration, default playback speed, auto-rewind, silence skipping, bookmarks, and stopping at the end of the current chapter.
 
-- Storage (`READ_MEDIA_AUDIO`, `READ_EXTERNAL_STORAGE`) to read and play your music files
-- Services (`FOREGROUND_SERVICE`, `WAKE_LOCK`) to keep the music playing in the background
-- Notifications (`POST_NOTIFICATION`) to indicate ongoing playback and music loading
+### Privacy and storage
 
-## Donate
+Auralis is designed for local playback. It does not require cloud synchronization or an account. Android media permissions are used only to discover and play local audio, while notification and foreground-service permissions support background playback.
 
-You can support Auxio's development through [my Github Sponsors page](https://github.com/sponsors/OxygenCobalt). Get the ability to prioritize features and have your profile added to the README, Release Changelogs, and even the app itself!
+## Build
 
-<h3 align="center">Legendary supporters:</h3>
-<p align="center">
-    <a href="https://github.com/bkkellyh"><img src="https://avatars.githubusercontent.com/u/248118457?v=4" width=250 /></a> 
-    <a href="ttps://github.com/gruntstumper"><img src="https://avatars.githubusercontent.com/u/308816080?v=4" width=125 /></a> 
-</p>
-<h3 align="center">
-    <a href="https://github.com/bkkellyh">@bkkellyh</a> - <i>$500!</i>, <a href="https://github.com/gruntstumper">@gruntstumper</a> - $100
-</h3>
-
-<hr />
-
-<p align="center"><b>$8/month supporters:</b></p>
-
-<p align="center">
-    <a href="https://github.com/uku3lig"><img src="https://avatars.githubusercontent.com/u/61147779?v=4" width=50 /></a>
-</p>
-<p align="center">
-    And **1** Private Sponsor!
-</p>
-
-## Building
-
-Auxio relies on a patched version of Media3 that enables some extra playback features, alongside taglib for metadata
-parsing. This adds some caveats to the build process:
-1. `cmake` and `ninja-build` must be installed before building the project.
-2. The project uses submodules, so when cloning initially, use `git clone --recurse-submodules` to properly
-download the external code.
-3. You are **unable** to build this project on windows, as the custom Media3 build runs shell scripts that
-will only work on unix-based systems.
-
-### Set up Android Studio
-
-#### Install Android Studio.
+The project uses Gradle, Android SDK/NDK tooling, a patched Media3 playback stack, and the native metadata parser in `musikr`.
 
 ```bash
-pkg -S android-studio
+./gradlew --no-daemon --max-workers=1 spotlessApply
+./gradlew --no-daemon --max-workers=1 check
+./gradlew --no-daemon --max-workers=1 :app:assembleDebug
 ```
 
-#### Configuring Android Studio:
-
-- Be sure to have NDK tools, version 28.2.13676358. You can search it on Languages & Frameworks > Android SDK.
-- Install Java-21 with your system package manager
-
-    ```bash
-    sudo pkg -S jdk21-openjdk
-    ```
-    Additionally: Set java version to jdk21-openjdk
-
-- Run ./gradlew assembleDebug
-
-#### Connecting to your Android Device
-
-You can connect your Mobile Phone through USB to run the app. 
-
-1. **Enable Developer Options on your phone**
-   - Go to **Settings > About phone**  
-   - Tap **Build number** 7 times until you see *"You are now a developer!"*
-
-2. **Enable USB debugging**
-   - Go to **Settings > Developer options**  
-   - Turn on **USB debugging**
-
-3. **Connect your phone to the computer**
-   - Use a USB cable  
-   - On your phone, accept the *Allow USB debugging?* prompt
-
-4. **Verify that your device is detected**
-   ```bash
-   cd ~/Android/Sdk/platform-tools
-   ./adb devices
-   ```
-
-Android Studio also offers virtual devices that come with this pre-configured.
-
-#### Install the app on the Android Phone
-To install the app on your physical device or emulator, run this command:
+For a local device or emulator with USB debugging enabled:
 
 ```bash
 ./gradlew installDebug
 ```
 
-Auxio should now appear in the list of Apps
+The debug variant is intended for testing. A release build must be signed with a release key before distribution. Do not commit a private signing keystore or passwords to the repository.
 
-#### Load music to Auxio (Optional)
+## Repository structure
 
-You can move files from your pc to your device / emulator to test the music using this command:
+| Module | Responsibility |
+|---|---|
+| `app` | Android UI, navigation, Music and Audiobooks projections, playback service, settings, and persistence. |
+| `musikr` | Native and Kotlin metadata indexing, MediaStore/SAF access, and music-domain models. |
+| `media` | Patched Media3 components used for playback and M4B/FFmpeg support. |
 
-```bash
-cd ~/Android/Sdk/platform-tools
-./adb push ~Music/ /sdcard/Music
-```
+## License and attribution
 
-## Contributing
+Auralis is distributed under the **GNU General Public License, version 3 or later**. It incorporates and modifies GPL-licensed open-source components. Copyright notices, license headers, and third-party notices remain in the source tree where required; rebranding the application does not remove those legal attributions.
 
-Auxio accepts most contributions as long as they follow the [Contribution Guidelines](/.github/CONTRIBUTING.md).
-
-However, feature additions and major UI changes are less likely to be accepted. See
-[Why Are These Features Missing?](https://github.com/OxygenCobalt/Auxio/wiki/Why-Are-These-Features-Missing%3F)
-for more information.
-
-
-
-## License
-
-[![GNU GPLv3 Image](https://www.gnu.org/graphics/gplv3-127x51.png)](http://www.gnu.org/licenses/gpl-3.0.en.html)
-
-Auxio is Free Software: You can use, study share and improve it at your
-will. Specifically you can redistribute and/or modify it under the terms of the
-[GNU General Public License](https://www.gnu.org/licenses/gpl.html) as
-published by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-More information can be found [here](https://github.com/OxygenCobalt/Auxio/wiki/Licenses).
+See [`LICENSE`](LICENSE) and the third-party notices in the relevant modules for the complete licensing information.

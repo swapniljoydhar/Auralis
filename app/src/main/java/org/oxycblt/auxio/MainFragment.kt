@@ -20,7 +20,7 @@ package org.oxycblt.auxio
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.ViewTreeObserver
+import android.view.View
 import android.view.WindowInsets
 import androidx.activity.BackEventCompat
 import androidx.activity.OnBackPressedCallback
@@ -79,9 +79,7 @@ import timber.log.Timber as L
  */
 @AndroidEntryPoint
 class MainFragment :
-    ViewBindingFragment<FragmentMainBinding>(),
-    ViewTreeObserver.OnPreDrawListener,
-    SpeedDialView.OnActionSelectedListener {
+    ViewBindingFragment<FragmentMainBinding>(), SpeedDialView.OnActionSelectedListener {
     private val musicModel: MusicViewModel by activityViewModels()
     private val detailModel: DetailViewModel by activityViewModels()
     private val homeModel: HomeViewModel by activityViewModels()
@@ -97,6 +95,9 @@ class MainFragment :
     private var normalCornerSize = 0f
     private var maxScaleXDistance = 0f
     private var sheetRising: Boolean? = null
+    private var playbackSheetCallback: BackportBottomSheetBehavior.BottomSheetCallback? = null
+    private var queueSheetCallback: BackportBottomSheetBehavior.BottomSheetCallback? = null
+    private var bindingActive = false
     @Inject lateinit var uiSettings: UISettings
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,6 +110,7 @@ class MainFragment :
 
     override fun onBindingCreated(binding: FragmentMainBinding, savedInstanceState: Bundle?) {
         super.onBindingCreated(binding, savedInstanceState)
+        bindingActive = true
 
         val playbackSheetBehavior =
             binding.playbackSheet.coordinatorLayoutBehavior as PlaybackBottomSheetBehavior
@@ -117,6 +119,13 @@ class MainFragment :
         val queueSheetBehavior =
             binding.queueSheet.coordinatorLayoutBehavior as QueueBottomSheetBehavior?
         queueSheetBehavior?.uiSettings = uiSettings
+
+        playbackSheetCallback = createSheetCallback()
+        playbackSheetBehavior.addBottomSheetCallback(requireNotNull(playbackSheetCallback))
+        if (queueSheetBehavior != null) {
+            queueSheetCallback = createSheetCallback()
+            queueSheetBehavior.addBottomSheetCallback(requireNotNull(queueSheetCallback))
+        }
 
         elevationNormal = binding.context.getDimen(MR.dimen.m3_sys_elevation_level1)
 
@@ -217,6 +226,7 @@ class MainFragment :
         collectImmediately(listModel.selected, selectionBackCallback::invalidateEnabled)
         collectImmediately(playbackModel.song, ::updateSong)
         collectImmediately(playbackModel.openPanel.flow, ::handlePanel)
+        updateSheetChrome()
     }
 
     override fun onStart() {
@@ -226,9 +236,6 @@ class MainFragment :
         // so handle that by resetting the flag.
         requireNotNull(navigationListener) { "NavigationListener was not available" }
             .attach(binding.exploreNavHost.findNavController())
-        // Listener could still reasonably fire even if we clear the binding, attach/detach
-        // our pre-draw listener our listener in onStart/onStop respectively.
-        binding.playbackSheet.viewTreeObserver.addOnPreDrawListener(this@MainFragment)
     }
 
     override fun onResume() {
@@ -249,10 +256,10 @@ class MainFragment :
         val binding = requireBinding()
         requireNotNull(navigationListener) { "NavigationListener was not available" }
             .release(binding.exploreNavHost.findNavController())
-        binding.playbackSheet.viewTreeObserver.removeOnPreDrawListener(this)
     }
 
     override fun onDestroyBinding(binding: FragmentMainBinding) {
+        bindingActive = false
         super.onDestroyBinding(binding)
         speedDialBackCallback = null
         sheetBackCallback = null
@@ -261,26 +268,42 @@ class MainFragment :
         navigationListener = null
         binding.homeNewPlaylistFab.setChangeListener(null)
         binding.homeNewPlaylistFab.setOnActionSelectedListener(null)
+        playbackSheetCallback?.let { callback ->
+            (binding.playbackSheet.coordinatorLayoutBehavior as PlaybackBottomSheetBehavior)
+                .removeBottomSheetCallback(callback)
+        }
+        queueSheetCallback?.let { callback ->
+            (binding.queueSheet.coordinatorLayoutBehavior as QueueBottomSheetBehavior?)
+                ?.removeBottomSheetCallback(callback)
+        }
+        playbackSheetCallback = null
+        queueSheetCallback = null
     }
 
-    override fun onPreDraw(): Boolean {
-        // This is where I shove literally all the UI logic that won't behave any callback
-        // or "normal" method I've tried. Surely running this on every frame will actually cause
-        // it to work properly!
+    private fun createSheetCallback() =
+        object : BackportBottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (!bindingActive) return
+                requireNotNull(sheetBackCallback) { "SheetBackPressedCallback was not available" }
+                    .invalidateEnabled()
+                updateSheetChrome()
+            }
 
-        // We overload CoordinatorLayout far too much to rely on any of it's typical
-        // listener functionality. Just update all transitions before every draw. Should
-        // probably be cheap enough.
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (bindingActive) updateSheetChrome()
+            }
+        }
+
+    private fun updateSheetChrome() {
+        if (!bindingActive) return
         val binding = requireBinding()
         val playbackSheetBehavior =
             binding.playbackSheet.coordinatorLayoutBehavior as PlaybackBottomSheetBehavior
         val queueSheetBehavior =
             binding.queueSheet.coordinatorLayoutBehavior as QueueBottomSheetBehavior?
+        if (binding.playbackSheet.width <= 0) return
 
         val playbackRatio = max(playbackSheetBehavior.calculateSlideOffset(), 0f)
-        // Stupid hack to prevent you from sliding the sheet up without closing the speed
-        // dial. Filtering out ACTION_MOVE events will cause back gestures to close the
-        // speed dial, which is super finicky behavior.
         val rising = playbackRatio > 0f
         if (rising != sheetRising) {
             sheetRising = rising
@@ -294,93 +317,71 @@ class MainFragment :
 
         val playbackOutRatio = 1 - min(playbackRatio * 2, 1f)
         val playbackInRatio = max(playbackRatio - 0.5f, 0f) * 2
-
         val playbackMaxXScaleDelta = maxScaleXDistance / binding.playbackSheet.width
         val playbackEdgeRatio = max(playbackRatio - 0.9f, 0f) / 0.1f
         val playbackBackRatio =
             max(1 - ((1 - binding.playbackSheet.scaleX) / playbackMaxXScaleDelta), 0f)
         val playbackLastStretchRatio = min(playbackEdgeRatio * playbackBackRatio, 1f)
-        binding.mainSheetScrim.alpha = playbackLastStretchRatio
 
+        if (binding.mainSheetScrim.alpha != playbackLastStretchRatio) {
+            binding.mainSheetScrim.alpha = playbackLastStretchRatio
+        }
         playbackSheetBehavior.sheetBackgroundDrawable.setCornerSize(
             normalCornerSize * (1 - playbackLastStretchRatio)
         )
         binding.exploreNavHost.isInvisible = playbackLastStretchRatio == 1f
         binding.playbackSheet.translationZ = (1 - playbackLastStretchRatio) * elevationNormal
 
-        if (queueSheetBehavior != null) {
+        if (queueSheetBehavior != null && binding.queueSheet.width > 0) {
             val queueRatio = max(queueSheetBehavior.calculateSlideOffset(), 0f)
             val queueInRatio = max(queueRatio - 0.5f, 0f) * 2
-
             val queueMaxXScaleDelta = maxScaleXDistance / binding.queueSheet.width
             val queueBackRatio =
                 max(1 - ((1 - binding.queueSheet.scaleX) / queueMaxXScaleDelta), 0f)
-
             val queueEdgeRatio = max(queueRatio - 0.9f, 0f) / 0.1f
-
             val queueBarEdgeRatio = max(queueEdgeRatio - 0.5f, 0f) * 2
             val queueBarBackRatio = max(queueBackRatio - 0.5f, 0f) * 2
             val queueBarRatio = min(queueBarEdgeRatio * queueBarBackRatio, 1f)
-
             val queuePanelEdgeRatio = min(queueEdgeRatio * 2, 1f)
             val queuePanelBackRatio = min(queueBackRatio * 2, 1f)
             val queuePanelRatio = 1 - min(queuePanelEdgeRatio * queuePanelBackRatio, 1f)
 
-            binding.playbackBarFragment.alpha = max(playbackOutRatio, queueBarRatio)
-            binding.playbackPanelFragment.alpha = min(playbackInRatio, queuePanelRatio)
-            binding.queueFragment.alpha = queueInRatio
+            setAlphaIfChanged(binding.playbackBarFragment, max(playbackOutRatio, queueBarRatio))
+            setAlphaIfChanged(binding.playbackPanelFragment, min(playbackInRatio, queuePanelRatio))
+            setAlphaIfChanged(binding.queueFragment, queueInRatio)
 
             if (playbackModel.song.value != null) {
-                // Playback sheet intercepts queue sheet touch events, prevent that from
-                // occurring by disabling dragging whenever the queue sheet is expanded.
-                playbackSheetBehavior.isDraggable =
+                val draggable =
                     queueSheetBehavior.state == BackportBottomSheetBehavior.STATE_COLLAPSED
+                if (playbackSheetBehavior.isDraggable != draggable) {
+                    playbackSheetBehavior.isDraggable = draggable
+                }
             }
         } else {
-            // No queue sheet, fade normally based on the playback sheet
-            binding.playbackBarFragment.alpha = playbackOutRatio
-            binding.playbackPanelFragment.alpha = playbackInRatio
+            setAlphaIfChanged(binding.playbackBarFragment, playbackOutRatio)
+            setAlphaIfChanged(binding.playbackPanelFragment, playbackInRatio)
             (binding.queueSheet.background as MaterialShapeDrawable).shapeAppearanceModel =
                 ShapeAppearanceModel.builder()
                     .setTopLeftCornerSize(normalCornerSize)
                     .setTopRightCornerSize(normalCornerSize * (1 - playbackLastStretchRatio))
                     .build()
         }
-        // Fade out the playback bar as the panel expands.
-        binding.playbackBarFragment.apply {
-            // Prevent interactions when the playback bar fully fades out.
-            isInvisible = alpha == 0f
-        }
 
-        // Prevent interactions when the playback panel fully fades out.
+        binding.playbackBarFragment.isInvisible = binding.playbackBarFragment.alpha == 0f
         binding.playbackPanelFragment.isInvisible = binding.playbackPanelFragment.alpha == 0f
-
-        binding.queueSheet.apply {
-            // Queue sheet (not queue content) should fade out with the playback panel.
-            alpha = playbackInRatio
-            // Prevent interactions when the queue sheet fully fades out.
-            binding.queueSheet.isInvisible = alpha == 0f
-        }
-
-        // Prevent interactions when the queue content fully fades out.
+        setAlphaIfChanged(binding.queueSheet, playbackInRatio)
+        binding.queueSheet.isInvisible = binding.queueSheet.alpha == 0f
         binding.queueFragment.isInvisible = binding.queueFragment.alpha == 0f
 
-        if (playbackModel.song.value == null) {
-            // Sometimes lingering drags can un-hide the playback sheet even when we intend to
-            // hide it, make sure we keep it hidden.
-            tryHideAllSheets()
-        }
-
-        // Since the navigation listener is also reliant on the bottom sheets, we must also update
-        // it every frame.
+        if (playbackModel.song.value == null) tryHideAllSheets()
         requireNotNull(sheetBackCallback) { "SheetBackPressedCallback was not available" }
             .invalidateEnabled()
-
-        // Stop the FrameLayout containing the fabs from eating touch events elsewhere
         binding.mainFabContainer.isVisible =
             binding.homeNewPlaylistFab.mainFab.isVisible || binding.homeShuffleFab.isVisible
+    }
 
-        return true
+    private fun setAlphaIfChanged(view: View, alpha: Float) {
+        if (view.alpha != alpha) view.alpha = alpha
     }
 
     override fun onActionSelected(actionItem: SpeedDialActionItem): Boolean {

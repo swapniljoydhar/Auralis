@@ -43,8 +43,10 @@ import org.oxycblt.auxio.databinding.FragmentHomeListBinding
 import org.oxycblt.auxio.home.HomeFragmentDirections
 import org.oxycblt.auxio.home.HomeViewModel
 import org.oxycblt.auxio.music.IndexingState
+import org.oxycblt.auxio.music.MusicType
 import org.oxycblt.auxio.music.MusicViewModel
 import org.oxycblt.auxio.util.collectImmediately
+import org.oxycblt.auxio.util.showToast
 
 @AndroidEntryPoint
 class AudiobookListFragment : Fragment() {
@@ -77,8 +79,12 @@ class AudiobookListFragment : Fragment() {
             setImageResource(R.drawable.ic_album_48)
             contentDescription = getString(R.string.lbl_audiobooks)
         }
-        current.homeNoMusicMsg.text = getString(R.string.lng_empty_audiobooks)
-        current.homeNoMusicAction.setOnClickListener { homeModel.startChooseMusicLocations() }
+        current.homeNoMusicMsg.text = getString(R.string.msg_add_audiobook_chapters)
+        current.homeNoMusicAction.text = getString(R.string.lbl_add_audiobook_chapters)
+        current.homeNoMusicAction.setOnClickListener {
+            homeModel.selectMode(MusicType.SONGS)
+            requireContext().showToast(R.string.msg_add_audiobook_chapters)
+        }
 
         collectImmediately(homeModel.audiobookList, ::updateBooks)
         collectImmediately(homeModel.empty, musicModel.indexingState, ::updateEmpty)

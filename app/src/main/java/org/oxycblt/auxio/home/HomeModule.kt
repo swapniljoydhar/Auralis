@@ -22,11 +22,15 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.oxycblt.auxio.audiobooks.AudiobookSettings
+import org.oxycblt.auxio.audiobooks.AudiobookSettingsImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
 interface HomeModule {
     @Binds fun settings(homeSettings: HomeSettingsImpl): HomeSettings
+
+    @Binds fun audiobookSettings(settings: AudiobookSettingsImpl): AudiobookSettings
 
     @Binds fun homeGeneratorFactory(factory: HomeGeneratorFactoryImpl): HomeGenerator.Factory
 }

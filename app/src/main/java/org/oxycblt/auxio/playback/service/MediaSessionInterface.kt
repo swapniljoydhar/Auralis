@@ -29,6 +29,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import org.apache.commons.text.similarity.JaroWinklerSimilarity
 import org.oxycblt.auxio.BuildConfig
+import org.oxycblt.auxio.audiobooks.AudiobookClassifier
+import org.oxycblt.auxio.audiobooks.AudiobookSettings
 import org.oxycblt.auxio.music.MusicRepository
 import org.oxycblt.auxio.music.resolve
 import org.oxycblt.auxio.music.service.MediaSessionUID
@@ -52,6 +54,7 @@ class MediaSessionInterface
 constructor(
     @ApplicationContext private val context: Context,
     private val playbackManager: PlaybackStateManager,
+    private val audiobookSettings: AudiobookSettings,
     private val commandFactory: PlaybackCommand.Factory,
     private val musicRepository: MusicRepository,
 ) : MediaSessionCompat.Callback() {
@@ -79,8 +82,8 @@ constructor(
         val uid = MediaSessionUID.fromString(mediaId ?: return) ?: return
         val parentUid =
             extras?.getString(MusicBrowser.KEY_CHILD_OF)?.let { MediaSessionUID.fromString(it) }
-        val command = expandUidIntoCommand(uid, parentUid)
-        playbackManager.play(requireNotNull(command) { "Invalid playback configuration" })
+        val command = expandUidIntoCommand(uid, parentUid) ?: return
+        playbackManager.play(command)
     }
 
     override fun onPrepareFromSearch(query: String?, extras: Bundle?) {
@@ -91,8 +94,8 @@ constructor(
     override fun onPlayFromSearch(query: String, extras: Bundle) {
         super.onPlayFromSearch(query, extras)
         val library = musicRepository.library ?: return
-        val command = expandSearchInfoCommand(query.ifBlank { null }, extras, library)
-        playbackManager.play(requireNotNull(command) { "Invalid playback configuration" })
+        val command = expandSearchInfoCommand(query.ifBlank { null }, extras, library) ?: return
+        playbackManager.play(command)
     }
 
     override fun onAddQueueItem(description: MediaDescriptionCompat) {
@@ -164,11 +167,19 @@ constructor(
     }
 
     override fun onFastForward() {
-        playbackManager.next()
+        if (playbackManager.currentSong?.let(AudiobookClassifier::isAudiobook) == true) {
+            playbackManager.seekBy(audiobookSettings.skipDurationMs)
+        } else {
+            playbackManager.next()
+        }
     }
 
     override fun onRewind() {
-        playbackManager.seekTo(0)
+        if (playbackManager.currentSong?.let(AudiobookClassifier::isAudiobook) == true) {
+            playbackManager.seekBy(-audiobookSettings.skipDurationMs)
+        } else {
+            playbackManager.seekTo(0)
+        }
         playbackManager.playing(true)
     }
 
@@ -199,7 +210,7 @@ constructor(
         super.onCustomAction(action, extras)
         // Service already handles intents from the old notification actions, easier to
         // plug into that system.
-        context.sendBroadcast(Intent(action))
+        context.sendBroadcast(Intent(action).setPackage(context.packageName))
     }
 
     private fun expandUidIntoCommand(
@@ -233,7 +244,8 @@ constructor(
                     library.songs.maxByOrNull {
                         fuzzy(it.name, songQuery) +
                             fuzzy(it.album.name, albumQuery) +
-                            it.artists.maxOf { artist -> fuzzy(artist.name, artistQuery) }
+                            (it.artists.maxOfOrNull { artist -> fuzzy(artist.name, artistQuery) }
+                                ?: 0.0)
                     }
                 if (best != null) {
                     return expandSongIntoCommand(best, null)
@@ -245,7 +257,8 @@ constructor(
                 val best =
                     library.albums.maxByOrNull {
                         fuzzy(it.name, albumQuery) +
-                            it.artists.maxOf { artist -> fuzzy(artist.name, artistQuery) }
+                            (it.artists.maxOfOrNull { artist -> fuzzy(artist.name, artistQuery) }
+                                ?: 0.0)
                     }
                 if (best != null) {
                     return commandFactory.album(best, ShuffleMode.OFF)
@@ -300,10 +313,14 @@ constructor(
             is Album -> commandFactory.songFromAlbum(music, ShuffleMode.IMPLICIT)
             is Artist ->
                 commandFactory.songFromArtist(music, parent, ShuffleMode.IMPLICIT)
-                    ?: commandFactory.songFromArtist(music, music.artists[0], ShuffleMode.IMPLICIT)
+                    ?: music.artists.firstOrNull()?.let {
+                        commandFactory.songFromArtist(music, it, ShuffleMode.IMPLICIT)
+                    }
             is Genre ->
                 commandFactory.songFromGenre(music, parent, ShuffleMode.IMPLICIT)
-                    ?: commandFactory.songFromGenre(music, music.genres[0], ShuffleMode.IMPLICIT)
+                    ?: music.genres.firstOrNull()?.let {
+                        commandFactory.songFromGenre(music, it, ShuffleMode.IMPLICIT)
+                    }
             is Playlist -> commandFactory.songFromPlaylist(music, parent, ShuffleMode.IMPLICIT)
             null -> commandFactory.songFromAll(music, ShuffleMode.IMPLICIT)
         }

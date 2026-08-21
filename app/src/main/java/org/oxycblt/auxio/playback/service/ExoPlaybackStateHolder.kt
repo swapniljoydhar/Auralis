@@ -51,6 +51,7 @@ import kotlinx.coroutines.yield
 import org.oxycblt.auxio.audiobooks.AudiobookCatalog
 import org.oxycblt.auxio.audiobooks.AudiobookClassifier
 import org.oxycblt.auxio.audiobooks.AudiobookProgressRepository
+import org.oxycblt.auxio.audiobooks.AudiobookSettings
 import org.oxycblt.auxio.image.ImageSettings
 import org.oxycblt.auxio.music.MusicRepository
 import org.oxycblt.auxio.playback.PlaybackSettings
@@ -76,6 +77,7 @@ class ExoPlaybackStateHolder(
     private val playbackManager: PlaybackStateManager,
     private val persistenceRepository: PersistenceRepository,
     private val audiobookProgressRepository: AudiobookProgressRepository,
+    private val audiobookSettings: AudiobookSettings,
     private val playbackSettings: PlaybackSettings,
     private val commandFactory: PlaybackCommand.Factory,
     private val replayGainProcessor: ReplayGainAudioProcessor,
@@ -86,13 +88,15 @@ class ExoPlaybackStateHolder(
     Player.Listener,
     MusicRepository.UpdateListener,
     PlaybackSettings.Listener,
-    ImageSettings.Listener {
+    ImageSettings.Listener,
+    AudiobookSettings.Listener {
     private val saveJob = Job()
     private val saveScope = CoroutineScope(Dispatchers.IO + saveJob)
     private val restoreScope = CoroutineScope(Dispatchers.IO + saveJob)
     private var currentSaveJob: Job? = null
     private var openAudioEffectSession = false
     private val pendingAudiobookProgress = mutableListOf<AudiobookProgressSnapshot>()
+    private var pausedAudiobookPositionMs: Long? = null
 
     var sessionOngoing = false
         private set
@@ -104,6 +108,8 @@ class ExoPlaybackStateHolder(
         replayGainProcessor.attach()
         playbackSettings.registerListener(this)
         imageSettings.registerListener(this)
+        audiobookSettings.registerListener(this)
+        applyAudiobookAudioSettings()
     }
 
     fun release() {
@@ -121,6 +127,7 @@ class ExoPlaybackStateHolder(
         replayGainProcessor.release()
         imageSettings.unregisterListener(this)
         playbackSettings.unregisterListener(this)
+        audiobookSettings.unregisterListener(this)
         player.release()
     }
 
@@ -241,6 +248,7 @@ class ExoPlaybackStateHolder(
     }
 
     override fun seekTo(positionMs: Long) {
+        pausedAudiobookPositionMs = null
         player.seekTo(positionMs)
         deferSave()
         // Ack handled w/ExoPlayer events
@@ -264,9 +272,17 @@ class ExoPlaybackStateHolder(
     }
 
     override fun newPlayback(command: PlaybackCommand) {
+        pausedAudiobookPositionMs = null
         parent = command.parent
         player.shuffleModeEnabled = command.shuffled
         player.setMediaItems(command.queue.map { it.buildMediaItem() })
+        playbackManager.playbackSpeed(
+            if (command.queue.firstOrNull()?.let(AudiobookClassifier::isAudiobook) == true) {
+                audiobookSettings.defaultPlaybackSpeed
+            } else {
+                1.0f
+            }
+        )
         val startIndex =
             command.song
                 ?.let { command.queue.indexOf(it) }
@@ -456,6 +472,15 @@ class ExoPlaybackStateHolder(
             player.seekTo(positionMs)
         }
 
+        val restoredSong = rawQueue.heap.getOrNull(rawQueue.heapIndex)
+        playbackManager.playbackSpeed(
+            if (restoredSong != null && AudiobookClassifier.isAudiobook(restoredSong)) {
+                audiobookSettings.defaultPlaybackSpeed
+            } else {
+                1.0f
+            }
+        )
+
         if (sendNewPlaybackEvent) {
             ack?.let { playbackManager.ack(this, it) }
         }
@@ -485,6 +510,26 @@ class ExoPlaybackStateHolder(
 
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
         super.onPlayWhenReadyChanged(playWhenReady, reason)
+
+        val currentSong = player.currentMediaItem?.song
+        if (
+            !playWhenReady &&
+                sessionOngoing &&
+                currentSong != null &&
+                AudiobookClassifier.isAudiobook(currentSong)
+        ) {
+            pausedAudiobookPositionMs = player.currentPosition
+        } else if (playWhenReady) {
+            val pausedPosition = pausedAudiobookPositionMs
+            if (
+                pausedPosition != null &&
+                    currentSong != null &&
+                    AudiobookClassifier.isAudiobook(currentSong)
+            ) {
+                player.seekTo((pausedPosition - audiobookSettings.autoRewindMs).coerceAtLeast(0L))
+            }
+            pausedAudiobookPositionMs = null
+        }
 
         if (player.playWhenReady) {
             // Mark that we have started playing so that the notification can now be posted.
@@ -521,6 +566,8 @@ class ExoPlaybackStateHolder(
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         super.onMediaItemTransition(mediaItem, reason)
+        applyAudiobookAudioSettings()
+        pausedAudiobookPositionMs = null
 
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
             playbackManager.ack(this, StateAck.IndexMoved)
@@ -591,6 +638,18 @@ class ExoPlaybackStateHolder(
     }
 
     // --- PLAYBACKSETTINGS OVERRIDES ---
+
+    override fun onAudiobookAssignmentsChanged() {}
+
+    override fun onAudiobookPlaybackSettingsChanged() {
+        applyAudiobookAudioSettings()
+    }
+
+    private fun applyAudiobookAudioSettings() {
+        val song = player.currentMediaItem?.song
+        player.skipSilenceEnabled =
+            song != null && AudiobookClassifier.isAudiobook(song) && audiobookSettings.skipSilence
+    }
 
     override fun onPauseOnRepeatChanged() {
         super.onPauseOnRepeatChanged()
@@ -720,6 +779,7 @@ class ExoPlaybackStateHolder(
         private val playbackManager: PlaybackStateManager,
         private val persistenceRepository: PersistenceRepository,
         private val audiobookProgressRepository: AudiobookProgressRepository,
+        private val audiobookSettings: AudiobookSettings,
         private val playbackSettings: PlaybackSettings,
         private val commandFactory: PlaybackCommand.Factory,
         private val mediaSourceFactory: MediaSource.Factory,
@@ -766,6 +826,7 @@ class ExoPlaybackStateHolder(
                 playbackManager,
                 persistenceRepository,
                 audiobookProgressRepository,
+                audiobookSettings,
                 playbackSettings,
                 commandFactory,
                 replayGainProcessor,

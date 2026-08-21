@@ -51,6 +51,7 @@ class HomeViewModel
 constructor(
     private val listSettings: ListSettings,
     private val playbackSettings: PlaybackSettings,
+    private val homeSettings: HomeSettings,
     homeGeneratorFactory: HomeGenerator.Factory,
 ) : ViewModel(), HomeGenerator.Invalidator {
     private val _songList = MutableStateFlow(listOf<Song>())
@@ -145,15 +146,23 @@ constructor(
         get() = listSettings.playlistSort
 
     private val homeGenerator = homeGeneratorFactory.create(this)
+    private var activeMode: MusicType? = homeSettings.preferredMode
 
     /**
      * A list of [MusicType] corresponding to the current [Tab] configuration, excluding invisible
      * [Tab]s.
      */
-    var currentTabTypes = homeGenerator.tabs()
+    var currentTabTypes = tabsForMode(activeMode)
         private set
 
     private val _currentTabType = MutableStateFlow(currentTabTypes[0])
+    private val _requestedMode = MutableEvent<MusicType>()
+    val requestedMode: Event<MusicType>
+        get() = _requestedMode
+
+    val preferredMode: MusicType?
+        get() = homeSettings.preferredMode
+
     /** The [MusicType] of the currently shown [Tab]. */
     val currentTabType: StateFlow<MusicType> = _currentTabType
 
@@ -221,8 +230,20 @@ constructor(
     }
 
     override fun invalidateTabs() {
-        currentTabTypes = homeGenerator.tabs()
+        currentTabTypes = tabsForMode(activeMode)
+        _currentTabType.value = currentTabTypes.first()
         _shouldRecreate.put(Unit)
+    }
+
+    private fun tabsForMode(mode: MusicType?): List<MusicType> {
+        return when (mode) {
+            MusicType.AUDIOBOOKS -> listOf(MusicType.AUDIOBOOKS)
+            else ->
+                homeGenerator
+                    .tabs()
+                    .filter { it != MusicType.AUDIOBOOKS }
+                    .ifEmpty { listOf(MusicType.SONGS) }
+        }
     }
 
     /**
@@ -288,6 +309,28 @@ constructor(
     fun setFastScrolling(isFastScrolling: Boolean) {
         L.d("Updating fast scrolling state: $isFastScrolling")
         _isFastScrolling.value = isFastScrolling
+    }
+
+    fun selectMode(mode: MusicType) {
+        activeMode = mode
+        homeSettings.preferredMode = mode
+        if (mode == MusicType.AUDIOBOOKS) {
+            val tabs = homeSettings.homeTabs
+            homeSettings.homeTabs =
+                if (tabs.any { it.type == MusicType.AUDIOBOOKS }) {
+                    tabs
+                        .map { tab ->
+                            if (tab.type == MusicType.AUDIOBOOKS) Tab.Visible(tab.type) else tab
+                        }
+                        .toTypedArray()
+                } else {
+                    (tabs.toList() + Tab.Visible(MusicType.AUDIOBOOKS)).toTypedArray()
+                }
+        }
+        currentTabTypes = tabsForMode(mode)
+        _currentTabType.value = currentTabTypes.first()
+        _shouldRecreate.put(Unit)
+        _requestedMode.put(mode)
     }
 
     fun startChooseMusicLocations() {

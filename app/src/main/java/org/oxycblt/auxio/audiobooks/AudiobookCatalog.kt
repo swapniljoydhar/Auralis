@@ -109,10 +109,15 @@ object AudiobookClassifier {
 
 /** Groups classified chapters into stable books while preserving ordinary Music albums. */
 object AudiobookCatalog {
-    fun fromSongs(songs: Collection<Song>): List<AudiobookBook> {
+    fun fromSongs(
+        songs: Collection<Song>,
+        manualSongUids: Set<String> = emptySet(),
+    ): List<AudiobookBook> {
         return songs
             .asSequence()
-            .filter(AudiobookClassifier::isAudiobook)
+            .filter { song ->
+                song.uid.toString() in manualSongUids || AudiobookClassifier.isAudiobook(song)
+            }
             .groupBy(::bookKey)
             .map { (key, chapters) ->
                 val ordered =

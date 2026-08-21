@@ -37,6 +37,9 @@ import timber.log.Timber as L
 interface HomeSettings : Settings<HomeSettings.Listener> {
     /** The tabs to show in the home UI. */
     var homeTabs: Array<Tab>
+    /** The last explicitly selected startup library mode, or null before first choice. */
+    var preferredMode: MusicType?
+
     /** Whether to hide artists considered "collaborators" from the home UI. */
     val shouldHideCollaborators: Boolean
 
@@ -51,6 +54,19 @@ interface HomeSettings : Settings<HomeSettings.Listener> {
 
 class HomeSettingsImpl @Inject constructor(@ApplicationContext context: Context) :
     Settings.Impl<HomeSettings.Listener>(context), HomeSettings {
+    override var preferredMode: MusicType?
+        get() =
+            sharedPreferences.getString(getString(R.string.set_key_library_mode), null)?.let { value
+                ->
+                runCatching { MusicType.valueOf(value) }.getOrNull()
+            }
+        set(value) {
+            sharedPreferences.edit {
+                if (value == null) remove(getString(R.string.set_key_library_mode))
+                else putString(getString(R.string.set_key_library_mode), value.name)
+            }
+        }
+
     override var homeTabs: Array<Tab>
         get() =
             Tab.fromIntCode(

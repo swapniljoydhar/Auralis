@@ -3,7 +3,7 @@
     <!-- Info namespace | App labels -->
     <eat-comment />
 
-    <string name="info_app_desc">A simple, rational music player for android.</string>
+    <string name="info_app_desc">A calm, focused player for music and audiobooks.</string>
 
     <!-- Label Namespace | Static Labels -->
     <eat-comment />
@@ -84,6 +84,23 @@
     <string name="lbl_playlist">Playlist</string>
     <string name="lbl_playlists">Playlists</string>
     <string name="lbl_audiobooks">Audiobooks</string>
+    <string name="lbl_music_mode">Music</string>
+    <string name="lbl_audiobook_mode">Audiobooks</string>
+    <string name="lbl_switch_library_mode">Switch library mode</string>
+    <string name="lbl_choose_library_mode">What do you want to explore?</string>
+    <string name="msg_choose_library_mode">Choose Music for songs and albums, or Audiobooks for chapter-based listening. You can switch at any time.</string>
+    <string name="msg_hub_subtitle">Choose how you want to listen</string>
+    <string name="msg_hub_music">Songs, albums, artists, genres, playlists, search, and your full music library.</string>
+    <string name="msg_hub_audiobooks">Books, chapters, progress, bookmarks, resume, and audiobook playback controls.</string>
+    <string name="action_open_music">Open Music</string>
+    <string name="action_open_audiobooks">Open Audiobooks</string>
+    <string name="desc_app_logo">Auralis book and wave logo</string>
+    <string name="desc_hub_music">Open the Music library</string>
+    <string name="desc_hub_audiobooks">Open the Audiobooks library</string>
+    <string name="lbl_add_to_audiobooks">Add to Audiobooks</string>
+    <string name="lng_audiobooks_added">Added to Audiobooks</string>
+    <string name="lbl_add_audiobook_chapters">Add audiobook chapters</string>
+    <string name="msg_add_audiobook_chapters">Select MP3 chapters from Music, then add them here as one audiobook by folder.</string>
     <string name="lbl_new_playlist">New playlist</string>
     <string name="lbl_empty_playlist">Empty playlist</string>
     <string name="lbl_imported_playlist">Imported playlist</string>
@@ -121,6 +138,32 @@
     <string name="lbl_playback">Now playing</string>
     <string name="lbl_equalizer">Equalizer</string>
     <string name="lbl_audiobook_controls">Audiobook controls</string>
+    <string name="lbl_audiobook_skip_back">−30 sec</string>
+    <string name="lbl_audiobook_skip_forward">+30 sec</string>
+    <string name="lbl_audiobook_skip_back_value">−%1$d sec</string>
+    <string name="lbl_audiobook_skip_forward_value">+%1$d sec</string>
+    <string name="lbl_audiobook_speed">Speed</string>
+    <string name="lbl_audiobook_speed_value">%1$.2f×</string>
+    <string name="lbl_audiobook_chapter">Audiobook chapter</string>
+    <string name="lbl_audiobook_bookmark">Bookmark</string>
+    <string name="lbl_audiobook_bookmarks">Bookmarks</string>
+    <string name="lbl_audiobook_add_bookmark">Add bookmark here</string>
+    <string name="lbl_audiobook_no_bookmarks">No bookmarks yet</string>
+    <string name="lbl_audiobook_remove_bookmark">Remove bookmark</string>
+    <string name="lbl_audiobook_bookmark_at">%1$s • %2$s</string>
+    <string name="lbl_audiobook_sleep">Sleep timer</string>
+    <string name="lbl_audiobook_resume">Resume audiobook</string>
+    <string name="lbl_audiobook_continue">Continue</string>
+    <string name="lbl_audiobook_start">Start</string>
+    <string name="lbl_audiobook_restart">Start from beginning</string>
+    <string name="lbl_audiobook_summary">%1$s • %2$d chapters</string>
+    <string name="lbl_audiobook_progress">%1$d of %2$d chapters complete</string>
+    <string name="lbl_audiobook_chapters">Chapters</string>
+    <string name="lbl_audiobook_chapter_duration">%1$s</string>
+    <string name="lbl_audiobook_chapter_complete">%1$s • Complete</string>
+    <string name="lbl_audiobook_chapter_complete_short">Chapter complete</string>
+    <string name="desc_audiobook_cover">Audiobook cover</string>
+    <string name="desc_audiobook_progress">%1$d of %2$d chapters complete</string>
     <string name="lbl_skip_back_30">Back 30 seconds</string>
     <string name="lbl_skip_forward_30">Forward 30 seconds</string>
     <string name="lbl_speed_075">Speed 0.75×</string>
@@ -132,6 +175,7 @@
     <string name="lbl_sleep_30">Sleep in 30 minutes</string>
     <string name="lbl_sleep_60">Sleep in 60 minutes</string>
     <string name="lbl_sleep_cancel">Cancel sleep timer</string>
+    <string name="lbl_sleep_end_chapter">End of chapter</string>
     <string name="lbl_play">Play</string>
     <string name="lbl_shuffle">Shuffle</string>
 
@@ -312,6 +356,28 @@
     <string name="set_audio">Audio</string>
     <string name="set_audio_desc">Configure sound and playback behavior</string>
     <string name="set_playback">Playback</string>
+    <string name="set_audiobook_playback">Audiobook playback</string>
+    <string name="set_audiobook_skip_duration">Skip amount</string>
+    <string name="set_audiobook_skip_duration_desc">Choose how far audiobook controls skip backward or forward</string>
+    <string name="set_audiobook_skip_15">15 seconds</string>
+    <string name="set_audiobook_skip_30">30 seconds</string>
+    <string name="set_audiobook_skip_45">45 seconds</string>
+    <string name="set_audiobook_skip_60">60 seconds</string>
+    <string name="set_audiobook_default_speed">Default playback speed</string>
+    <string name="set_audiobook_default_speed_desc">Applied when audiobook playback starts</string>
+    <string name="set_audiobook_auto_rewind">Auto-rewind</string>
+    <string name="set_audiobook_auto_rewind_desc">Briefly rewind when audiobook playback resumes after a pause</string>
+    <string name="set_audiobook_rewind_off">Off</string>
+    <string name="set_audiobook_rewind_2">2 seconds</string>
+    <string name="set_audiobook_rewind_5">5 seconds</string>
+    <string name="set_audiobook_rewind_10">10 seconds</string>
+    <string name="set_audiobook_skip_silence">Skip silence</string>
+    <string name="set_audiobook_skip_silence_desc">Automatically reduce long silent sections during audiobook playback</string>
+    <string name="set_audiobook_speed_075">0.75×</string>
+    <string name="set_audiobook_speed_100">1.00×</string>
+    <string name="set_audiobook_speed_125">1.25×</string>
+    <string name="set_audiobook_speed_150">1.50×</string>
+    <string name="set_audiobook_speed_200">2.00×</string>
     <string name="set_headset_autoplay">Headset autoplay</string>
     <string name="set_headset_autoplay_desc">Always start playing when a headset is connected (may not work on all devices)</string>
     <string name="set_rewind_prev">Rewind before skipping back</string>

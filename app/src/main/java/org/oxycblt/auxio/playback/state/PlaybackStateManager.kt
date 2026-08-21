@@ -69,6 +69,9 @@ interface PlaybackStateManager {
     /** The audio session ID of the internal player. Null if no internal player exists. */
     val currentAudioSessionId: Int?
 
+    /** The last playback speed requested for the current player session. */
+    val playbackSpeed: Float
+
     /**
      * Add a [Listener] to this instance. This can be used to receive changes in the playback state.
      * Will immediately invoke [Listener] methods to initialize the instance with the current state.
@@ -366,6 +369,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
         )
     @Volatile private var stateHolder: PlaybackStateHolder? = null
     @Volatile private var pendingDeferredPlayback: DeferredPlayback? = null
+    @Volatile private var currentPlaybackSpeed = 1.0f
     @Volatile private var isInitialized = false
 
     override val progression
@@ -391,6 +395,9 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
 
     override val currentAudioSessionId: Int?
         get() = stateHolder?.audioSessionId
+
+    override val playbackSpeed: Float
+        get() = currentPlaybackSpeed
 
     @Synchronized
     override fun addListener(listener: Listener) {
@@ -588,7 +595,8 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
 
     @Synchronized
     override fun playbackSpeed(speed: Float) {
-        stateHolder?.playbackSpeed(speed)
+        currentPlaybackSpeed = speed.coerceIn(0.5f, 3.0f)
+        stateHolder?.playbackSpeed(currentPlaybackSpeed)
     }
 
     @Synchronized

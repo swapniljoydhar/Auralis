@@ -28,9 +28,16 @@ import org.oxycblt.auxio.music.MusicRepository
  * Audiobooks tab can request a new projection and receives the same Song instances used elsewhere
  * in the app.
  */
-class AudiobookRepository @Inject constructor(private val musicRepository: MusicRepository) {
+class AudiobookRepository
+@Inject
+constructor(
+    private val musicRepository: MusicRepository,
+    private val audiobookSettings: AudiobookSettings,
+) {
     fun books(): List<AudiobookBook> =
-        musicRepository.library?.songs?.let(AudiobookCatalog::fromSongs).orEmpty()
+        musicRepository.library?.songs?.let {
+            AudiobookCatalog.fromSongs(it, audiobookSettings.manualSongUids)
+        } ?: emptyList()
 
     fun book(key: String): AudiobookBook? = books().firstOrNull { it.key == key }
 }

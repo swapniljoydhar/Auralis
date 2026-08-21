@@ -22,12 +22,18 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Color
 import android.media.audiofx.AudioEffect
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
@@ -35,20 +41,28 @@ import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.abs
 import org.oxycblt.auxio.R
+import org.oxycblt.auxio.audiobooks.AudiobookBookmark
+import org.oxycblt.auxio.audiobooks.AudiobookBookmarkRepository
+import org.oxycblt.auxio.audiobooks.AudiobookCatalog
 import org.oxycblt.auxio.audiobooks.AudiobookClassifier
 import org.oxycblt.auxio.audiobooks.AudiobookPlaybackController
+import org.oxycblt.auxio.audiobooks.AudiobookSettings
 import org.oxycblt.auxio.databinding.FragmentPlaybackPanelBinding
 import org.oxycblt.auxio.detail.DetailViewModel
 import org.oxycblt.auxio.list.ListViewModel
 import org.oxycblt.auxio.music.resolve
 import org.oxycblt.auxio.music.resolveNames
 import org.oxycblt.auxio.playback.queue.QueueViewModel
+import org.oxycblt.auxio.playback.state.PlaybackCommand
 import org.oxycblt.auxio.playback.state.PlaybackStateManager
 import org.oxycblt.auxio.playback.state.RepeatMode
+import org.oxycblt.auxio.playback.state.ShuffleMode
 import org.oxycblt.auxio.playback.ui.StyledSeekBar
 import org.oxycblt.auxio.playback.ui.stepper.Direction
 import org.oxycblt.auxio.playback.ui.stepper.StepperOverlay
@@ -87,9 +101,15 @@ class PlaybackPanelFragment :
     private val queueModel: QueueViewModel by viewModels()
     @Inject lateinit var playbackManager: PlaybackStateManager
     @Inject lateinit var audiobookPlaybackController: AudiobookPlaybackController
+    @Inject lateinit var audiobookSettings: AudiobookSettings
+    @Inject lateinit var audiobookBookmarkRepository: AudiobookBookmarkRepository
+    @Inject lateinit var commandFactory: PlaybackCommand.Factory
     private var equalizerLauncher: ActivityResultLauncher<Intent>? = null
     private var userAwarePagerCallback: UserAwarePagerCallback? = null
     private var currentPagerPosition = 0
+    private var audiobookActionRow: LinearLayout? = null
+    private var audiobookSpeedButton: MaterialButton? = null
+    private var audiobookSessionActive = false
 
     override fun onCreateBinding(inflater: LayoutInflater) =
         FragmentPlaybackPanelBinding.inflate(inflater)
@@ -156,6 +176,8 @@ class PlaybackPanelFragment :
         }
 
         binding.playbackSeekBar?.listener = this
+        audiobookActionRow = createAudiobookActionRow()
+        binding.playbackInfoContainer.addView(audiobookActionRow)
 
         // Set up actions
         // TODO: Add better playback button accessibility
@@ -189,47 +211,15 @@ class PlaybackPanelFragment :
         collectImmediately(playbackModel.pagerQueue, ::updatePager)
     }
 
-    // FIXME: Old code!! Maybe not necessary anymore?
-    //    override fun onStart() {
-    //        super.onStart()
-    //        playbackModel.song.value?.let { requireBinding().playbackCover.bind(it) }
-    //        requireBinding().root.viewTreeObserver.addOnGlobalLayoutListener(this)
-    //    }
-
-    //    override fun onStop() {
-    //        super.onStop()
-    //        requireBinding().root.viewTreeObserver.removeOnGlobalLayoutListener(this)
-    //    }
-
-    //    override fun onGlobalLayout() {
-    //        if (binding == null || lastCoverWidth < 0) {
-    //            return
-    //        }
-    // Hacky workaround for cover radius not being preserved in between sizing changes
-    // (i.e split screen or landscape mode)
-    // For some reason ConstraintLayout does several passes on 1:1 elements that causes their
-    // size to radically change, so we wait until it stabilizes and then force an image
-    // reload if needed. Optimistically this is a no-op from coil caching, but when the cover
-    // did accidentally load the wrong image (with weird corner radius intended for bigger
-    // covers) we can force it to reload.
-    // If this breaks, it's fine since we also started a load as we normally did w/state
-    // updates, so the cover will not break.
-    //        val binding = requireBinding()
-    //        val coverWidth = binding.playbackCover.width
-    //        if (lastCoverWidth != coverWidth) {
-    //            lastCoverWidth = coverWidth
-    //        } else {
-    //            playbackModel.song.value?.let { binding.playbackCover.bind(it) }
-    //            lastCoverWidth = -1
-    //        }
-    //    }
-
     override fun onDestroyBinding(binding: FragmentPlaybackPanelBinding) {
         equalizerLauncher = null
         binding.playbackRepeat.clearPendingIcon()
         binding.playbackSong.isSelected = false
         binding.playbackArtist.isSelected = false
         binding.playbackAlbum?.isSelected = false
+        audiobookActionRow = null
+        audiobookSpeedButton = null
+        audiobookSessionActive = false
         binding.playbackToolbar.setOnMenuItemClickListener(null)
         userAwarePagerCallback?.release()
         binding.playbackPager?.adapter = null
@@ -277,19 +267,314 @@ class PlaybackPanelFragment :
         val binding = requireBinding()
         val context = requireContext()
         L.d("Updating song display: $song")
-        binding.playbackSong.text = song.name.resolve(context)
-        binding.playbackArtist.text = song.artists.resolveNames(context)
-        binding.playbackAlbum?.text = song.album.name.resolve(context)
+        val isAudiobook = AudiobookClassifier.isAudiobook(song)
+        if (isAudiobook) {
+            // Audiobooks are chapter-led: keep the chapter as the primary line and the book
+            // grouping as the secondary line instead of presenting a music artist hierarchy.
+            audiobookSessionActive = true
+            binding.playbackSong.text = song.name.resolve(context)
+            binding.playbackArtist.text = song.album.name.resolve(context)
+            binding.playbackAlbum?.text = context.getString(R.string.lbl_audiobook_chapter)
+            updateAudiobookSpeed()
+        } else {
+            if (audiobookSessionActive) {
+                playbackManager.playbackSpeed(1.0f)
+            }
+            audiobookSessionActive = false
+            binding.playbackSong.text = song.name.resolve(context)
+            binding.playbackArtist.text = song.artists.resolveNames(context)
+            binding.playbackAlbum?.text = song.album.name.resolve(context)
+        }
         binding.playbackSeekBar?.durationDs = song.durationMs.msToDs()
         binding.playbackToolbar.menu.findItem(R.id.action_audiobook_controls)?.isVisible =
-            AudiobookClassifier.isAudiobook(song)
+            isAudiobook
+        audiobookActionRow?.visibility = if (isAudiobook) View.VISIBLE else View.GONE
+    }
+
+    private fun createAudiobookActionRow() =
+        LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            visibility = View.GONE
+            setPadding(0, 8, 0, 0)
+            addView(
+                LinearLayout(requireContext()).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    addView(
+                        audiobookButton(
+                            getString(
+                                R.string.lbl_audiobook_skip_back_value,
+                                audiobookSettings.skipDurationMs / 1000L,
+                            ),
+                            R.drawable.ic_skip_prev_24,
+                        ) {
+                            playbackManager.seekBy(-audiobookSettings.skipDurationMs)
+                        },
+                        weightedButtonParams(),
+                    )
+                    addView(
+                        audiobookButton(
+                            getString(
+                                R.string.lbl_audiobook_skip_forward_value,
+                                audiobookSettings.skipDurationMs / 1000L,
+                            ),
+                            R.drawable.ic_skip_next_24,
+                        ) {
+                            playbackManager.seekBy(audiobookSettings.skipDurationMs)
+                        },
+                        weightedButtonParams(),
+                    )
+                }
+            )
+            addView(
+                LinearLayout(requireContext()).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    audiobookSpeedButton =
+                        audiobookButton(getString(R.string.lbl_audiobook_speed), null) {
+                            showSpeedPicker()
+                        }
+                    addView(audiobookSpeedButton, weightedButtonParams())
+                    addView(
+                        audiobookButton(getString(R.string.lbl_audiobook_chapters), null) {
+                            showChapterPicker()
+                        },
+                        weightedButtonParams(),
+                    )
+                    addView(
+                        audiobookButton(getString(R.string.lbl_audiobook_sleep), null) {
+                            showSleepPicker()
+                        },
+                        weightedButtonParams(),
+                    )
+                }
+            )
+        }
+
+    private fun audiobookButton(label: CharSequence, icon: Int?, action: () -> Unit) =
+        MaterialButton(requireContext()).apply {
+            text = label
+            isAllCaps = false
+            minHeight = 0
+            minWidth = 0
+            setPadding(8, 0, 8, 0)
+            icon?.let(::setIconResource)
+            setOnClickListener { action() }
+        }
+
+    private fun weightedButtonParams() =
+        LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+            marginStart = 2
+            marginEnd = 2
+        }
+
+    private fun updateAudiobookSpeed() {
+        audiobookSpeedButton?.text =
+            getString(R.string.lbl_audiobook_speed_value, playbackManager.playbackSpeed)
+    }
+
+    private fun showSpeedPicker() {
+        val labels =
+            arrayOf(
+                getString(R.string.lbl_speed_075),
+                getString(R.string.lbl_speed_100),
+                getString(R.string.lbl_speed_125),
+                getString(R.string.lbl_speed_150),
+                getString(R.string.lbl_speed_200),
+            )
+        val speeds = floatArrayOf(0.75f, 1.0f, 1.25f, 1.5f, 2.0f)
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.lbl_audiobook_speed)
+            .setItems(labels) { _, which -> setPlaybackSpeed(speeds[which]) }
+            .show()
+    }
+
+    private fun showSleepPicker() {
+        val labels =
+            arrayOf(
+                getString(R.string.lbl_sleep_15),
+                getString(R.string.lbl_sleep_30),
+                getString(R.string.lbl_sleep_60),
+                getString(R.string.lbl_sleep_end_chapter),
+                getString(R.string.lbl_sleep_cancel),
+            )
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.lbl_audiobook_sleep)
+            .setItems(labels) { _, which ->
+                when (which) {
+                    0 -> audiobookPlaybackController.scheduleSleepTimer(15 * 60_000L)
+                    1 -> audiobookPlaybackController.scheduleSleepTimer(30 * 60_000L)
+                    2 -> audiobookPlaybackController.scheduleSleepTimer(60 * 60_000L)
+                    3 -> audiobookPlaybackController.scheduleSleepAtChapterEnd()
+                    else -> audiobookPlaybackController.cancelSleepTimer()
+                }
+            }
+            .show()
+    }
+
+    private fun setPlaybackSpeed(speed: Float) {
+        playbackManager.playbackSpeed(speed)
+        updateAudiobookSpeed()
+    }
+
+    private fun showChapterPicker() {
+        val queue = playbackManager.queue
+        val currentSong = playbackManager.currentSong
+        if (queue.isEmpty() || currentSong == null || !AudiobookClassifier.isAudiobook(currentSong))
+            return
+
+        val bookKey = AudiobookCatalog.bookKey(currentSong)
+        val dialog = BottomSheetDialog(requireContext())
+        val list =
+            LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(20, 16, 20, 24)
+                addView(
+                    TextView(requireContext()).apply {
+                        text = getString(R.string.lbl_audiobook_chapters)
+                        textSize = 20f
+                        setTextColor(Color.WHITE)
+                        setPadding(0, 0, 0, 12)
+                    }
+                )
+                addView(
+                    MaterialButton(requireContext()).apply {
+                        text = getString(R.string.lbl_audiobook_add_bookmark)
+                        isAllCaps = false
+                        setOnClickListener {
+                            audiobookBookmarkRepository.add(
+                                bookKey,
+                                currentSong.uid,
+                                playbackManager.progression.calculateElapsedPositionMs(),
+                            )
+                            dialog.dismiss()
+                        }
+                    }
+                )
+                val bookmarks = audiobookBookmarkRepository.getForBook(bookKey)
+                addView(
+                    TextView(requireContext()).apply {
+                        text = getString(R.string.lbl_audiobook_bookmarks)
+                        textSize = 18f
+                        setTextColor(Color.WHITE)
+                        setPadding(0, 16, 0, 4)
+                    }
+                )
+                if (bookmarks.isEmpty()) {
+                    addView(
+                        TextView(requireContext()).apply {
+                            text = getString(R.string.lbl_audiobook_no_bookmarks)
+                            setTextColor(Color.LTGRAY)
+                            setPadding(0, 4, 0, 12)
+                        }
+                    )
+                } else {
+                    bookmarks.forEach { bookmark -> addBookmarkRow(bookmark, queue, dialog) }
+                }
+                addView(
+                    TextView(requireContext()).apply {
+                        text = getString(R.string.lbl_audiobook_chapters)
+                        textSize = 18f
+                        setTextColor(Color.WHITE)
+                        setPadding(0, 16, 0, 4)
+                    }
+                )
+                queue.forEachIndexed { index, chapter ->
+                    addView(
+                        TextView(requireContext()).apply {
+                            text = buildString {
+                                append(if (index == playbackManager.index) "▶ " else "")
+                                append(index + 1)
+                                append(". ")
+                                append(chapter.name.resolve(requireContext()))
+                                append("  •  ")
+                                append(chapter.durationMs.formatDurationMs(false))
+                            }
+                            textSize = 16f
+                            setTextColor(Color.WHITE)
+                            setPadding(0, 14, 0, 14)
+                            isClickable = true
+                            isFocusable = true
+                            setOnClickListener {
+                                playbackManager.goto(index)
+                                dialog.dismiss()
+                            }
+                        }
+                    )
+                }
+            }
+        dialog.setContentView(ScrollView(requireContext()).apply { addView(list) })
+        dialog.show()
+    }
+
+    private fun LinearLayout.addBookmarkRow(
+        bookmark: AudiobookBookmark,
+        queue: List<Song>,
+        dialog: BottomSheetDialog,
+    ) {
+        val chapter = queue.firstOrNull { it.uid == bookmark.chapterUid } ?: return
+        addView(
+            LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                addView(
+                    TextView(requireContext()).apply {
+                        text =
+                            getString(
+                                R.string.lbl_audiobook_bookmark_at,
+                                chapter.name.resolve(requireContext()),
+                                bookmark.positionMs.formatDurationMs(true),
+                            )
+                        textSize = 16f
+                        setTextColor(Color.WHITE)
+                        setPadding(0, 10, 0, 10)
+                        isClickable = true
+                        isFocusable = true
+                        setOnClickListener { jumpToBookmark(bookmark, queue, dialog) }
+                        layoutParams =
+                            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                    }
+                )
+                addView(
+                    MaterialButton(requireContext()).apply {
+                        text = getString(R.string.lbl_delete)
+                        isAllCaps = false
+                        setOnClickListener {
+                            audiobookBookmarkRepository.remove(bookmark)
+                            dialog.dismiss()
+                        }
+                    }
+                )
+            }
+        )
+    }
+
+    private fun jumpToBookmark(
+        bookmark: AudiobookBookmark,
+        queue: List<Song>,
+        dialog: BottomSheetDialog,
+    ) {
+        val chapter = queue.firstOrNull { it.uid == bookmark.chapterUid } ?: return
+        val command =
+            commandFactory.songs(
+                songs = queue,
+                shuffle = ShuffleMode.OFF,
+                startSong = chapter,
+                startPositionMs = bookmark.positionMs,
+            ) ?: return
+        playbackManager.play(command)
+        dialog.dismiss()
     }
 
     private fun showAudiobookControls() {
         val labels =
             arrayOf(
-                getString(R.string.lbl_skip_back_30),
-                getString(R.string.lbl_skip_forward_30),
+                getString(
+                    R.string.lbl_audiobook_skip_back_value,
+                    audiobookSettings.skipDurationMs / 1000L,
+                ),
+                getString(
+                    R.string.lbl_audiobook_skip_forward_value,
+                    audiobookSettings.skipDurationMs / 1000L,
+                ),
                 getString(R.string.lbl_speed_075),
                 getString(R.string.lbl_speed_100),
                 getString(R.string.lbl_speed_125),
@@ -298,23 +583,25 @@ class PlaybackPanelFragment :
                 getString(R.string.lbl_sleep_15),
                 getString(R.string.lbl_sleep_30),
                 getString(R.string.lbl_sleep_60),
+                getString(R.string.lbl_sleep_end_chapter),
                 getString(R.string.lbl_sleep_cancel),
             )
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.lbl_audiobook_controls)
             .setItems(labels) { _, which ->
                 when (which) {
-                    0 -> playbackManager.seekBy(-30_000L)
-                    1 -> playbackManager.seekBy(30_000L)
-                    2 -> playbackManager.playbackSpeed(0.75f)
-                    3 -> playbackManager.playbackSpeed(1.0f)
-                    4 -> playbackManager.playbackSpeed(1.25f)
-                    5 -> playbackManager.playbackSpeed(1.5f)
-                    6 -> playbackManager.playbackSpeed(2.0f)
+                    0 -> playbackManager.seekBy(-audiobookSettings.skipDurationMs)
+                    1 -> playbackManager.seekBy(audiobookSettings.skipDurationMs)
+                    2 -> setPlaybackSpeed(0.75f)
+                    3 -> setPlaybackSpeed(1.0f)
+                    4 -> setPlaybackSpeed(1.25f)
+                    5 -> setPlaybackSpeed(1.5f)
+                    6 -> setPlaybackSpeed(2.0f)
                     7 -> audiobookPlaybackController.scheduleSleepTimer(15 * 60_000L)
                     8 -> audiobookPlaybackController.scheduleSleepTimer(30 * 60_000L)
                     9 -> audiobookPlaybackController.scheduleSleepTimer(60 * 60_000L)
-                    10 -> audiobookPlaybackController.cancelSleepTimer()
+                    10 -> audiobookPlaybackController.scheduleSleepAtChapterEnd()
+                    11 -> audiobookPlaybackController.cancelSleepTimer()
                 }
             }
             .show()
@@ -347,27 +634,8 @@ class PlaybackPanelFragment :
     }
 
     private fun updatePager(queue: PagerQueue) {
-        // Right now there's easily 140ms of frame skipping when going next/prev. This is primarily
-        // the fault of specifically the nested bottom sheet UI setup, which is intractable to
-        // optimize. If I don't do multiple remeasures/relayouts on every slightest state
-        // instability
-        // I will suddenly encounter insane issues where the sheet fails to measure, appears below
-        // the sidebar, flies away, not changing with ui scale, etc, often only on third-party OEM
-        // ROMs that randomly mangle  SDK APIs and the SystemUI chrome for no reason.
-        //
-        // Historically this was not an issue, as I did not animate next/prev. Now I do, and it's
-        // highly noticeable. So at least for plain next/prev I have to hack around it, do not
-        // execute any transition until the state has fully adjudicated and laid out the UI. It's
-        // not effective for swiping but there's nothing I can do there.
-        //
-        // Eventually one day Claude Fable 6.7 will probably be able to figure out that you need to
-        // reflect into System.FoobaCrumbo::beegieConnector(GoolaUtils.PlubBud) and call it
-        // specifically with 0x189B31FA alongside disabling the AndroidX Helpo SuperCharge by
-        // manually clobbering `BottomSheetM2InternalBoogieCompat::scrimbloManager` to null for it
-        // to not actually randomly mangle the sheets and do it in 1 clean layout, but for now I
-        // must do this to keep my sanity.
-        //
-        // Actual snippet here was codex, just cleaned & adapted it / cognitive ownership
+        // Defer pager transitions until the current layout pass settles. This avoids the nested
+        // bottom-sheet remeasure race observed on fast next/previous navigation.
         requireBinding().playbackPager.apply {
             if (!isAttachedToWindow) {
                 post { updatePagerImpl(queue) }

@@ -3,7 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/absurd"
-    app:startDestination="@id/main_fragment">
+    app:startDestination="@id/mode_hub_fragment">
+
+    <fragment
+        android:id="@+id/mode_hub_fragment"
+        android:name="org.oxycblt.auxio.home.ModeHubFragment"
+        android:label="@string/info_app_name"
+        tools:layout="@layout/fragment_mode_hub">
+        <action
+            android:id="@+id/open_main"
+            app:destination="@id/main_fragment"
+            app:popUpTo="@id/mode_hub_fragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/main_fragment"

@@ -54,6 +54,7 @@ import timber.log.Timber as L
 class MainActivity : AppCompatActivity() {
     private val playbackModel: PlaybackViewModel by viewModels()
     @Inject lateinit var uiSettings: UISettings
+    private var serviceStartPending = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,12 +68,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        startService(
-            Intent(this, AuxioService::class.java)
-                .setAction(AuxioService.ACTION_START)
-                .putExtra(AuxioService.INTENT_KEY_START_ID, IntegerTable.START_ID_ACTIVITY)
-        )
+        serviceStartPending = true
+        startPlaybackServiceIfVisible()
 
         if (!startIntentAction(intent)) {
             // No intent action to do, just restore the previously saved state.
@@ -80,9 +77,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) startPlaybackServiceIfVisible()
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         startIntentAction(intent)
+    }
+
+    private fun startPlaybackServiceIfVisible() {
+        if (!serviceStartPending || !hasWindowFocus() || isFinishing) return
+        serviceStartPending = false
+        startService(
+            Intent(this, AuxioService::class.java)
+                .setAction(AuxioService.ACTION_START)
+                .putExtra(AuxioService.INTENT_KEY_START_ID, IntegerTable.START_ID_ACTIVITY)
+        )
     }
 
     private fun setupTheme() {

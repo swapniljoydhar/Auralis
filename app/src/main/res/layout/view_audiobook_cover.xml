@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.oxycblt.auxio.image.CoverView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.Auxio.Image.Large"
+    android:layout_width="match_parent"
+    android:layout_height="320dp"
+    app:enablePlaybackIndicator="false"
+    app:enableSelectionBadge="false"
+    android:contentDescription="@string/desc_audiobook_cover" />

@@ -23,7 +23,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import org.oxycblt.auxio.R
+import org.oxycblt.auxio.audiobooks.AudiobookSettings
 import org.oxycblt.auxio.databinding.DialogMenuBinding
 import org.oxycblt.auxio.detail.DetailViewModel
 import org.oxycblt.auxio.list.ListViewModel
@@ -346,6 +348,7 @@ class SelectionMenuDialogFragment : MenuDialogFragment<Menu.ForSelection>() {
     override val listModel: ListViewModel by activityViewModels()
     private val musicModel: MusicViewModel by activityViewModels()
     private val playbackModel: PlaybackViewModel by activityViewModels()
+    @Inject lateinit var audiobookSettings: AudiobookSettings
     private val args: SelectionMenuDialogFragmentArgs by navArgs()
 
     override val parcel
@@ -380,6 +383,10 @@ class SelectionMenuDialogFragment : MenuDialogFragment<Menu.ForSelection>() {
                 requireContext().showToast(R.string.lng_queue_added)
             }
             R.id.action_playlist_add -> musicModel.addToPlaylist(menu.songs)
+            R.id.action_add_to_audiobooks -> {
+                audiobookSettings.addSongs(menu.songs)
+                requireContext().showToast(R.string.lng_audiobooks_added)
+            }
             R.id.action_share -> requireContext().share(menu.songs)
             else -> error("Unexpected menu item selected $item")
         }

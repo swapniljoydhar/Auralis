@@ -133,7 +133,12 @@ constructor(
         shuffle: ShuffleMode,
         startSong: Song?,
         startPositionMs: Long,
-    ) = newCommand(startSong, null, songs, shuffle, startPositionMs)
+    ): PlaybackCommand? {
+        if (songs.isEmpty() || (startSong != null && startSong !in songs)) {
+            return null
+        }
+        return PlaybackCommandImpl(startSong, null, songs, isShuffled(shuffle), startPositionMs)
+    }
 
     override fun album(album: Album, shuffle: ShuffleMode) =
         newCommand(null, album, listSettings.albumSongSort, shuffle)

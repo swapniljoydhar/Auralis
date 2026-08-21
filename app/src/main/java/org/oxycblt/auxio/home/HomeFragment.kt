@@ -35,6 +35,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,7 +50,6 @@ import org.oxycblt.auxio.home.list.GenreListFragment
 import org.oxycblt.auxio.home.list.PlaylistListFragment
 import org.oxycblt.auxio.home.list.SongListFragment
 import org.oxycblt.auxio.home.tabs.NamedTabStrategy
-import org.oxycblt.auxio.home.tabs.Tab
 import org.oxycblt.auxio.list.ListViewModel
 import org.oxycblt.auxio.list.SelectionFragment
 import org.oxycblt.auxio.list.menu.Menu
@@ -150,11 +150,9 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
             // listener with a non-consuming listener.
             setOnApplyWindowInsetsListener { _, insets -> insets }
 
-            // We know that there will only be a fixed amount of tabs, so we manually set this
-            // limit to the maximum amount possible. This will prevent the tab ripple from
-            // bugging out due to dynamically inflating each fragment, at the cost of slower
-            // debug UI performance.
-            offscreenPageLimit = Tab.MAX_SEQUENCE_IDX + 1
+            // Inflate only adjacent pages. Keeping every library tab alive makes startup and
+            // rescan transitions noticeably heavier, especially when audiobook rows are present.
+            offscreenPageLimit = 1
 
             dampen()
         }
@@ -162,11 +160,18 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
         // Further initialization must be done in the function that also handles
         // re-creating the ViewPager.
         setupPager(binding)
+        homeModel.preferredMode?.let { mode ->
+            binding.homePager.post {
+                val position = homeModel.currentTabTypes.indexOf(mode)
+                if (position >= 0) binding.homePager.setCurrentItem(position, false)
+            }
+        }
 
         // --- VIEWMODEL SETUP ---
         collect(homeModel.recreateTabs.flow, ::handleRecreate)
         collect(homeModel.chooseMusicLocations.flow, ::handleChooseFolders)
         collectImmediately(homeModel.currentTabType, ::updateCurrentTab)
+        collect(homeModel.requestedMode.flow, ::handleRequestedMode)
         collect(detailModel.toShow.flow, ::handleShow)
         collect(listModel.menu.flow, ::handleMenu)
         collectImmediately(listModel.selected, ::updateSelection)
@@ -174,6 +179,10 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
         collect(musicModel.playlistDecision.flow, ::handlePlaylistDecision)
         collectImmediately(musicModel.playlistMessage.flow, ::handlePlaylistMessage)
         collect(playbackModel.playbackDecision.flow, ::handlePlaybackDecision)
+        updateModeAction(homeModel.currentTabType.value)
+        if (homeModel.preferredMode == null) {
+            binding.root.post { showModeChooser() }
+        }
     }
 
     override fun onDestroyBinding(binding: FragmentHomeBinding) {
@@ -189,6 +198,21 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
 
         return when (item.itemId) {
             // Handle main actions (Search, Settings, About)
+            R.id.action_switch_library_mode -> {
+                val next =
+                    if (homeModel.currentTabType.value == MusicType.AUDIOBOOKS) {
+                        MusicType.SONGS
+                    } else {
+                        MusicType.AUDIOBOOKS
+                    }
+                homeModel.selectMode(next)
+                true
+            }
+            R.id.action_add_audiobook_chapters -> {
+                homeModel.selectMode(MusicType.SONGS)
+                requireContext().showToast(R.string.msg_add_audiobook_chapters)
+                true
+            }
             R.id.action_search -> {
                 L.d("Navigating to search")
                 findNavController().navigateSafe(HomeFragmentDirections.search())
@@ -259,6 +283,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
     }
 
     private fun updateCurrentTab(tabType: MusicType) {
+        updateModeAction(tabType)
         val binding = requireBinding()
 
         // Update the scrolling view in AppBarLayout to align with the current tab's
@@ -273,6 +298,43 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 MusicType.PLAYLISTS -> R.id.home_playlist_recycler
                 MusicType.AUDIOBOOKS -> R.id.home_audiobook_recycler
             }
+    }
+
+    private fun handleRequestedMode(mode: MusicType?) {
+        if (mode == null) return
+        requireBinding().homePager.post {
+            val position = homeModel.currentTabTypes.indexOf(mode)
+            if (position >= 0) {
+                requireBinding().homePager.setCurrentItem(position, false)
+            }
+        }
+        homeModel.requestedMode.consume()
+    }
+
+    private fun updateModeAction(mode: MusicType) {
+        val item = requireBinding().homeNormalToolbar.menu.findItem(R.id.action_switch_library_mode)
+        item?.title =
+            getString(
+                if (mode == MusicType.AUDIOBOOKS) {
+                    R.string.lbl_music_mode
+                } else {
+                    R.string.lbl_audiobook_mode
+                }
+            )
+    }
+
+    private fun showModeChooser() {
+        if (!isAdded || homeModel.preferredMode != null) return
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.lbl_choose_library_mode)
+            .setMessage(R.string.msg_choose_library_mode)
+            .setItems(
+                arrayOf(getString(R.string.lbl_music_mode), getString(R.string.lbl_audiobook_mode))
+            ) { _, which ->
+                homeModel.selectMode(if (which == 1) MusicType.AUDIOBOOKS else MusicType.SONGS)
+            }
+            .setOnCancelListener { homeModel.selectMode(MusicType.SONGS) }
+            .show()
     }
 
     private fun handleRecreate(recreate: Unit?) {

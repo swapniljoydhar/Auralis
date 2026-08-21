@@ -121,10 +121,11 @@ class AuxioService :
     }
 
     private fun getRootChildrenLimit(): Int {
-        return browserRootHints?.getInt(
-            MediaConstants.BROWSER_ROOT_HINTS_KEY_ROOT_CHILDREN_LIMIT,
-            4,
-        ) ?: 4
+        return (browserRootHints?.getInt(
+                MediaConstants.BROWSER_ROOT_HINTS_KEY_ROOT_CHILDREN_LIMIT,
+                4,
+            ) ?: 4)
+            .coerceAtLeast(1)
     }
 
     override fun updateForeground(change: ForegroundListener.Change) {

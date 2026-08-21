@@ -59,7 +59,8 @@ class AudiobookProgressRepository @Inject constructor(private val dao: Audiobook
             val safePosition =
                 positionMs.coerceIn(0L, safeDuration.takeIf { it > 0L } ?: Long.MAX_VALUE)
             val completed =
-                safeDuration > 0L &&
+                safePosition > 0L &&
+                    safeDuration > 0L &&
                     safePosition >= (safeDuration - COMPLETION_THRESHOLD_MS).coerceAtLeast(0L)
             dao.upsert(
                 AudiobookProgressEntity(

@@ -21,6 +21,7 @@ package org.oxycblt.auxio.home
 import javax.inject.Inject
 import org.oxycblt.auxio.audiobooks.AudiobookBook
 import org.oxycblt.auxio.audiobooks.AudiobookRepository
+import org.oxycblt.auxio.audiobooks.AudiobookSettings
 import org.oxycblt.auxio.home.tabs.Tab
 import org.oxycblt.auxio.list.ListSettings
 import org.oxycblt.auxio.list.adapter.UpdateInstructions
@@ -74,6 +75,7 @@ constructor(
     private val listSettings: ListSettings,
     private val musicRepository: MusicRepository,
     private val audiobookRepository: AudiobookRepository,
+    private val audiobookSettings: AudiobookSettings,
 ) : HomeGenerator.Factory {
     override fun create(invalidator: HomeGenerator.Invalidator): HomeGenerator =
         HomeGeneratorImpl(
@@ -82,6 +84,7 @@ constructor(
             listSettings,
             musicRepository,
             audiobookRepository,
+            audiobookSettings,
         )
 }
 
@@ -91,15 +94,30 @@ private class HomeGeneratorImpl(
     private val listSettings: ListSettings,
     private val musicRepository: MusicRepository,
     private val audiobookRepository: AudiobookRepository,
-) : HomeGenerator, HomeSettings.Listener, ListSettings.Listener, MusicRepository.UpdateListener {
+    private val audiobookSettings: AudiobookSettings,
+) :
+    HomeGenerator,
+    HomeSettings.Listener,
+    ListSettings.Listener,
+    MusicRepository.UpdateListener,
+    AudiobookSettings.Listener {
     override fun attach() {
         homeSettings.registerListener(this)
         listSettings.registerListener(this)
         musicRepository.addUpdateListener(this)
+        audiobookSettings.registerListener(this)
     }
 
     override fun onTabsChanged() {
         invalidator.invalidateTabs()
+    }
+
+    override fun onAudiobookAssignmentsChanged() {
+        invalidator.invalidateMusic(MusicType.SONGS, UpdateInstructions.Replace(0))
+        invalidator.invalidateMusic(MusicType.ALBUMS, UpdateInstructions.Replace(0))
+        invalidator.invalidateMusic(MusicType.ARTISTS, UpdateInstructions.Replace(0))
+        invalidator.invalidateMusic(MusicType.GENRES, UpdateInstructions.Replace(0))
+        invalidator.invalidateMusic(MusicType.AUDIOBOOKS, UpdateInstructions.Replace(0))
     }
 
     override fun onHideCollaboratorsChanged() {
@@ -159,32 +177,54 @@ private class HomeGeneratorImpl(
         musicRepository.removeUpdateListener(this)
         listSettings.unregisterListener(this)
         homeSettings.unregisterListener(this)
+        audiobookSettings.unregisterListener(this)
     }
 
-    override fun empty() = musicRepository.library?.empty() ?: true
+    private fun isMusicVisible(song: Song): Boolean =
+        song.uid.toString() !in audiobookSettings.manualSongUids
+
+    override fun empty() = musicRepository.library?.songs?.none(::isMusicVisible) ?: true
 
     override fun songs() =
-        musicRepository.library?.let { listSettings.songSort.songs(it.songs) } ?: emptyList()
+        musicRepository.library?.let { library ->
+            listSettings.songSort.songs(library.songs.filter(::isMusicVisible))
+        } ?: emptyList()
 
     override fun albums() =
-        musicRepository.library?.let { listSettings.albumSort.albums(it.albums) } ?: emptyList()
+        musicRepository.library?.let { library ->
+            listSettings.albumSort.albums(
+                library.albums.filter { album -> album.songs.any(::isMusicVisible) }
+            )
+        } ?: emptyList()
 
     override fun artists() =
         musicRepository.library?.let { deviceLibrary ->
-            val sorted = listSettings.artistSort.artists(deviceLibrary.artists)
+            val sorted =
+                listSettings.artistSort.artists(
+                    deviceLibrary.artists.filter { artist -> artist.songs.any(::isMusicVisible) }
+                )
             if (homeSettings.shouldHideCollaborators) {
-                sorted.filter { it.explicitAlbums.isNotEmpty() }
+                sorted.filter {
+                    it.explicitAlbums.any { album -> album.songs.any(::isMusicVisible) }
+                }
             } else {
                 sorted
             }
         } ?: emptyList()
 
     override fun genres() =
-        musicRepository.library?.let { listSettings.genreSort.genres(it.genres) } ?: emptyList()
+        musicRepository.library?.let { library ->
+            listSettings.genreSort.genres(
+                library.genres.filter { genre -> genre.songs.any(::isMusicVisible) }
+            )
+        } ?: emptyList()
 
     override fun playlists() =
-        musicRepository.library?.let { listSettings.playlistSort.playlists(it.playlists) }
-            ?: emptyList()
+        musicRepository.library?.let { library ->
+            listSettings.playlistSort.playlists(
+                library.playlists.filter { playlist -> playlist.songs.any(::isMusicVisible) }
+            )
+        } ?: emptyList()
 
     override fun audiobooks() =
         musicRepository.library?.let { audiobookRepository.books() } ?: emptyList()
