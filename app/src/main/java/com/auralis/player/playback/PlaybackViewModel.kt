@@ -208,6 +208,18 @@ constructor(
         _repeatMode.value = repeatMode
     }
 
+    override fun onSessionEnded() {
+        lastPositionJob?.cancel()
+        _song.value = null
+        _parent.value = null
+        _isPlaying.value = false
+        _positionDs.value = 0L
+        _repeatMode.value = RepeatMode.NONE
+        _isShuffled.value = false
+        _pagerCommand.put(PagerCommand(update = UpdateInstructions.Replace(0), scroll = null))
+        _pagerQueue.value = PagerQueue(queue = emptyList(), index = 0)
+    }
+
     override fun onBarActionChanged() {
         _currentBarAction.value = playbackSettings.barAction
     }

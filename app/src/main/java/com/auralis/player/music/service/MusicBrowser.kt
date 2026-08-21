@@ -20,6 +20,7 @@ package com.auralis.player.music.service
 
 import android.content.Context
 import android.support.v4.media.MediaBrowserCompat.MediaItem
+import android.support.v4.media.MediaDescriptionCompat
 import com.auralis.player.BuildConfig
 import com.auralis.player.R
 import com.auralis.player.detail.DetailGenerator
@@ -90,9 +91,11 @@ private constructor(
     }
 
     override fun invalidateTabs() {
-        val rootId = MediaSessionUID.Tab(TabNode.Root).toString()
+        val rootId = ROOT_ID
+        val musicRootId = MUSIC_ROOT_ID
+        val audiobookRootId = AUDIOBOOK_ROOT_ID
         val moreId = MediaSessionUID.Tab(TabNode.More).toString()
-        invalidator.invalidateMusic(setOf(rootId, moreId))
+        invalidator.invalidateMusic(setOf(rootId, musicRootId, audiobookRootId, moreId))
     }
 
     override fun invalidate(type: MusicType, replace: Int?) {
@@ -113,6 +116,9 @@ private constructor(
     }
 
     fun getItem(mediaId: String): MediaItem? {
+        domainRoot(mediaId)?.let {
+            return it
+        }
         val music =
             when (val uid = MediaSessionUID.fromString(mediaId)) {
                 is MediaSessionUID.Tab -> return uid.node.toMediaItem(context)
@@ -180,6 +186,16 @@ private constructor(
     }
 
     private fun getMediaItemList(id: String, maxTabs: Int): List<MediaItem>? {
+        when (id) {
+            ROOT_ID -> return listOf(domainRoot(MUSIC_ROOT_ID)!!, domainRoot(AUDIOBOOK_ROOT_ID)!!)
+            MUSIC_ROOT_ID ->
+                return homeGenerator
+                    .tabs()
+                    .filter { it != MusicType.AUDIOBOOKS }
+                    .take(maxTabs)
+                    .map { TabNode.Home(it).toMediaItem(context) }
+            AUDIOBOOK_ROOT_ID -> return homeGenerator.audiobooks().map { it.toMediaItem(context) }
+        }
         return when (val mediaSessionUID = MediaSessionUID.fromString(id)) {
             is MediaSessionUID.Tab -> {
                 getCategoryMediaItems(mediaSessionUID.node, maxTabs)
@@ -252,7 +268,23 @@ private constructor(
         }
     }
 
+    private fun domainRoot(mediaId: String): MediaItem? {
+        val title =
+            when (mediaId) {
+                MUSIC_ROOT_ID -> "Music"
+                AUDIOBOOK_ROOT_ID -> "Audiobooks"
+                else -> return null
+            }
+        return MediaItem(
+            MediaDescriptionCompat.Builder().setMediaId(mediaId).setTitle(title).build(),
+            MediaItem.FLAG_BROWSABLE,
+        )
+    }
+
     companion object {
+        const val ROOT_ID = "auralis:root"
+        const val MUSIC_ROOT_ID = "auralis:music"
+        const val AUDIOBOOK_ROOT_ID = "auralis:audiobooks"
         const val KEY_CHILD_OF = BuildConfig.APPLICATION_ID + ".key.CHILD_OF"
     }
 }

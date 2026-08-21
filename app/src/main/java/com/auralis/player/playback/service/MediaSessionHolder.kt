@@ -27,7 +27,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.DrawableRes
-import androidx.car.app.mediaextensions.MetadataExtras
 import androidx.core.app.NotificationCompat
 import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media.session.MediaButtonReceiver
@@ -43,7 +42,6 @@ import com.auralis.player.image.BitmapProvider
 import com.auralis.player.image.ImageSettings
 import com.auralis.player.music.resolve
 import com.auralis.player.music.resolveNames
-import com.auralis.player.music.service.MediaSessionUID
 import com.auralis.player.music.service.toMediaDescription
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.Progression
@@ -246,14 +244,6 @@ private constructor(
                 .putText(
                     PlaybackNotification.KEY_PARENT,
                     parent?.name?.resolve(context) ?: context.getString(R.string.lbl_all_songs),
-                )
-                .putText(
-                    MetadataExtras.KEY_SUBTITLE_LINK_MEDIA_ID,
-                    MediaSessionUID.SingleItem(song.artists[0].uid).toString(),
-                )
-                .putText(
-                    MetadataExtras.KEY_DESCRIPTION_LINK_MEDIA_ID,
-                    MediaSessionUID.SingleItem(song.album.uid).toString(),
                 )
         // These fields are nullable and so we must check first before adding them to the fields.
         song.track?.let {

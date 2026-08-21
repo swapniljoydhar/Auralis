@@ -36,6 +36,9 @@ import org.oxycblt.musikr.Song
  * @author Alexander Capehart (OxygenCobalt)
  */
 interface PlaybackCommand {
+    /** The local-library domain that owns this queue. */
+    val domain: PlaybackDomain
+
     /** A particular [Song] to play, or null to play the first [Song] in the new queue. * */
     val song: Song?
     /**
@@ -71,6 +74,7 @@ interface PlaybackCommand {
             shuffle: ShuffleMode,
             startSong: Song? = null,
             startPositionMs: Long = 0L,
+            domain: PlaybackDomain = PlaybackDomain.MUSIC,
         ): PlaybackCommand?
 
         fun album(album: Album, shuffle: ShuffleMode): PlaybackCommand?
@@ -98,6 +102,7 @@ constructor(
     val musicRepository: MusicRepository,
 ) : PlaybackCommand.Factory {
     data class PlaybackCommandImpl(
+        override val domain: PlaybackDomain,
         override val song: Song?,
         override val parent: MusicParent?,
         override val queue: List<Song>,
@@ -133,11 +138,23 @@ constructor(
         shuffle: ShuffleMode,
         startSong: Song?,
         startPositionMs: Long,
+        domain: PlaybackDomain,
     ): PlaybackCommand? {
-        if (songs.isEmpty() || (startSong != null && startSong !in songs)) {
+        if (
+            songs.isEmpty() ||
+                (startSong != null && startSong !in songs) ||
+                songs.any { !domain.accepts(it) }
+        ) {
             return null
         }
-        return PlaybackCommandImpl(startSong, null, songs, isShuffled(shuffle), startPositionMs)
+        return PlaybackCommandImpl(
+            domain,
+            startSong,
+            null,
+            songs,
+            isShuffled(shuffle),
+            startPositionMs,
+        )
     }
 
     override fun album(album: Album, shuffle: ShuffleMode) =
@@ -193,7 +210,13 @@ constructor(
         if (queue.isEmpty() || (song != null && song !in queue)) {
             return null
         }
-        return PlaybackCommandImpl(song, parent, sort.songs(queue), isShuffled(shuffle))
+        return PlaybackCommandImpl(
+            PlaybackDomain.MUSIC,
+            song,
+            parent,
+            sort.songs(queue),
+            isShuffled(shuffle),
+        )
     }
 
     private fun newCommand(
@@ -203,7 +226,14 @@ constructor(
         shuffle: ShuffleMode,
         startPositionMs: Long = 0L,
     ): PlaybackCommand {
-        return PlaybackCommandImpl(song, parent, queue, isShuffled(shuffle), startPositionMs)
+        return PlaybackCommandImpl(
+            PlaybackDomain.MUSIC,
+            song,
+            parent,
+            queue,
+            isShuffled(shuffle),
+            startPositionMs,
+        )
     }
 
     private fun isShuffled(shuffle: ShuffleMode) =

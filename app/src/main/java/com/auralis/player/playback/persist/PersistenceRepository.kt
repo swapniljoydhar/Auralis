@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2026 Auxio Project
  * PersistenceRepository.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,111 +18,87 @@
  
 package com.auralis.player.playback.persist
 
+import androidx.room.withTransaction
 import com.auralis.player.music.MusicRepository
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import javax.inject.Inject
 import org.oxycblt.musikr.MusicParent
 import timber.log.Timber as L
 
-/**
- * Manages the persisted playback state in a structured manner.
- *
- * @author Alexander Capehart (OxygenCobalt)
- */
+/** Persists independently recoverable local playback snapshots for each Auralis domain. */
 interface PersistenceRepository {
-    /** Read the previously persisted [PlaybackStateManager.SavedState]. */
-    suspend fun readState(): PlaybackStateManager.SavedState?
+    suspend fun readState(domain: PlaybackDomain): PlaybackStateManager.SavedState?
 
-    /**
-     * Persist a new [PlaybackStateManager.SavedState].
-     *
-     * @param state The [PlaybackStateManager.SavedState] to persist.
-     */
     suspend fun saveState(state: PlaybackStateManager.SavedState?): Boolean
 }
 
 class PersistenceRepositoryImpl
 @Inject
 constructor(
-    private val playbackStateDao: PlaybackStateDao,
-    private val queueDao: QueueDao,
+    private val database: PersistenceDatabase,
+    private val domainPlaybackStateDao: DomainPlaybackStateDao,
     private val musicRepository: MusicRepository,
 ) : PersistenceRepository {
 
-    override suspend fun readState(): PlaybackStateManager.SavedState? {
+    override suspend fun readState(domain: PlaybackDomain): PlaybackStateManager.SavedState? {
         val library = musicRepository.library?.takeIf { !it.empty() } ?: return null
-        val playbackState: PlaybackState
-        val heapItems: List<QueueHeapItem>
-        val mappingItems: List<QueueShuffledMappingItem>
-        try {
-            playbackState = playbackStateDao.getState() ?: return null
-            heapItems = queueDao.getHeap()
-            mappingItems = queueDao.getShuffledMapping()
+        return try {
+            val persisted = domainPlaybackStateDao.getState(domain.name) ?: return null
+            val heap = domainPlaybackStateDao.getHeap(domain.name).map { library.findSong(it.uid) }
+            val mapping = domainPlaybackStateDao.getMapping(domain.name).map { it.index }
+            val parent = persisted.parentUid?.let { musicRepository.find(it) as? MusicParent }
+            PlaybackStateManager.SavedState(
+                domain = domain,
+                positionMs = persisted.positionMs,
+                repeatMode = persisted.repeatMode,
+                parent = parent,
+                heap = heap,
+                shuffledMapping = mapping,
+                index = persisted.index,
+                songUid = persisted.songUid,
+            )
         } catch (e: Exception) {
-            L.e("Unable read playback state")
-            L.e(e.stackTraceToString())
-            return null
+            L.e(e, "Unable to read $domain playback state")
+            null
         }
-
-        val heap = heapItems.map { library.findSong(it.uid) }
-        val shuffledMapping = mappingItems.map { it.index }
-        val parent = playbackState.parentUid?.let { musicRepository.find(it) as? MusicParent }
-
-        return PlaybackStateManager.SavedState(
-            positionMs = playbackState.positionMs,
-            repeatMode = playbackState.repeatMode,
-            parent = parent,
-            heap = heap,
-            shuffledMapping = shuffledMapping,
-            index = playbackState.index,
-            songUid = playbackState.songUid,
-        )
     }
 
     override suspend fun saveState(state: PlaybackStateManager.SavedState?): Boolean {
-        try {
-            playbackStateDao.nukeState()
-            queueDao.nukeHeap()
-            queueDao.nukeShuffledMapping()
-        } catch (e: Exception) {
-            L.e("Unable to clear previous state")
-            L.e(e.stackTraceToString())
-            return false
-        }
+        val domain = state?.domain ?: PlaybackDomain.MUSIC
+        return try {
+            database.withTransaction {
+                domainPlaybackStateDao.clearState(domain.name)
+                domainPlaybackStateDao.clearHeap(domain.name)
+                domainPlaybackStateDao.clearMapping(domain.name)
 
-        L.d("Successfully cleared previous state")
-        if (state != null) {
-            // Transform saved state into raw state, which can then be written to the database.
-            val playbackState =
-                PlaybackState(
-                    id = 0,
-                    index = state.index,
-                    positionMs = state.positionMs,
-                    repeatMode = state.repeatMode,
-                    songUid = state.songUid,
-                    parentUid = state.parent?.uid,
-                )
-
-            // Convert the remaining queue information do their database-specific counterparts.
-            val heap =
-                state.heap.mapIndexed { i, song -> QueueHeapItem(i, requireNotNull(song).uid) }
-
-            val shuffledMapping =
-                state.shuffledMapping.mapIndexed { i, index -> QueueShuffledMappingItem(i, index) }
-
-            try {
-                playbackStateDao.insertState(playbackState)
-                queueDao.insertHeap(heap)
-                queueDao.insertShuffledMapping(shuffledMapping)
-            } catch (e: Exception) {
-                L.e("Unable to write new state")
-                L.e(e.stackTraceToString())
-                return false
+                if (state != null) {
+                    domainPlaybackStateDao.insertState(
+                        DomainPlaybackState(
+                            domain = domain.name,
+                            index = state.index,
+                            positionMs = state.positionMs,
+                            repeatMode = state.repeatMode,
+                            songUid = state.songUid,
+                            parentUid = state.parent?.uid,
+                        )
+                    )
+                    domainPlaybackStateDao.insertHeap(
+                        state.heap.mapIndexed { index, song ->
+                            DomainQueueHeapItem(domain.name, index, requireNotNull(song).uid)
+                        }
+                    )
+                    domainPlaybackStateDao.insertMapping(
+                        state.shuffledMapping.mapIndexed { index, mappedIndex ->
+                            DomainQueueMappingItem(domain.name, index, mappedIndex)
+                        }
+                    )
+                }
             }
-
-            L.d("Successfully wrote new state")
+            true
+        } catch (e: Exception) {
+            L.e(e, "Unable to replace $domain playback state")
+            false
         }
-
-        return true
     }
 }

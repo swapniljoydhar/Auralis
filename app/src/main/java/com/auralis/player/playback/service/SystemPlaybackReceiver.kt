@@ -104,7 +104,7 @@ private constructor(
                 pauseFromHeadsetPlug()
             }
 
-            // --- AUXIO EVENTS ---
+            // --- AURALIS EVENTS ---
             PlaybackActions.ACTION_PLAY_PAUSE -> {
                 L.d("Received play event")
                 playbackManager.playing(!playbackManager.progression.isPlaying)

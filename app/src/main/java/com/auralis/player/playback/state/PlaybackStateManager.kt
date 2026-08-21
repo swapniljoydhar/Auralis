@@ -45,6 +45,9 @@ import timber.log.Timber as L
  * @author Alexander Capehart (OxygenCobalt)
  */
 interface PlaybackStateManager {
+    /** The explicit local-library domain that owns the active session. */
+    val domain: PlaybackDomain
+
     /** The current [Progression] of the audio player */
     val progression: Progression
 
@@ -71,6 +74,9 @@ interface PlaybackStateManager {
 
     /** The last playback speed requested for the current player session. */
     val playbackSpeed: Float
+
+    /** Switch the active local playback domain without merging queues between domains. */
+    fun selectDomain(domain: PlaybackDomain)
 
     /**
      * Add a [Listener] to this instance. This can be used to receive changes in the playback state.
@@ -333,6 +339,7 @@ interface PlaybackStateManager {
      * @param repeatMode The current [RepeatMode].
      */
     data class SavedState(
+        val domain: PlaybackDomain,
         val positionMs: Long,
         val repeatMode: RepeatMode,
         val parent: MusicParent?,
@@ -345,6 +352,7 @@ interface PlaybackStateManager {
 
 class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     private data class StateMirror(
+        val domain: PlaybackDomain,
         val progression: Progression,
         val repeatMode: RepeatMode,
         val parent: MusicParent?,
@@ -359,6 +367,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     @Volatile
     private var stateMirror =
         StateMirror(
+            domain = PlaybackDomain.MUSIC,
             progression = Progression.nil(),
             repeatMode = RepeatMode.NONE,
             parent = null,
@@ -371,9 +380,13 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     @Volatile private var pendingDeferredPlayback: DeferredPlayback? = null
     @Volatile private var currentPlaybackSpeed = 1.0f
     @Volatile private var isInitialized = false
+    private val domainSnapshots = mutableMapOf<PlaybackDomain, StateMirror>()
 
     override val progression
         get() = stateMirror.progression
+
+    override val domain
+        get() = stateMirror.domain
 
     override val repeatMode
         get() = stateMirror.repeatMode
@@ -398,6 +411,43 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
 
     override val playbackSpeed: Float
         get() = currentPlaybackSpeed
+
+    @Synchronized
+    override fun selectDomain(domain: PlaybackDomain) {
+        if (domain == stateMirror.domain) return
+        val stateHolder = stateHolder ?: return
+        val outgoingDomain = stateMirror.domain
+        domainSnapshots[outgoingDomain] = stateMirror
+        stateHolder.playing(false)
+
+        val target =
+            domainSnapshots[domain]
+                ?: StateMirror(
+                    domain = domain,
+                    progression = Progression.nil(),
+                    repeatMode = RepeatMode.NONE,
+                    parent = null,
+                    queue = emptyList(),
+                    index = -1,
+                    isShuffled = false,
+                    rawQueue = RawQueue.nil(),
+                )
+        stateMirror = target
+        currentPlaybackSpeed =
+            if (domain == PlaybackDomain.AUDIOBOOKS) currentPlaybackSpeed else 1.0f
+
+        if (target.index >= 0 && target.rawQueue.heap.isNotEmpty()) {
+            stateHolder.applySavedState(
+                target.parent,
+                target.rawQueue,
+                target.progression.calculateElapsedPositionMs(),
+                target.repeatMode,
+                StateAck.NewPlayback,
+            )
+        } else {
+            stateHolder.reset(StateAck.NewPlayback)
+        }
+    }
 
     @Synchronized
     override fun addListener(listener: Listener) {
@@ -462,9 +512,17 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     @Synchronized
     override fun play(command: PlaybackCommand) {
         val stateHolder = stateHolder ?: return
+        if (command.queue.isEmpty() || command.queue.any { !command.domain.accepts(it) }) {
+            L.w("Rejecting invalid ${command.domain} playback queue")
+            return
+        }
         L.d("Playing $command")
         // Played something, so we are initialized now
         isInitialized = true
+        if (command.domain != stateMirror.domain) {
+            domainSnapshots[stateMirror.domain] = stateMirror
+        }
+        stateMirror = stateMirror.copy(domain = command.domain)
         stateHolder.newPlayback(command)
     }
 
@@ -516,6 +574,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     }
 
     private class QueueCommand(override val queue: List<Song>) : PlaybackCommand {
+        override val domain = PlaybackDomain.MUSIC
         override val song: Song? = null
         override val parent: MusicParent? = null
         override val shuffled = false
@@ -727,6 +786,21 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
                 listeners.forEach { it.onRepeatModeChanged(stateMirror.repeatMode) }
             }
             is StateAck.SessionEnded -> {
+                val endedDomain = stateMirror.domain
+                stateMirror =
+                    StateMirror(
+                        domain = endedDomain,
+                        progression = Progression.nil(),
+                        repeatMode = RepeatMode.NONE,
+                        parent = null,
+                        queue = emptyList(),
+                        index = -1,
+                        isShuffled = false,
+                        rawQueue = RawQueue.nil(),
+                    )
+                currentPlaybackSpeed = 1.0f
+                listeners.forEach { it.onNewPlayback(null, emptyList(), -1, false) }
+                listeners.forEach { it.onProgressionChanged(stateMirror.progression) }
                 listeners.forEach { it.onSessionEnded() }
             }
         }
@@ -738,6 +812,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     override fun toSavedState(): PlaybackStateManager.SavedState? {
         val currentSong = currentSong ?: return null
         return PlaybackStateManager.SavedState(
+            domain = stateMirror.domain,
             positionMs = stateMirror.progression.calculateElapsedPositionMs(),
             repeatMode = stateMirror.repeatMode,
             parent = stateMirror.parent,
@@ -831,6 +906,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
             StateAck.NewPlayback,
         )
 
+        stateMirror = stateMirror.copy(domain = savedState.domain)
         isInitialized = true
     }
 }

@@ -48,6 +48,7 @@ import com.auralis.player.playback.persist.PersistenceRepository
 import com.auralis.player.playback.replaygain.ReplayGainAudioProcessor
 import com.auralis.player.playback.state.DeferredPlayback
 import com.auralis.player.playback.state.PlaybackCommand
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateHolder
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.Progression
@@ -180,7 +181,7 @@ class ExoPlaybackStateHolder(
             is DeferredPlayback.RestoreState -> {
                 L.d("Restoring playback state")
                 restoreScope.launch {
-                    val state = persistenceRepository.readState()
+                    val state = persistenceRepository.readState(playbackManager.domain)
                     withContext(Dispatchers.Main) {
                         if (state != null) {
                             // Apply the saved state on the main thread to prevent code expecting
@@ -277,7 +278,7 @@ class ExoPlaybackStateHolder(
         player.shuffleModeEnabled = command.shuffled
         player.setMediaItems(command.queue.map { it.buildMediaItem() })
         playbackManager.playbackSpeed(
-            if (command.queue.firstOrNull()?.let(AudiobookClassifier::isAudiobook) == true) {
+            if (command.domain == PlaybackDomain.AUDIOBOOKS) {
                 audiobookSettings.defaultPlaybackSpeed
             } else {
                 1.0f
@@ -489,6 +490,8 @@ class ExoPlaybackStateHolder(
     override fun endSession() {
         // This session has ended, so we need to reset this flag for when the next
         // session starts.
+        player.stop()
+        player.clearMediaItems()
         playbackManager.playing(false)
         save {
             // User could feasibly start playing again if they were fast enough, so

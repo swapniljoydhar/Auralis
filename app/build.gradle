@@ -16,8 +16,8 @@ android {
 
     defaultConfig {
         applicationId namespace
-        versionName "4.1.5"
-        versionCode 75
+        versionName "4.1.6"
+        versionCode 76
 
         minSdk min_sdk
         // randomly flickers between deprecated and required depending on what mood my gradle is in
@@ -126,9 +126,6 @@ dependencies {
 
     // Media
     implementation "androidx.media:media:1.8.0"
-
-    // Android Auto
-    implementation "androidx.car.app:app:1.7.0"
 
     // Preferences
     implementation "androidx.preference:preference-ktx:1.2.1"

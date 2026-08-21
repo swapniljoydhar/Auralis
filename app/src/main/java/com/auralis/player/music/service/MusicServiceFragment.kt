@@ -100,7 +100,7 @@ constructor(
         indexer.createNotification(post)
     }
 
-    fun getRoot() = BrowserRoot(MediaSessionUID.Tab(TabNode.Root).toString(), Bundle())
+    fun getRoot() = BrowserRoot(MusicBrowser.ROOT_ID, Bundle())
 
     fun getItem(mediaId: String, result: Result<MediaItem>) =
         result.dispatch { musicBrowser.getItem(mediaId) }

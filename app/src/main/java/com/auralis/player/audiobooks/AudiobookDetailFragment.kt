@@ -339,6 +339,7 @@ class AudiobookDetailFragment : Fragment() {
                     shuffle = ShuffleMode.OFF,
                     startSong = chapter.song,
                     startPositionMs = position,
+                    domain = com.auralis.player.playback.state.PlaybackDomain.AUDIOBOOKS,
                 ) ?: return@launch
             playbackManager.play(command)
         }

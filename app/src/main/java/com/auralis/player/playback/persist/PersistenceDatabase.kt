@@ -43,8 +43,11 @@ import org.oxycblt.musikr.Music
             QueueHeapItem::class,
             QueueShuffledMappingItem::class,
             AudiobookProgressEntity::class,
+            DomainPlaybackState::class,
+            DomainQueueHeapItem::class,
+            DomainQueueMappingItem::class,
         ],
-    version = 39,
+    version = 40,
     exportSchema = false,
 )
 @TypeConverters(Music.UID.TypeConverters::class)
@@ -65,6 +68,8 @@ abstract class PersistenceDatabase : RoomDatabase() {
 
     /** Get the DAO for durable, per-book audiobook progress. */
     abstract fun audiobookProgressDao(): AudiobookProgressDao
+
+    abstract fun domainPlaybackStateDao(): DomainPlaybackStateDao
 
     companion object {
         val MIGRATION_27_32 =
@@ -87,6 +92,67 @@ abstract class PersistenceDatabase : RoomDatabase() {
                         completed INTEGER NOT NULL,
                         updatedMs INTEGER NOT NULL
                     )
+                    """
+                        .trimIndent()
+                )
+            }
+
+        /** Splits the legacy single playback session into domain-keyed snapshot tables. */
+        val MIGRATION_39_40 =
+            Migration(39, 40) {
+                it.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS DomainPlaybackState (
+                        domain TEXT NOT NULL PRIMARY KEY,
+                        `index` INTEGER NOT NULL,
+                        positionMs INTEGER NOT NULL,
+                        repeatMode TEXT NOT NULL,
+                        songUid TEXT NOT NULL,
+                        parentUid TEXT
+                    )
+                    """
+                        .trimIndent()
+                )
+                it.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS DomainQueueHeapItem (
+                        domain TEXT NOT NULL,
+                        id INTEGER NOT NULL,
+                        uid TEXT NOT NULL,
+                        PRIMARY KEY(domain, id)
+                    )
+                    """
+                        .trimIndent()
+                )
+                it.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS DomainQueueMappingItem (
+                        domain TEXT NOT NULL,
+                        id INTEGER NOT NULL,
+                        `index` INTEGER NOT NULL,
+                        PRIMARY KEY(domain, id)
+                    )
+                    """
+                        .trimIndent()
+                )
+                it.execSQL(
+                    """
+                    INSERT OR IGNORE INTO DomainPlaybackState(domain, `index`, positionMs, repeatMode, songUid, parentUid)
+                    SELECT 'MUSIC', `index`, positionMs, repeatMode, songUid, parentUid FROM PlaybackState WHERE id = 0
+                    """
+                        .trimIndent()
+                )
+                it.execSQL(
+                    """
+                    INSERT OR IGNORE INTO DomainQueueHeapItem(domain, id, uid)
+                    SELECT 'MUSIC', id, uid FROM QueueHeapItem
+                    """
+                        .trimIndent()
+                )
+                it.execSQL(
+                    """
+                    INSERT OR IGNORE INTO DomainQueueMappingItem(domain, id, `index`)
+                    SELECT 'MUSIC', id, `index` FROM QueueShuffledMappingItem
                     """
                         .trimIndent()
                 )
@@ -201,4 +267,50 @@ interface AudiobookProgressDao {
 
     @Query("DELETE FROM AudiobookProgressEntity WHERE bookKey = :bookKey")
     suspend fun deleteForBook(bookKey: String)
+}
+
+@Entity
+data class DomainPlaybackState(
+    @PrimaryKey val domain: String,
+    val index: Int,
+    val positionMs: Long,
+    val repeatMode: RepeatMode,
+    val songUid: Music.UID,
+    val parentUid: Music.UID?,
+)
+
+@Entity(primaryKeys = ["domain", "id"])
+data class DomainQueueHeapItem(val domain: String, val id: Int, val uid: Music.UID)
+
+@Entity(primaryKeys = ["domain", "id"])
+data class DomainQueueMappingItem(val domain: String, val id: Int, val index: Int)
+
+@Dao
+interface DomainPlaybackStateDao {
+    @Query("SELECT * FROM DomainPlaybackState WHERE domain = :domain LIMIT 1")
+    suspend fun getState(domain: String): DomainPlaybackState?
+
+    @Query("SELECT * FROM DomainQueueHeapItem WHERE domain = :domain ORDER BY id")
+    suspend fun getHeap(domain: String): List<DomainQueueHeapItem>
+
+    @Query("SELECT * FROM DomainQueueMappingItem WHERE domain = :domain ORDER BY id")
+    suspend fun getMapping(domain: String): List<DomainQueueMappingItem>
+
+    @Query("DELETE FROM DomainPlaybackState WHERE domain = :domain")
+    suspend fun clearState(domain: String)
+
+    @Query("DELETE FROM DomainQueueHeapItem WHERE domain = :domain")
+    suspend fun clearHeap(domain: String)
+
+    @Query("DELETE FROM DomainQueueMappingItem WHERE domain = :domain")
+    suspend fun clearMapping(domain: String)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertState(state: DomainPlaybackState)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertHeap(heap: List<DomainQueueHeapItem>)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertMapping(mapping: List<DomainQueueMappingItem>)
 }

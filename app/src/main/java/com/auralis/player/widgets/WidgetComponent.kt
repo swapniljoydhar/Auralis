@@ -165,6 +165,10 @@ private constructor(
 
     override fun onRepeatModeChanged(repeatMode: RepeatMode) = update()
 
+    override fun onSessionEnded() {
+        widgetProvider.update(context, uiSettings, null)
+    }
+
     // Respond to settings changes that will affect the widget
     override fun onRoundModeChanged() = update()
 

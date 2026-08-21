@@ -27,6 +27,8 @@ import com.auralis.player.list.sort.Sort
 import com.auralis.player.music.MusicType
 import com.auralis.player.playback.PlaySong
 import com.auralis.player.playback.PlaybackSettings
+import com.auralis.player.playback.state.PlaybackDomain
+import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.util.Event
 import com.auralis.player.util.MutableEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,6 +53,7 @@ class HomeViewModel
 constructor(
     private val listSettings: ListSettings,
     private val playbackSettings: PlaybackSettings,
+    private val playbackManager: PlaybackStateManager,
     private val homeSettings: HomeSettings,
     homeGeneratorFactory: HomeGenerator.Factory,
 ) : ViewModel(), HomeGenerator.Invalidator {
@@ -312,6 +315,9 @@ constructor(
     }
 
     fun selectMode(mode: MusicType) {
+        playbackManager.selectDomain(
+            if (mode == MusicType.AUDIOBOOKS) PlaybackDomain.AUDIOBOOKS else PlaybackDomain.MUSIC
+        )
         activeMode = mode
         homeSettings.preferredMode = mode
         if (mode == MusicType.AUDIOBOOKS) {

@@ -45,8 +45,11 @@ class PersistenceRoomModule {
                 PersistenceDatabase::class.java,
                 "playback_persistence.db",
             )
-            .fallbackToDestructiveMigration()
-            .addMigrations(PersistenceDatabase.MIGRATION_27_32, PersistenceDatabase.MIGRATION_38_39)
+            .addMigrations(
+                PersistenceDatabase.MIGRATION_27_32,
+                PersistenceDatabase.MIGRATION_38_39,
+                PersistenceDatabase.MIGRATION_39_40,
+            )
             .build()
 
     @Provides fun playbackStateDao(database: PersistenceDatabase) = database.playbackStateDao()
@@ -55,4 +58,7 @@ class PersistenceRoomModule {
 
     @Provides
     fun audiobookProgressDao(database: PersistenceDatabase) = database.audiobookProgressDao()
+
+    @Provides
+    fun domainPlaybackStateDao(database: PersistenceDatabase) = database.domainPlaybackStateDao()
 }

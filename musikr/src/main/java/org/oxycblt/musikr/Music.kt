@@ -113,7 +113,7 @@ sealed interface Music {
          */
         private enum class Format(val namespace: String, val microNamespace: Char) {
             /** @see auralis */
-            AUXIO("com.auralis.player", 'a'),
+            AURALIS("com.auralis.player", 'a'),
 
             /** @see musicBrainz */
             MUSICBRAINZ("org.musicbrainz", 'm'),
@@ -135,7 +135,7 @@ sealed interface Music {
              * @param item The type of [Item] that created this [UID].
              */
             internal fun auralis(item: Item): UID {
-                return UID(Format.AUXIO, item, UUID.randomUUID())
+                return UID(Format.AURALIS, item, UUID.randomUUID())
             }
 
             /**
@@ -179,7 +179,7 @@ sealed interface Music {
                             .or(digest[14].toLong().and(0xFF).shl(8))
                             .or(digest[15].toLong().and(0xFF)),
                     )
-                return UID(Format.AUXIO, item, uuid)
+                return UID(Format.AURALIS, item, uuid)
             }
 
             /**
@@ -206,7 +206,7 @@ sealed interface Music {
                     // new compressed-format parsing
                     val microFormat =
                         when (uid.getOrNull(1)) {
-                            Format.AUXIO.microNamespace -> Format.AUXIO
+                            Format.AURALIS.microNamespace -> Format.AURALIS
                             Format.MUSICBRAINZ.microNamespace -> Format.MUSICBRAINZ
                             else -> return null
                         }
@@ -233,7 +233,7 @@ sealed interface Music {
 
                 val format =
                     when (split[0]) {
-                        Format.AUXIO.namespace -> Format.AUXIO
+                        Format.AURALIS.namespace -> Format.AURALIS
                         Format.MUSICBRAINZ.namespace -> Format.MUSICBRAINZ
                         else -> return null
                     }

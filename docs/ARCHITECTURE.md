@@ -14,11 +14,15 @@ Audiobooks are represented by a catalog, repository, progress repository, bookma
 
 ## Playback boundary
 
-The playback service is shared so Android notifications, media buttons, widgets, and Android Auto have one system-facing entry point. The service translates domain items into media-session items, validates queue indices, and persists state after a coherent snapshot rather than while a mutable queue is being written. External actions are treated as untrusted input and are ignored or converted to safe no-op results when they do not map to a valid current mode.
+The playback service owns one ExoPlayer, one media session, one foreground notification, and one simplified cross-mode widget. `PlaybackStateManager` is the explicit `PlaybackDomain` coordinator: it switches only between `MUSIC` and `AUDIOBOOKS`, snapshots the outgoing state, restores the incoming state, and rejects a command or queue operation that contains items outside the active domain. The service restart path reads the snapshot for the coordinator’s current domain; persistence does not silently default to Music.
+
+`DomainPlaybackState`, `DomainQueueHeapItem`, and `DomainQueueMappingItem` store separate, transactionally written session snapshots for Music and Audiobooks. A session end is destructive by design: the player stops and clears its media items, the state mirror clears its queue and progression, and UI and widget projections receive an explicit reset. This makes a finished session observably empty instead of leaving stale media metadata or controls behind.
+
+The local media-browser tree begins at `auralis:root` and exposes `auralis:music` and `auralis:audiobooks` as separate browsable roots. Each root only exposes its own local descendants. There is no Android Auto feature in Auralis’s supported product scope.
 
 ## Storage boundary
 
-Auralis reads local audio through MediaStore and Storage Access Framework locations. Artwork is exposed through a constrained content provider whose URI matcher accepts only the application’s cover path. Unknown paths return null or an empty cursor rather than throwing from an exported component.
+Auralis is local-only: it reads device audio through MediaStore and Storage Access Framework locations and never turns a media URI into a network playback source. Artwork is exposed through a constrained content provider whose URI matcher accepts only the application’s cover path. Unknown paths return null or an empty cursor rather than throwing from an exported component.
 
 ## Verification boundary
 
