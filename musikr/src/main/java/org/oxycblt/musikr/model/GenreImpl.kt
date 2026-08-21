@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2023 Auxio Project
- * GenreImpl.kt is part of Auxio.
+ * GenreImpl.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ internal interface GenreCore {
  * @author Alexander Capehart (OxygenCobalt)
  */
 internal class GenreImpl(private val core: GenreCore) : Genre {
-    override val uid = Music.UID.auxio(Music.UID.Item.GENRE) { update(core.preGenre.rawName) }
+    override val uid = Music.UID.auralis(Music.UID.Item.GENRE) { update(core.preGenre.rawName) }
     override val name = core.preGenre.name
 
     override val songs = core.songs

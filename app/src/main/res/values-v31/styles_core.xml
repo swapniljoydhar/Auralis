@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Auxio.V31" parent="Theme.Auxio.V29">
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_book</item>
+    <style name="Theme.Auralis.V31" parent="Theme.Auralis.V29">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_auralis_launcher</item>
     </style>
 
     <!-- Use dynamic colors since that's assumed to be the setting used. -->
-    <style name="Theme.Auxio.App" parent="Theme.Auxio.Base" />
+    <style name="Theme.Auralis.App" parent="Theme.Auralis.Base" />
 
-    <style name="Theme.Auxio.Widget" parent="@android:style/Theme.DeviceDefault.DayNight">
+    <style name="Theme.Auralis.Widget" parent="@android:style/Theme.DeviceDefault.DayNight">
         <item name="colorPrimary">?android:attr/colorAccent</item>
         <item name="colorOnPrimary">?attr/colorSurface</item>
 

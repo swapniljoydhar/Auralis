@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2025 Auxio Project
- * JByteArrayRef.h is part of Auxio.
+ * JByteArrayRef.h is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

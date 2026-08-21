@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Auxio Project
- * ID3.kt is part of Auxio.
+ * ID3.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -320,6 +320,6 @@ private val genreTable =
         "Garage Rock",
         "Psybient",
 
-        // Auxio's extensions, added because Future Garage is also a good genre.
+        // Auralis's extensions, added because Future Garage is also a good genre.
         "Future Garage",
     )

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Auxio Project
- * StoredPlaylists.kt is part of Auxio.
+ * StoredPlaylists.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ abstract class StoredPlaylists {
 
 private class StoredPlaylistsImpl(private val playlistDao: PlaylistDao) : StoredPlaylists() {
     override suspend fun new(name: String, songs: List<Song>): PlaylistHandle {
-        val info = PlaylistInfo(Music.UID.auxio(Music.UID.Item.PLAYLIST), name)
+        val info = PlaylistInfo(Music.UID.auralis(Music.UID.Item.PLAYLIST), name)
         playlistDao.insertPlaylist(RawPlaylist(info, songs.map { PlaylistSong(it.uid) }))
         return StoredPlaylistHandle(info, playlistDao)
     }

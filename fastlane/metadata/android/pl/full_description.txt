@@ -1,4 +1,4 @@
-Auxio jest lokalnym odtwarzaczem muzyki z szybkim i niezawodnym interfejsem użytkownika, pozbawionym wielu zbędnych funkcji obecnych w innych odtwarzaczach. Dzięki nowoczesnym bibliotekom odtwarzania mediów, Auxio oferuje lepszą obsługę biblioteki i wyższą jakość dźwięku w porównaniu do aplikacji korzystających z przestarzałych funkcji Androida. W skrócie, <b>odtwarza muzykę.</b>
+Auralis jest lokalnym odtwarzaczem muzyki z szybkim i niezawodnym interfejsem użytkownika, pozbawionym wielu zbędnych funkcji obecnych w innych odtwarzaczach. Dzięki nowoczesnym bibliotekom odtwarzania mediów, Auralis oferuje lepszą obsługę biblioteki i wyższą jakość dźwięku w porównaniu do aplikacji korzystających z przestarzałych funkcji Androida. W skrócie, <b>odtwarza muzykę.</b>
 
 <b>Funkcje</b>
 

@@ -1,60 +1,54 @@
-<h1 align="center"><b>Auralis</b></h1>
+<h1 align="center">Auralis</h1>
 <h4 align="center">A private, local-first player for music and audiobooks on Android.</h4>
 <p align="center">
     <img alt="Minimum SDK Version" src="https://img.shields.io/badge/API-24%2B-1450A8?style=flat">
     <img alt="License" src="https://img.shields.io/badge/license-GPL%20v3-2B6DBE.svg?style=flat">
 </p>
 
-## About
+## Product direction
 
-Auralis is an offline Android player with two deliberately separated listening spaces. **Music** is organized around songs, albums, artists, genres, playlists, search, queues, and fast everyday playback. **Audiobooks** is organized around books, chapters, resume positions, progress, bookmarks, speed, skip intervals, silence skipping, auto-rewind, and sleep-at-chapter-end behavior.
+Auralis brings two listening experiences into one focused application without flattening their differences. The opening hub lets listeners choose **Music** or **Audiobooks**, and each mode exposes the navigation, sorting, playback controls, and persistence model that fit that medium. Shared playback infrastructure keeps the app small and reliable; mode-specific state prevents music and audiobook assumptions from leaking into one another.
 
-The application reads local media, does not require an account, and keeps library and playback state on the device. The opening hub asks whether the listener wants Music or Audiobooks; each choice opens a focused library projection rather than exposing both experiences in one mixed tab strip. The toolbar still provides a quick way to switch modes.
+## Music
 
-Auralis supports M4B audiobook playback and can classify ordinary MP3 files as audiobook chapters. When MP3 chapters are assigned to Audiobooks, they disappear from the Music projection without deleting or moving the files and reappear as one audiobook grouped by folder. Removing the assignment returns them to Music.
+The Music space indexes local audio with embedded artwork and metadata. It provides songs, albums, artists, genres, playlists, search, queue management, shuffle, repeat, persistent playback, gapless playback, ReplayGain, external equalizer integration, Android Auto, headset controls, widgets, and an edge-to-edge Material interface.
 
-## Feature areas
+## Audiobooks
 
-### Music
+The Audiobooks space supports M4B books and MP3 chapter folders. It groups chapters into books, shows chapter durations and completion state, resumes from the last position, and provides chapter navigation, bookmarks, configurable skip intervals, playback speed, auto-rewind, silence skipping, and sleep-at-chapter-end behavior. Assigning MP3 chapters to Audiobooks changes only the library projection; it does not move or delete the underlying files, and removing the assignment returns them to Music.
 
-Auralis provides local Music indexing, embedded artwork, songs, albums, artists, genres, playlists, search, queue management, shuffle and repeat, playback persistence, gapless playback, ReplayGain, external equalizer integration, Android Auto, headset controls, widgets, and edge-to-edge Material UI.
+## Privacy and storage
 
-### Audiobooks
-
-Audiobooks provide M4B and MP3-chapter playback, cover-led detail pages, chapter durations, completion state, resume-first actions, chapter navigation, visible skip/speed/sleep controls, configurable skip duration, default playback speed, auto-rewind, silence skipping, bookmarks, and stopping at the end of the current chapter.
-
-### Privacy and storage
-
-Auralis is designed for local playback. It does not require cloud synchronization or an account. Android media permissions are used only to discover and play local audio, while notification and foreground-service permissions support background playback.
+Auralis is designed for local playback. It does not require an account or cloud synchronization. Android media permissions are used to discover and play local audio, while notification and foreground-service permissions support background playback. Library metadata, playback state, bookmarks, and settings remain on the device.
 
 ## Build
 
-The project uses Gradle, Android SDK/NDK tooling, a patched Media3 playback stack, and the native metadata parser in `musikr`.
+The project uses Gradle, Android SDK/NDK tooling, a patched Media3 playback stack, and the native metadata parser in `musikr`. Initialize the repository’s nested submodules before building:
 
 ```bash
-./gradlew --no-daemon --max-workers=1 spotlessApply
-./gradlew --no-daemon --max-workers=1 check
+git submodule update --init --recursive
 ./gradlew --no-daemon --max-workers=1 :app:assembleDebug
+./gradlew --no-daemon --max-workers=1 :app:testDebugUnitTest :musikr:test
+./gradlew --no-daemon --max-workers=1 :app:lintDebug
 ```
 
-For a local device or emulator with USB debugging enabled:
-
-```bash
-./gradlew installDebug
-```
-
-The debug variant is intended for testing. A release build must be signed with a release key before distribution. Do not commit a private signing keystore or passwords to the repository.
+The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`. A release build must be signed with a release key before distribution. Never commit a private keystore, signing password, API token, or local `local.properties` file.
 
 ## Repository structure
 
 | Module | Responsibility |
 |---|---|
-| `app` | Android UI, navigation, Music and Audiobooks projections, playback service, settings, and persistence. |
-| `musikr` | Native and Kotlin metadata indexing, MediaStore/SAF access, and music-domain models. |
-| `media` | Patched Media3 components used for playback and M4B/FFmpeg support. |
+| `app` | Android UI, navigation, mode separation, playback service, settings, persistence, widgets, and audiobook behavior. |
+| `musikr` | Kotlin and native metadata indexing, MediaStore/SAF access, tag parsing, and music-domain models. |
+| `media` | Vendored Media3 components used for playback, extraction, and optional FFmpeg decoding. |
+| `design` | Auralis visual assets and brand references. |
 
-## License and attribution
+## Engineering principles
 
-Auralis is distributed under the **GNU General Public License, version 3 or later**. It incorporates and modifies GPL-licensed open-source components. Copyright notices, license headers, and third-party notices remain in the source tree where required; rebranding the application does not remove those legal attributions.
+Auralis favors local-first behavior, explicit state transitions, safe handling of external intents and content URIs, bounded background work, and user-visible loading, empty, and error states. Music and Audiobooks are separate projections over shared storage rather than one mixed library. Unsupported operations should remain no-ops or return a safe result instead of crashing the process.
 
-See [`LICENSE`](LICENSE) and the third-party notices in the relevant modules for the complete licensing information.
+## License and provenance
+
+Auralis is distributed under the **GNU General Public License, version 3 or later**. This repository incorporates and modifies GPL-licensed open-source components. Copyright notices, license headers, `NOTICE` files, and third-party notices remain in the source tree where required; product rebranding does not remove legal attribution.
+
+See [`LICENSE`](LICENSE), [`NOTICE`](NOTICE), and the relevant module notices for complete licensing information. The `media` and `taglib` submodules retain their own upstream license files and pinned revisions.

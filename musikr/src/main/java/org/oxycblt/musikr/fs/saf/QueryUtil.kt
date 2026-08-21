@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2022 Auxio Project
- * QueryUtil.kt is part of Auxio.
+ * QueryUtil.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import android.net.Uri
 
 /**
  * Get a content resolver that will not mangle MediaStore queries on certain devices. See
- * https://github.com/OxygenCobalt/Auxio/issues/50 for more info.
+ * https://github.com/OxygenCobalt/Auralis/issues/50 for more info.
  */
 internal val Context.contentResolverSafe: ContentResolver
     get() = applicationContext.contentResolver

@@ -1,23 +1,25 @@
 # musikr
 
-Musikr is a highly opinionated multithreaded music loader that enables Auxio's advanced music functionality.
-It completely bypasses Android's MediaStore and uses the [storage access framework (SAF)](https://developer.android.com/guide/topics/providers/document-provider)
-and [taglib](https://taglib.org/) to replicate it's functionality with less bugs and more flexibility, further
-expanding it with an advanced music model that leverages the wide variety of tags available in modern extended
-specs.
+`musikr` is Auralis’s local music-library engine. It reads user-selected folders through Android’s Storage Access Framework, parses tags with the pinned TagLib source, interprets multi-value metadata, stores a compact cache, and exposes the domain model consumed by the Music space.
 
-Warning that the API surface is:
-- Extremely unstable, as it's a very thin shim on top of a constantly optimzied and updated music loader
-- Minimized to only what the rest of the app uses or builds on, so you will need to patch it to extend 
-certain components
+The module intentionally does not own Android UI or playback policy. The app layer decides how Music and Audiobooks are projected, while `musikr` provides stable metadata and filesystem primitives for local media.
 
-Feel free to use this library as long as you follow Auxio's GPLv3 license. Note that the license is viral, so
-if you wind up using this in a proprietary project, the entire project must be GPLv3 too.
+## API boundary
 
-If you want to generate some docs for the unstable API, you can run
+This is an internal library with a deliberately small and evolving API. Callers should use the interfaces already exercised by the `app` module rather than depending on implementation details. Changes to tag interpretation, cache serialization, or native bindings require unit tests and a debug build.
+
+## Build and tests
+
+From the repository root, initialize the nested submodules and run:
 
 ```bash
-./gradlew musikr:dokkaGeneratePublicationHtml
+git submodule update --init --recursive
+./gradlew :musikr:test
+./gradlew :app:assembleDebug
 ```
 
-In the project root and it should produce a webpage in `musikr/build/dokka/html`
+Native TagLib output is built for the Android ABIs configured by the module. The pinned `taglib` and `utfcpp` revisions are part of the repository’s reproducible build inputs and must not be replaced by unreviewed system libraries.
+
+## License
+
+`musikr` is distributed under the GNU General Public License, version 3 or later. See the repository `LICENSE`, `NOTICE`, and the module’s vendored third-party notices for complete attribution.

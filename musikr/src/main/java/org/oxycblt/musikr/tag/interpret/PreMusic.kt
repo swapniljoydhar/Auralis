@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Auxio Project
- * PreMusic.kt is part of Auxio.
+ * PreMusic.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ internal data class PreAlbum(
     val uid =
         // Attempt to use a MusicBrainz ID first before falling back to a hashed UID.
         musicBrainzId?.let { Music.UID.musicBrainz(Music.UID.Item.ALBUM, it) }
-            ?: Music.UID.auxio(Music.UID.Item.ALBUM) {
+            ?: Music.UID.auralis(Music.UID.Item.ALBUM) {
                 // Hash based on only names despite the presence of a date to increase stability.
                 // I don't know if there is any situation where an artist will have two albums with
                 // the exact same name, but if there is, I would love to know.
@@ -88,7 +88,7 @@ internal data class PreArtist(val musicBrainzId: UUID?, val name: Name, val rawN
     val uid =
         // Attempt to use a MusicBrainz ID first before falling back to a hashed UID.
         musicBrainzId?.let { Music.UID.musicBrainz(Music.UID.Item.ARTIST, it) }
-            ?: Music.UID.auxio(Music.UID.Item.ARTIST) { update(rawName) }
+            ?: Music.UID.auralis(Music.UID.Item.ARTIST) { update(rawName) }
 }
 
 internal data class PreGenre(val name: Name, val rawName: String?)

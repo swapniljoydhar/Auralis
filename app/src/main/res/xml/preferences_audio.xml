@@ -31,7 +31,7 @@
 
     <PreferenceCategory android:title="@string/set_audiobook_playback">
 
-        <org.oxycblt.auxio.settings.ui.IntListPreference
+        <com.auralis.player.settings.ui.IntListPreference
             app:defaultValue="30"
             app:entries="@array/entries_audiobook_skip_duration"
             app:entryValues="@array/values_audiobook_skip_duration"
@@ -39,7 +39,7 @@
             app:summary="@string/set_audiobook_skip_duration_desc"
             app:title="@string/set_audiobook_skip_duration" />
 
-        <org.oxycblt.auxio.settings.ui.IntListPreference
+        <com.auralis.player.settings.ui.IntListPreference
             app:defaultValue="100"
             app:entries="@array/entries_audiobook_default_speed"
             app:entryValues="@array/values_audiobook_default_speed"
@@ -47,7 +47,7 @@
             app:summary="@string/set_audiobook_default_speed_desc"
             app:title="@string/set_audiobook_default_speed" />
 
-        <org.oxycblt.auxio.settings.ui.IntListPreference
+        <com.auralis.player.settings.ui.IntListPreference
             app:defaultValue="2"
             app:entries="@array/entries_audiobook_auto_rewind"
             app:entryValues="@array/values_audiobook_auto_rewind"
@@ -65,14 +65,14 @@
 
     <PreferenceCategory android:title="@string/set_replay_gain">
 
-        <org.oxycblt.auxio.settings.ui.IntListPreference
+        <com.auralis.player.settings.ui.IntListPreference
             app:defaultValue="@integer/replay_gain_dynamic"
             app:entries="@array/entries_replay_gain"
             app:entryValues="@array/values_replay_gain"
             app:key="@string/set_key_replay_gain"
             app:title="@string/set_replay_gain_mode" />
 
-        <org.oxycblt.auxio.settings.ui.WrappedDialogPreference
+        <com.auralis.player.settings.ui.WrappedDialogPreference
             app:key="@string/set_key_pre_amp"
             app:summary="@string/set_pre_amp_desc"
             app:title="@string/set_pre_amp" />

@@ -16,3 +16,8 @@ captures/
 .kotlin
 .aider*
 .env
+*.log
+*.jks
+*.keystore
+*.p12
+*.idsig

@@ -21,7 +21,7 @@ These should also be logged in the [Issues](https://github.com/swapniljoydhar/Au
 Please keep in mind when requesting a feature:
 - **Has it already been requested?** Make sure request for this feature is not already here.
 - **Has it been already added?** Make sure this feature has not already been added in the most recent release.
-- **Will it be accepted?** Read the [Why Are These Features Missing?](https://github.com/swapniljoydhar/Auxio/wiki/Why-Are-These-Features-Missing%3F) in order to see the likelihood that your request will be implemented.
+- **Will it be accepted?** Read the [Auralis architecture](https://github.com/swapniljoydhar/Auxio/blob/dev/docs/ARCHITECTURE.md) in order to see the likelihood that your request will be implemented.
 
 If you do make a request, provide the following:
 - What is it that you want?
@@ -29,7 +29,7 @@ If you do make a request, provide the following:
 - Why do you think it will benefit everyone's usage of the app?
 
 If you have the knowledge, you can also implement the feature yourself and create a [Pull Request](https://github.com/swapniljoydhar/Auxio/pulls), but its recommended that **you create an issue beforehand to give me a heads up.**
-Its also recommended that you read about [Auralis's Architecture](https://github.com/swapniljoydhar/Auxio/wiki/Architecture) as well to make changes better and more efficient.
+Its also recommended that you read about [Auralis's Architecture](https://github.com/swapniljoydhar/Auxio/blob/dev/docs/ARCHITECTURE.md) as well to make changes better and more efficient.
 
 ## Translations
 Translation support is being reorganized under the Auralis project. Please open an issue in this repository before adding or changing translation resources.
@@ -43,4 +43,4 @@ If you have knowledge of Android/Kotlin, feel free to to contribute to the proje
 - Make sure you stick to Auralis's styling, which should be auto-formatted on every build.
 - Please ***FULLY TEST*** your changes before creating a PR. Untested code will not be merged.
 - Only **Kotlin** will be accepted, except for the case that a UI component must be vendored in the project.
-- Keep your code up the date with the upstream and continue to maintain it after you create the PR. This makes it less of a hassle to merge.
+- Keep your branch up to date with the repository and continue to maintain it after you create the PR. This makes it easier to review and merge.

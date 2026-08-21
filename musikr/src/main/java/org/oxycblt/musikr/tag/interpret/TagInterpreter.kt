@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Auxio Project
- * TagInterpreter.kt is part of Auxio.
+ * TagInterpreter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ private class TagInterpreterImpl(private val interpretation: Interpretation) : T
         val musicBrainzId = song.tags.musicBrainzId?.toUuidOrNull()
         val v363uid =
             musicBrainzId?.let { Music.UID.musicBrainz(Music.UID.Item.SONG, it) }
-                ?: Music.UID.auxio(Music.UID.Item.SONG) {
+                ?: Music.UID.auralis(Music.UID.Item.SONG) {
                     update(songNameOrFileWithoutExtCorrect)
                     update(albumNameOrDir)
                     update(song.tags.date)
@@ -97,7 +97,7 @@ private class TagInterpreterImpl(private val interpretation: Interpretation) : T
         // the broken UID too and maintain compat for that version.
         val v400uid =
             musicBrainzId?.let { Music.UID.musicBrainz(Music.UID.Item.SONG, it) }
-                ?: Music.UID.auxio(Music.UID.Item.SONG) {
+                ?: Music.UID.auralis(Music.UID.Item.SONG) {
                     update(songNameOrFile)
                     update(song.tags.albumName)
                     update(song.tags.date)
@@ -114,7 +114,7 @@ private class TagInterpreterImpl(private val interpretation: Interpretation) : T
 
         val v401uid =
             musicBrainzId?.let { Music.UID.musicBrainz(Music.UID.Item.SONG, it) }
-                ?: Music.UID.auxio(Music.UID.Item.SONG) {
+                ?: Music.UID.auralis(Music.UID.Item.SONG) {
                     update(songNameOrFileWithoutExt)
                     update(albumNameOrDir)
                     update(song.tags.date)

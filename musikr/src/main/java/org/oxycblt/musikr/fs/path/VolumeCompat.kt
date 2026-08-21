@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Auxio Project
- * VolumeCompat.kt is part of Auxio.
+ * VolumeCompat.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,7 +136,7 @@ internal val StorageVolume.mediaStoreVolumeNameCompat: String?
         } else {
             // Replicate API: primary_external if primary storage, lowercase uuid otherwise
             if (isPrimaryCompat) {
-                // "primary_external" is used in all versions that Auxio supports, is safe to use.
+                // "primary_external" is used in all versions that Auralis supports, is safe to use.
                 @Suppress("NewApi") MediaStore.VOLUME_EXTERNAL_PRIMARY
             } else {
                 uuidCompat?.lowercase()

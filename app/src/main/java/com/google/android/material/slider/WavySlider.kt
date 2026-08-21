@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 Auxio Project
- * WavySlider.kt is part of Auxio.
+ * WavySlider.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,12 +38,12 @@ import androidx.core.graphics.withSave
 import androidx.core.view.isVisible
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
+import com.auralis.player.R
 import com.google.android.material.R as MR
 import com.google.android.material.motion.MotionUtils
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import org.oxycblt.auxio.R
 import timber.log.Timber
 
 /**
@@ -543,7 +543,7 @@ constructor(
         waveTransitionAnimation = null
 
         // Use a standard M3 animation
-        // Not using Auxio anim utils due to this being outside the Auxio pkg
+        // Not using Auralis anim utils due to this being outside the Auralis pkg
         // TODO: Could move it inside the pkg honestly
         val springAnimation =
             SpringAnimation(FloatValueHolder(currentAmplitudeFraction)).apply {

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2023 Auxio Project
- * Music.kt is part of Auxio.
+ * Music.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ sealed interface Music {
 
         internal enum class Item(val intCode: Int, val microNamespace: Char) {
             // Item used to be MusicType back when the music module was
-            // part of Auxio, so these old integer codes remain.
+            // part of Auralis, so these old integer codes remain.
             // TODO: Introduce new UID format that removes these.
             SONG(0xA10B, 's'),
             ALBUM(0xA10A, 'a'),
@@ -112,8 +112,8 @@ sealed interface Music {
          * @param namespace Namespace to use in the [Music.UID]'s string representation.
          */
         private enum class Format(val namespace: String, val microNamespace: Char) {
-            /** @see auxio */
-            AUXIO("org.oxycblt.auxio", 'a'),
+            /** @see auralis */
+            AUXIO("com.auralis.player", 'a'),
 
             /** @see musicBrainz */
             MUSICBRAINZ("org.musicbrainz", 'm'),
@@ -129,26 +129,26 @@ sealed interface Music {
 
         companion object {
             /**
-             * Creates an Auxio-style [UID] of random composition. Used if there is no
+             * Creates an Auralis-style [UID] of random composition. Used if there is no
              * non-subjective, unlikely-to-change metadata of the music.
              *
              * @param item The type of [Item] that created this [UID].
              */
-            internal fun auxio(item: Item): UID {
+            internal fun auralis(item: Item): UID {
                 return UID(Format.AUXIO, item, UUID.randomUUID())
             }
 
             /**
-             * Creates an Auxio-style [UID] with a [UUID] composed of a hash of the non-subjective,
-             * unlikely-to-change metadata of the music.
+             * Creates an Auralis-style [UID] with a [UUID] composed of a hash of the
+             * non-subjective, unlikely-to-change metadata of the music.
              *
              * @param item The type of [Item] that created this [UID].
              * @param updates Block to update the [MessageDigest] hash with the metadata of the
              *   item. Make sure the metadata hashed semantically aligns with the format
              *   specification.
-             * @return A new auxio-style [UID].
+             * @return A new auralis-style [UID].
              */
-            internal fun auxio(item: Item, updates: MessageDigest.() -> Unit): UID {
+            internal fun auralis(item: Item, updates: MessageDigest.() -> Unit): UID {
                 val digest =
                     MessageDigest.getInstance("SHA-256").run {
                         updates()

@@ -24,4 +24,4 @@ debug.zip
 
 #### Due diligence
 - [ ] I have read the [Contribution Guidelines](https://github.com/swapniljoydhar/Auxio/blob/dev/.github/CONTRIBUTING.md).
-- [ ] I have read the [Why Are These Features Missing?](https://github.com/swapniljoydhar/Auxio/wiki/Why-Are-These-Features-Missing%3F) page.
+- [ ] I have read the [Auralis architecture](https://github.com/swapniljoydhar/Auxio/blob/dev/docs/ARCHITECTURE.md) page.

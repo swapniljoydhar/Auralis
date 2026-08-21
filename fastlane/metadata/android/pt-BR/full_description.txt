@@ -1,4 +1,4 @@
-Auxio é um reprodutor de música local com uma interface e experiência de usuário rápida e confiável sem os tantos recursos inúteis presentes em outros reprodutores de música. Baseado em bibliotecas modernas de reprodução de mídia, Auxio possui um suporte à biblioteca e qualidade de reprodução superior comparado a outros aplicativos que usam recursos desatualizados do Android. Em resumo, <b>Auxio toca música</b>.
+Auralis é um reprodutor de música local com uma interface e experiência de usuário rápida e confiável sem os tantos recursos inúteis presentes em outros reprodutores de música. Baseado em bibliotecas modernas de reprodução de mídia, Auralis possui um suporte à biblioteca e qualidade de reprodução superior comparado a outros aplicativos que usam recursos desatualizados do Android. Em resumo, <b>Auralis toca música</b>.
 
 <b>Recursos:</b>
 

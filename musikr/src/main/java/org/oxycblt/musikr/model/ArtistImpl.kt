@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Auxio Project
- * ArtistImpl.kt is part of Auxio.
+ * ArtistImpl.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
