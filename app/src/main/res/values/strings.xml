@@ -146,6 +146,9 @@
     <string name="lbl_audiobook_chapter">Audiobook chapter</string>
     <string name="lbl_audiobook_bookmark">Bookmark</string>
     <string name="lbl_audiobook_bookmarks">Bookmarks</string>
+    <string name="lbl_audiobook_bookmarks_for">Bookmarks · %1$s</string>
+    <string name="lbl_audiobook_bookmark_unavailable">Unavailable chapter</string>
+    <string name="msg_audiobook_no_bookmarks">No bookmarks yet.</string>
     <string name="lbl_audiobook_add_bookmark">Add bookmark here</string>
     <string name="msg_audiobook_bookmark_added">Bookmark added</string>
     <string name="lbl_audiobook_no_bookmarks">No bookmarks yet</string>
@@ -160,7 +163,10 @@
     <string name="lbl_audiobook_reset_progress">Reset progress</string>
     <string name="lbl_audiobook_summary">%1$s • %2$d chapters</string>
     <string name="lbl_audiobook_progress">%1$d of %2$d chapters complete</string>
+    <string name="lbl_audiobook_progress_percent">%1$d%% · %2$s listened · %3$s remaining</string>
+    <string name="desc_audiobook_progress_percent">%1$d percent complete, %2$s remaining</string>
     <string name="lbl_audiobook_chapters">Chapters</string>
+    <string name="desc_audiobook_resume">Resume %1$s</string>
     <string name="lbl_audiobook_embedded_chapters">Embedded chapters</string>
     <string name="lbl_audiobook_file_chapters">Chapter files</string>
     <string name="lbl_audiobook_embedded_chapter">Embedded chapter</string>

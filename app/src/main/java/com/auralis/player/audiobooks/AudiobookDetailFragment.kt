@@ -38,6 +38,7 @@ import androidx.appcompat.R as AR
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.auralis.player.R
 import com.auralis.player.image.CoverView
@@ -101,7 +102,20 @@ class AudiobookDetailFragment : Fragment() {
     private suspend fun render(book: AudiobookBook) {
         val root = content ?: return
         val progress = progressRepository.getForBook(book.key).associateBy { it.chapterUid }
-        val completed = progress.values.count { it.completed }
+        val listeningSummary =
+            AudiobookListeningState.summarize(
+                book.chapters.map { chapter ->
+                    progress[chapter.uid]?.let {
+                        AudiobookProgressInput(
+                            chapter.durationMs,
+                            it.positionMs,
+                            it.completed,
+                            it.updatedMs,
+                        )
+                    } ?: AudiobookProgressInput(chapter.durationMs, 0L, false, 0L)
+                }
+            )
+        val completed = listeningSummary.completedChapters
         val resumeChapter = book.chapters.firstOrNull { progress[it.uid]?.completed != true }
         val hasSavedProgress = progress.values.any { it.positionMs > 0L || it.completed }
         val colors = requireContext()
@@ -161,18 +175,28 @@ class AudiobookDetailFragment : Fragment() {
 
         root.addView(
             LinearProgressIndicator(colors).apply {
-                max = book.chapterCount.coerceAtLeast(1)
-                this.progress = completed.coerceIn(0, max)
+                max = 100
+                this.progress = listeningSummary.percentage
                 isIndeterminate = false
                 contentDescription =
-                    getString(R.string.desc_audiobook_progress, completed, book.chapterCount)
+                    getString(
+                        R.string.desc_audiobook_progress_percent,
+                        listeningSummary.percentage,
+                        listeningSummary.remainingMs.formatDurationMs(false),
+                    )
                 layoutParams = fullWidthParams(bottom = 4)
             }
         )
 
         root.addView(
             TextView(colors).apply {
-                text = getString(R.string.lbl_audiobook_progress, completed, book.chapterCount)
+                text =
+                    getString(
+                        R.string.lbl_audiobook_progress_percent,
+                        listeningSummary.percentage,
+                        listeningSummary.listenedMs.formatDurationMs(false),
+                        listeningSummary.remainingMs.formatDurationMs(false),
+                    )
                 textSize = 14f
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setTextColor(
@@ -192,6 +216,20 @@ class AudiobookDetailFragment : Fragment() {
                     }
                 isAllCaps = false
                 setOnClickListener { startBook(book, progress) }
+                layoutParams = fullWidthParams(bottom = 8)
+            }
+        )
+
+        root.addView(
+            MaterialButton(colors).apply {
+                text = getString(R.string.lbl_audiobook_bookmarks)
+                isAllCaps = false
+                setOnClickListener {
+                    findNavController()
+                        .navigate(
+                            AudiobookDetailFragmentDirections.showAudiobookBookmarks(book.key)
+                        )
+                }
                 layoutParams = fullWidthParams(bottom = 8)
             }
         )

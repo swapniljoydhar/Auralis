@@ -40,7 +40,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.auralis.player.R
 import com.auralis.player.audiobooks.AudiobookBook
+import com.auralis.player.audiobooks.AudiobookLifecycle
+import com.auralis.player.audiobooks.AudiobookListeningState
+import com.auralis.player.audiobooks.AudiobookListeningSummary
 import com.auralis.player.audiobooks.AudiobookProgress
+import com.auralis.player.audiobooks.AudiobookProgressInput
 import com.auralis.player.audiobooks.AudiobookProgressRepository
 import com.auralis.player.databinding.FragmentHomeListBinding
 import com.auralis.player.home.HomeFragmentDirections
@@ -49,7 +53,12 @@ import com.auralis.player.image.CoverView
 import com.auralis.player.music.IndexingState
 import com.auralis.player.music.MusicViewModel
 import com.auralis.player.playback.formatDurationMs
+import com.auralis.player.playback.state.PlaybackCommand
+import com.auralis.player.playback.state.PlaybackDomain
+import com.auralis.player.playback.state.PlaybackStateManager
+import com.auralis.player.playback.state.ShuffleMode
 import com.auralis.player.util.collectImmediately
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -61,9 +70,11 @@ class AudiobookListFragment : Fragment() {
     private val musicModel: MusicViewModel by activityViewModels()
 
     @Inject lateinit var progressRepository: AudiobookProgressRepository
+    @Inject lateinit var commandFactory: PlaybackCommand.Factory
+    @Inject lateinit var playbackManager: PlaybackStateManager
 
     private var binding: FragmentHomeListBinding? = null
-    private val adapter = AudiobookAdapter(::openBook)
+    private val adapter = AudiobookAdapter(::openBook, ::resumeBook)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -127,15 +138,34 @@ class AudiobookListFragment : Fragment() {
         findNavController().navigate(HomeFragmentDirections.showAudiobook(book.key))
     }
 
+    private fun resumeBook(book: AudiobookBook, progress: Map<Music.UID, AudiobookProgress>) {
+        val chapter = book.chapters.firstOrNull { progress[it.uid]?.completed != true } ?: return
+        val positionMs = progress[chapter.uid]?.positionMs ?: 0L
+        commandFactory
+            .songs(
+                songs = book.chapters.map { it.song },
+                shuffle = ShuffleMode.OFF,
+                startSong = chapter.song,
+                startPositionMs = positionMs,
+                domain = PlaybackDomain.AUDIOBOOKS,
+            )
+            ?.let(playbackManager::play)
+    }
+
     private sealed interface AudiobookRow {
         data class Header(val title: String) : AudiobookRow
 
-        data class Book(val book: AudiobookBook, val progress: Map<Music.UID, AudiobookProgress>) :
-            AudiobookRow
+        data class Book(
+            val book: AudiobookBook,
+            val progress: Map<Music.UID, AudiobookProgress>,
+            val summary: AudiobookListeningSummary,
+        ) : AudiobookRow
     }
 
-    private class AudiobookAdapter(private val onClick: (AudiobookBook) -> Unit) :
-        ListAdapter<AudiobookRow, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
+    private class AudiobookAdapter(
+        private val onClick: (AudiobookBook) -> Unit,
+        private val onResume: (AudiobookBook, Map<Music.UID, AudiobookProgress>) -> Unit,
+    ) : ListAdapter<AudiobookRow, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
         private var books = emptyList<AudiobookBook>()
         private var progress = emptyMap<String, Map<Music.UID, AudiobookProgress>>()
 
@@ -161,7 +191,7 @@ class AudiobookListFragment : Fragment() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
             when (viewType) {
                 VIEW_TYPE_HEADER -> HeaderViewHolder(parent)
-                VIEW_TYPE_BOOK -> AudiobookViewHolder(parent, onClick)
+                VIEW_TYPE_BOOK -> AudiobookViewHolder(parent, onClick, onResume)
                 else -> error("Unknown audiobook row type: $viewType")
             }
 
@@ -173,23 +203,68 @@ class AudiobookListFragment : Fragment() {
         }
 
         private fun submitRows() {
-            val current =
-                books.filter { book ->
-                    progress[book.key].orEmpty().values.any { it.positionMs > 0L || it.completed }
+            val summaries =
+                books.associateWith { book ->
+                    val saved = progress[book.key].orEmpty()
+                    AudiobookListeningState.summarize(
+                        book.chapters.map { chapter ->
+                            saved[chapter.uid]?.let {
+                                AudiobookProgressInput(
+                                    chapter.durationMs,
+                                    it.positionMs,
+                                    it.completed,
+                                    it.updatedMs,
+                                )
+                            } ?: AudiobookProgressInput(chapter.durationMs, 0L, false, 0L)
+                        }
+                    )
                 }
-            val notStarted = books - current.toSet()
+            val current =
+                books
+                    .filter { summaries.getValue(it).lifecycle == AudiobookLifecycle.CURRENT }
+                    .sortedByDescending { summaries.getValue(it).latestUpdatedMs }
+            val finished =
+                books
+                    .filter { summaries.getValue(it).lifecycle == AudiobookLifecycle.FINISHED }
+                    .sortedByDescending { summaries.getValue(it).latestUpdatedMs }
+            val notStarted =
+                books.filter { summaries.getValue(it).lifecycle == AudiobookLifecycle.NOT_STARTED }
             submitList(
                 buildList {
                     if (current.isNotEmpty()) {
                         add(AudiobookRow.Header("Current"))
                         current.forEach { book ->
-                            add(AudiobookRow.Book(book, progress[book.key].orEmpty()))
+                            add(
+                                AudiobookRow.Book(
+                                    book,
+                                    progress[book.key].orEmpty(),
+                                    summaries.getValue(book),
+                                )
+                            )
                         }
                     }
                     if (notStarted.isNotEmpty()) {
                         add(AudiobookRow.Header("Not started"))
                         notStarted.forEach { book ->
-                            add(AudiobookRow.Book(book, progress[book.key].orEmpty()))
+                            add(
+                                AudiobookRow.Book(
+                                    book,
+                                    progress[book.key].orEmpty(),
+                                    summaries.getValue(book),
+                                )
+                            )
+                        }
+                    }
+                    if (finished.isNotEmpty()) {
+                        add(AudiobookRow.Header("Finished"))
+                        finished.forEach { book ->
+                            add(
+                                AudiobookRow.Book(
+                                    book,
+                                    progress[book.key].orEmpty(),
+                                    summaries.getValue(book),
+                                )
+                            )
                         }
                     }
                 }
@@ -212,6 +287,7 @@ class AudiobookListFragment : Fragment() {
         private class AudiobookViewHolder(
             parent: ViewGroup,
             private val onClick: (AudiobookBook) -> Unit,
+            private val onResume: (AudiobookBook, Map<Music.UID, AudiobookProgress>) -> Unit,
         ) :
             RecyclerView.ViewHolder(
                 LinearLayout(parent.context).apply {
@@ -227,6 +303,7 @@ class AudiobookListFragment : Fragment() {
             private val cover = CoverView(parent.context)
             private val title = TextView(parent.context).apply { textSize = 17f }
             private val subtitle = TextView(parent.context).apply { textSize = 14f }
+            private val resume = MaterialButton(parent.context).apply { isAllCaps = false }
 
             init {
                 root.addView(
@@ -241,6 +318,10 @@ class AudiobookListFragment : Fragment() {
                     },
                     LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f),
                 )
+                root.addView(
+                    resume,
+                    LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 48.dp()),
+                )
             }
 
             fun bind(row: AudiobookRow.Book) {
@@ -254,16 +335,24 @@ class AudiobookListFragment : Fragment() {
                 )
                 title.text = book.title
                 val author = book.author?.takeIf { it.isNotBlank() }?.let { "$it · " }.orEmpty()
-                val isCurrent = row.progress.values.any { it.positionMs > 0L || it.completed }
-                val progress = row.progress.values.count { it.completed }
                 subtitle.text =
-                    if (isCurrent) {
-                        "Continue · $progress of ${book.chapterCount} complete"
-                    } else {
-                        "$author${book.chapterCount} chapters · ${book.totalDurationMs.formatDurationMs(false)}"
+                    when (row.summary.lifecycle) {
+                        AudiobookLifecycle.CURRENT ->
+                            "${row.summary.percentage}% · ${row.summary.remainingMs.formatDurationMs(false)} remaining"
+                        AudiobookLifecycle.FINISHED ->
+                            "Finished · ${book.totalDurationMs.formatDurationMs(false)}"
+                        AudiobookLifecycle.NOT_STARTED ->
+                            "$author${book.chapterCount} chapters · ${book.totalDurationMs.formatDurationMs(false)}"
                     }
                 root.setOnClickListener { onClick(book) }
                 root.contentDescription = book.title
+                resume.visibility =
+                    if (row.summary.lifecycle == AudiobookLifecycle.CURRENT) View.VISIBLE
+                    else View.GONE
+                resume.text = context.getString(R.string.lbl_audiobook_resume)
+                resume.contentDescription =
+                    context.getString(R.string.desc_audiobook_resume, book.title)
+                resume.setOnClickListener { onResume(book, row.progress) }
             }
         }
 

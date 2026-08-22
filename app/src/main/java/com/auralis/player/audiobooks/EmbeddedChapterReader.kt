@@ -24,6 +24,7 @@ package com.auralis.player.audiobooks
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -33,13 +34,25 @@ data class EmbeddedChapter(val startMs: Long, val title: String)
 
 /** Reads ID3v2 `CHAP` frames embedded in one local MP3 file. */
 class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val context: Context) {
-    suspend fun read(song: Song): List<EmbeddedChapter> =
-        withContext(Dispatchers.IO) {
-            runCatching {
-                    context.contentResolver.openInputStream(song.uri)?.use(::readChapters).orEmpty()
-                }
-                .getOrDefault(emptyList())
+    private val cache = ConcurrentHashMap<String, List<EmbeddedChapter>>()
+
+    suspend fun read(song: Song): List<EmbeddedChapter> {
+        val key = song.uid.toString()
+        cache[key]?.let {
+            return it
         }
+        return withContext(Dispatchers.IO) {
+            val chapters =
+                runCatching {
+                        context.contentResolver
+                            .openInputStream(song.uri)
+                            ?.use(::readChapters)
+                            .orEmpty()
+                    }
+                    .getOrDefault(emptyList())
+            cache.putIfAbsent(key, chapters) ?: chapters
+        }
+    }
 
     private fun readChapters(input: java.io.InputStream): List<EmbeddedChapter> {
         val header = readExact(input, 10) ?: return emptyList()

@@ -37,6 +37,7 @@ data class AudiobookBookmark(
     val chapterUid: Music.UID,
     val positionMs: Long,
     val createdMs: Long,
+    val embeddedChapterStartMs: Long?,
 )
 
 @Singleton
@@ -51,13 +52,19 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
             .filter { it.bookKey == bookKey }
             .sortedBy { it.createdMs }
 
-    fun add(bookKey: String, chapterUid: Music.UID, positionMs: Long) {
+    fun add(
+        bookKey: String,
+        chapterUid: Music.UID,
+        positionMs: Long,
+        embeddedChapterStartMs: Long? = null,
+    ) {
         val bookmark =
             AudiobookBookmark(
                 bookKey = bookKey,
                 chapterUid = chapterUid,
                 positionMs = positionMs.coerceAtLeast(0L),
                 createdMs = System.currentTimeMillis(),
+                embeddedChapterStartMs = embeddedChapterStartMs?.coerceAtLeast(0L),
             )
         val encoded = preferences.getStringSet(KEY_BOOKMARKS, emptySet()).orEmpty().toMutableSet()
         if (
@@ -87,12 +94,13 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
                 bookmark.chapterUid.toString(),
                 bookmark.positionMs.toString(),
                 bookmark.createdMs.toString(),
+                bookmark.embeddedChapterStartMs?.toString().orEmpty(),
             )
             .joinToString(DELIMITER)
 
     private fun decode(value: String): AudiobookBookmark? {
         val parts = value.split(DELIMITER)
-        if (parts.size != 4) return null
+        if (parts.size !in 4..5) return null
         val uid = Music.UID.fromString(parts[1]) ?: return null
         val bookKey =
             runCatching { String(Base64.decode(parts[0], Base64.NO_WRAP), Charsets.UTF_8) }
@@ -102,6 +110,7 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
             chapterUid = uid,
             positionMs = parts[2].toLongOrNull()?.coerceAtLeast(0L) ?: return null,
             createdMs = parts[3].toLongOrNull() ?: return null,
+            embeddedChapterStartMs = parts.getOrNull(4)?.toLongOrNull()?.coerceAtLeast(0L),
         )
     }
 

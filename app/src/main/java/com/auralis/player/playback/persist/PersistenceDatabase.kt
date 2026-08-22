@@ -51,7 +51,7 @@ import org.oxycblt.musikr.Music
             DomainQueueHeapItem::class,
             DomainQueueMappingItem::class,
         ],
-    version = 40,
+    version = 41,
     exportSchema = false,
 )
 @TypeConverters(Music.UID.TypeConverters::class)
@@ -161,6 +161,14 @@ abstract class PersistenceDatabase : RoomDatabase() {
                         .trimIndent()
                 )
             }
+
+        /** Adds the optional embedded-ID3 chapter start for one-file audiobook location context. */
+        val MIGRATION_40_41 =
+            Migration(40, 41) {
+                it.execSQL(
+                    "ALTER TABLE AudiobookProgressEntity ADD COLUMN embeddedChapterStartMs INTEGER"
+                )
+            }
     }
 }
 
@@ -256,6 +264,7 @@ data class AudiobookProgressEntity(
     val positionMs: Long,
     val completed: Boolean,
     val updatedMs: Long,
+    val embeddedChapterStartMs: Long?,
 )
 
 @Dao

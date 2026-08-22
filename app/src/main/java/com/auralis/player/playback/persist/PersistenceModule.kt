@@ -53,6 +53,7 @@ class PersistenceRoomModule {
                 PersistenceDatabase.MIGRATION_27_32,
                 PersistenceDatabase.MIGRATION_38_39,
                 PersistenceDatabase.MIGRATION_39_40,
+                PersistenceDatabase.MIGRATION_40_41,
             )
             .build()
 

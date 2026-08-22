@@ -50,6 +50,22 @@ class AudiobookProgressRepositoryTest {
         assertTrue(dao.saved!!.completed)
     }
 
+    @Test
+    fun validEmbeddedChapterLocationIsStoredWithProgress() = runBlocking {
+        val dao = RecordingDao()
+        AudiobookProgressRepository(dao)
+            .save(
+                "book",
+                chapterUid,
+                90_000L,
+                180_000L,
+                embeddedChapterStartMs = 60_000L,
+                updatedMs = 1L,
+            )
+
+        assertTrue(dao.saved?.embeddedChapterStartMs == 60_000L)
+    }
+
     private class RecordingDao : AudiobookProgressDao {
         var saved: AudiobookProgressEntity? = null
 

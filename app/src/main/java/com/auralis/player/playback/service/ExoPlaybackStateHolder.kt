@@ -45,6 +45,7 @@ import com.auralis.player.audiobooks.AudiobookCatalog
 import com.auralis.player.audiobooks.AudiobookPlaybackController
 import com.auralis.player.audiobooks.AudiobookProgressRepository
 import com.auralis.player.audiobooks.AudiobookSettings
+import com.auralis.player.audiobooks.EmbeddedChapterReader
 import com.auralis.player.image.ImageSettings
 import com.auralis.player.music.MusicRepository
 import com.auralis.player.playback.PlaybackSettings
@@ -82,6 +83,7 @@ class ExoPlaybackStateHolder(
     private val playbackManager: PlaybackStateManager,
     private val persistenceRepository: PersistenceRepository,
     private val audiobookProgressRepository: AudiobookProgressRepository,
+    private val embeddedChapterReader: EmbeddedChapterReader,
     private val audiobookPlaybackController: AudiobookPlaybackController,
     private val audiobookSettings: AudiobookSettings,
     private val playbackSettings: PlaybackSettings,
@@ -770,6 +772,8 @@ class ExoPlaybackStateHolder(
             chapterUid = song.uid,
             positionMs = positionMs,
             durationMs = song.durationMs,
+            embeddedChapterStartMs =
+                embeddedChapterReader.read(song).lastOrNull { it.startMs <= positionMs }?.startMs,
         )
     }
 
@@ -844,6 +848,7 @@ class ExoPlaybackStateHolder(
         private val playbackManager: PlaybackStateManager,
         private val persistenceRepository: PersistenceRepository,
         private val audiobookProgressRepository: AudiobookProgressRepository,
+        private val embeddedChapterReader: EmbeddedChapterReader,
         private val audiobookPlaybackController: AudiobookPlaybackController,
         private val audiobookSettings: AudiobookSettings,
         private val playbackSettings: PlaybackSettings,
@@ -892,6 +897,7 @@ class ExoPlaybackStateHolder(
                 playbackManager,
                 persistenceRepository,
                 audiobookProgressRepository,
+                embeddedChapterReader,
                 audiobookPlaybackController,
                 audiobookSettings,
                 playbackSettings,

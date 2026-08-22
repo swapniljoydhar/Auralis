@@ -417,12 +417,21 @@ class PlaybackPanelFragment :
     private fun bookmarkCurrentPosition() {
         val currentSong = playbackManager.currentSong ?: return
         if (playbackManager.domain != PlaybackDomain.AUDIOBOOKS) return
-        audiobookBookmarkRepository.add(
-            AudiobookCatalog.bookKey(currentSong),
-            currentSong.uid,
-            playbackManager.progression.calculateElapsedPositionMs(),
-        )
-        requireContext().showToast(R.string.msg_audiobook_bookmark_added)
+        val positionMs = playbackManager.progression.calculateElapsedPositionMs()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val embeddedChapterStartMs =
+                embeddedChapterReader
+                    .read(currentSong)
+                    .lastOrNull { it.startMs <= positionMs }
+                    ?.startMs
+            audiobookBookmarkRepository.add(
+                AudiobookCatalog.bookKey(currentSong),
+                currentSong.uid,
+                positionMs,
+                embeddedChapterStartMs,
+            )
+            requireContext().showToast(R.string.msg_audiobook_bookmark_added)
+        }
     }
 
     private fun showSleepPicker() {

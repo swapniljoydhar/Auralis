@@ -36,6 +36,7 @@ data class AudiobookProgress(
     val positionMs: Long,
     val completed: Boolean,
     val updatedMs: Long,
+    val embeddedChapterStartMs: Long?,
 )
 
 /**
@@ -56,6 +57,7 @@ class AudiobookProgressRepository @Inject constructor(private val dao: Audiobook
         chapterUid: Music.UID,
         positionMs: Long,
         durationMs: Long,
+        embeddedChapterStartMs: Long? = null,
         updatedMs: Long = System.currentTimeMillis(),
     ) =
         withContext(Dispatchers.IO) {
@@ -73,6 +75,10 @@ class AudiobookProgressRepository @Inject constructor(private val dao: Audiobook
                     positionMs = safePosition,
                     completed = completed,
                     updatedMs = updatedMs,
+                    embeddedChapterStartMs =
+                        embeddedChapterStartMs?.coerceAtLeast(0L)?.takeIf {
+                            safeDuration <= 0L || it < safeDuration
+                        },
                 )
             )
         }
@@ -88,6 +94,7 @@ class AudiobookProgressRepository @Inject constructor(private val dao: Audiobook
             positionMs = entity.positionMs,
             completed = entity.completed,
             updatedMs = entity.updatedMs,
+            embeddedChapterStartMs = entity.embeddedChapterStartMs,
         )
     }
 

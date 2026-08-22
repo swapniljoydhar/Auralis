@@ -102,6 +102,18 @@
         <argument
             android:name="bookKey"
             app:argType="string" />
+        <action
+            android:id="@+id/show_audiobook_bookmarks"
+            app:destination="@id/audiobook_bookmarks_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/audiobook_bookmarks_fragment"
+        android:name="com.auralis.player.audiobooks.AudiobookBookmarksFragment"
+        android:label="audiobook_bookmarks_fragment">
+        <argument
+            android:name="bookKey"
+            app:argType="string" />
     </fragment>
 
     <dialog
