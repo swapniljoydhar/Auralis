@@ -55,3 +55,6 @@
 - [x] Refine Audiobooks-only loading, empty, finished, metadata, and long-title presentation with calm Auralis-specific treatment.
 - [x] Add a focused regression suite proving Audiobooks folder scope cannot alter Music library snapshots.
 - [x] Extend conservative local Audiobooks classification to supported M4A, OGG, OGA, and OPUS formats without admitting ordinary Music.
+- [x] Audit and fix confirmed M4A, OGG, OGA, and OPUS parity gaps across local indexing, metadata, playback, chapters, progress, and bookmarks.
+- [x] Strengthen Music/Audiobooks isolation coverage for repeated and concurrent shared-library snapshot refreshes.
+- [x] Document the verified Auralis 4.1.17 Audiobooks discovery and P0-P2 listening flow.

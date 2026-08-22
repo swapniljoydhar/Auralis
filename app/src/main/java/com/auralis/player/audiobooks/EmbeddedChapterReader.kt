@@ -32,7 +32,7 @@ import org.oxycblt.musikr.Song
 
 data class EmbeddedChapter(val startMs: Long, val title: String)
 
-/** Reads ID3v2 `CHAP` frames embedded in one local MP3 file. */
+/** Reads embedded chapters from local ID3v2 `CHAP` and MP4 `chpl` metadata. */
 class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val context: Context) {
     private val cache = ConcurrentHashMap<String, List<EmbeddedChapter>>()
 
@@ -55,15 +55,22 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
     }
 
     private fun readChapters(input: java.io.InputStream): List<EmbeddedChapter> {
-        val header = readExact(input, 10) ?: return emptyList()
+        val buffered = input.buffered()
+        buffered.mark(ID3_HEADER_BYTES)
+        val header = readExact(buffered, ID3_HEADER_BYTES) ?: return emptyList()
         if (!header.copyOfRange(0, 3).contentEquals("ID3".toByteArray())) {
-            return emptyList()
+            buffered.reset()
+            return if (header.copyOfRange(4, 8).contentEquals("ftyp".toByteArray())) {
+                Mp4ChapterReader.read(buffered)
+            } else {
+                emptyList()
+            }
         }
         val version = header[3].toInt() and 0xFF
         if (version !in 3..4) return emptyList()
         val payloadSize = synchsafeInt(header, 6)
         if (payloadSize <= 0 || payloadSize > MAX_TAG_BYTES) return emptyList()
-        val payload = readExact(input, payloadSize) ?: return emptyList()
+        val payload = readExact(buffered, payloadSize) ?: return emptyList()
 
         var offset =
             if ((header[5].toInt() and 0x40) != 0) extendedHeaderSize(payload, version) else 0
@@ -149,6 +156,7 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
 
     private companion object {
         const val MAX_TAG_BYTES = 16 * 1024 * 1024
+        const val ID3_HEADER_BYTES = 10
         const val FRAME_HEADER_BYTES = 10
         const val CHAPTER_HEADER_BYTES = 17
     }

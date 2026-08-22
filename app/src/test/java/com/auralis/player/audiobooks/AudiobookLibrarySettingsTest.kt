@@ -22,6 +22,10 @@
  
 package com.auralis.player.audiobooks
 
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotSame
@@ -106,5 +110,46 @@ class AudiobookLibrarySettingsTest {
 
         assertEquals(musicSnapshot, audiobookProjection)
         assertNotSame(musicSnapshot, audiobookProjection)
+    }
+
+    @Test
+    fun concurrentFolderProjectionsNeverMutateMusicSnapshot() {
+        val musicSnapshot =
+            List(128) { index ->
+                "/library/${if (index % 2 == 0) "Audiobooks" else "Music"}/$index"
+            }
+        val expectedSnapshot = musicSnapshot.toList()
+        val selectedFolders = musicSnapshot.filter { it.contains("/Audiobooks/") }.toSet()
+        val start = CountDownLatch(1)
+        val complete = CountDownLatch(8)
+        val failures = ConcurrentLinkedQueue<String>()
+
+        repeat(8) {
+            thread(start = true) {
+                start.await()
+                repeat(200) {
+                    val projection =
+                        AudiobookFolderScope.filterSnapshot(
+                            snapshot = musicSnapshot,
+                            enabled = true,
+                            selectedFolders = selectedFolders,
+                        ) {
+                            it
+                        }
+                    if (projection.any { it !in selectedFolders }) {
+                        failures += "Audiobooks projection included an unselected Music entry"
+                    }
+                    if (projection === musicSnapshot) {
+                        failures += "Audiobooks projection reused the Music snapshot"
+                    }
+                }
+                complete.countDown()
+            }
+        }
+
+        start.countDown()
+        assertTrue("Concurrent projections did not finish", complete.await(5, TimeUnit.SECONDS))
+        assertTrue(failures.joinToString(), failures.isEmpty())
+        assertEquals(expectedSnapshot, musicSnapshot)
     }
 }

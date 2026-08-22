@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Auralis Temporary Release, O=Auralis, C=US
+Signer #1 certificate SHA-256 digest: d3183db8e81539e81fcbb408205a5d182c1915d84925ec1c50156dfd51b095fa
+Signer #1 certificate SHA-1 digest: eaf67ddf6fc65babc804e665074cdcb67a00b378
+Signer #1 certificate MD5 digest: 429a596eb9135d1d020d3de00d8dd93c
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 4096
+Signer #1 public key SHA-256 digest: e3cc5cf7fb3feec0c9c554812ac4c4f7887a75eef97b7614d31a30e46ca348ee
+Signer #1 public key SHA-1 digest: 2266865c8ea893af23170f7757d2410f2c00e6aa
+Signer #1 public key MD5 digest: 927cd452e8596b04a458b207bb5a19ad
