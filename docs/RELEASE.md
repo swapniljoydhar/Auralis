@@ -1,17 +1,19 @@
 # Auralis Release Verification
 
-The current verified release artifact is `artifacts/auralis-4.1.20-release-signed.apk`. It was built from the repository’s minified `release` variant with the pinned Android SDK, NDK `28.2.13676358`, CMake `3.22.1`, taglib, and utfcpp inputs initialized.
+The current verified release artifact is `artifacts/auralis-4.1.21-material3-release-signed.apk`. It was built from the repository’s minified `release` variant with the pinned Android SDK, NDK `28.2.13676358`, CMake `3.22.1`, taglib, and utfcpp inputs initialized.
 
-Version **4.1.20** adds three local-folder organization strategies exclusively to the Audiobooks library. **Each book folder** keeps every physical book directory separate, even if unrelated books contain matching album tags. **Selected folder is one book** treats all supported local audio nested below the longest matching chosen root as one audiobook. **Author and book folders** recognizes the local structure `<selected root>/<author>/<book>/…` and derives the book and author context from those directory levels; malformed or shallower paths safely fall back to their immediate book directory. Selected roots remain available as grouping context even when the existing selected-folder filter is disabled, while the filter itself continues to control which local audio is admitted to Audiobooks. Music settings, Music library projections, and persisted Music snapshots remain unchanged.
+Version **4.1.21** is the first Auralis Material 3 experience release. It retains the existing native Material 3 dependency and theme contract, then makes the shared hierarchy more intentional across Music and Audiobooks: the home app bar now states the active library context; indexing, empty states, Music detail, search, mini-player, and expanded-player surfaces use clearer tonal roles; and the long-form Audiobook detail and bookmarks screens use Material 3 type and action hierarchy. The release preserves local-only media, explicit `PlaybackDomain`, independent Music/Audiobooks snapshots, and domain-pure queues.
+
+The Auralis identity is now vector-first and Material 3-ready. An original open-listening-page mark replaces the prior detailed raster foreground in the adaptive launcher icon, legacy launcher fallback, Android themed monochrome layer, Android 12+ splash, and compact widget glyph. The mark represents Music listening and Audiobook storytelling without reproducing Voice, Auxio, or Google product branding.
 
 The APK passed `apksigner verify` using APK Signature Schemes v2 and v3. Its certificate SHA-256 fingerprint is:
 
 ```text
-673c6e77630e358da43a0852e3a4b06654e6911b4c49adf8ad503b06f52faee2
+174a8b0c7ba4f7a86293350a1b4d7d84388cb268ded7d6ca541acd6f75708ddb
 ```
 
-The SHA-256 checksum is recorded in [`../artifacts/SHA256SUMS.txt`](../artifacts/SHA256SUMS.txt) and the release-specific sidecar file. The final verified checksum is `9b9c84fedcda981104ee65dd874ed1d8782d538c6a1a2f064bcd6ed4a018ca15`.
+The SHA-256 checksum is recorded in [`../artifacts/SHA256SUMS.txt`](../artifacts/SHA256SUMS.txt) and the release-specific sidecar file. The final verified checksum is `12c3a9e23c5e71653c7c8e1857deffde11f8a39e09c4ea086a431799f7ad8a89`.
 
 The signing key was generated outside the repository only for this verification artifact and was deleted after signing. It is **not** a production update key. Because previous Auralis repair releases were also signed with deleted ephemeral keys, this APK must be installed after uninstalling an older ephemeral-key build. Future seamless installable updates require a securely managed, persistent release key whose fingerprint is published before distribution.
 
-The 4.1.20 release gate completed successfully with the app and `musikr` unit tests, debug lint, `spotlessCheck`, and both debug and minified release builds. Focused organization tests additionally cover unknown preference fallback; separate-directory keys; selected-root grouping; author/book hierarchy resolution; safe malformed-path fallback; and Music snapshot isolation during concurrent Audiobooks refreshes.
+The 4.1.21 release gate completed successfully with the app and `musikr` unit tests, debug lint, `spotlessCheck`, and both debug and minified release builds. Focused existing playback-domain, Music snapshot-isolation, Audiobooks organization, chapter, bookmark, and lifecycle tests remain part of the passing suite. Static verification does not replace a physical-device review of launcher masks, Android themed icons, large-font layouts, TalkBack traversal, or the user’s own local media library.

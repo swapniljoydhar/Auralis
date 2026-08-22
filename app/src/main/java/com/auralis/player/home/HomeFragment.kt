@@ -281,6 +281,14 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
     private fun updateCurrentTab(tabType: MusicType) {
         updateModeAction(tabType)
         val binding = requireBinding()
+        binding.homeNormalToolbar.title =
+            getString(
+                if (tabType == MusicType.AUDIOBOOKS) {
+                    R.string.lbl_audiobook_mode
+                } else {
+                    R.string.lbl_music_mode
+                }
+            )
 
         // Update the scrolling view in AppBarLayout to align with the current tab's
         // scrolling state. This prevents the lift state from being confused as one

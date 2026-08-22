@@ -23,6 +23,7 @@
                 android:id="@+id/search_normal_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?attr/colorSurfaceContainerHigh"
                 app:navigationIcon="@drawable/ic_back_24">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -51,9 +52,10 @@
         </com.auralis.player.ui.MultiToolbar>
 
         <HorizontalScrollView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_gravity="center"
             android:layout_height="wrap_content"
+            android:background="?attr/colorSurfaceContainerLow"
             android:scrollbars="none">
 
             <com.google.android.material.chip.ChipGroup

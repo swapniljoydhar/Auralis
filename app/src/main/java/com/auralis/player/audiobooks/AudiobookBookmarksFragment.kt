@@ -23,6 +23,7 @@
 package com.auralis.player.audiobooks
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -41,7 +42,9 @@ import com.auralis.player.playback.state.PlaybackCommand
 import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.ShuffleMode
+import com.google.android.material.R as MR
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -68,8 +71,20 @@ class AudiobookBookmarksFragment : Fragment() {
     ): View {
         val context = requireContext()
         adapter = BookmarkAdapter(::resumeBookmark, ::removeBookmark)
-        title = TextView(context).apply { textSize = 24f }
-        empty = TextView(context).apply { text = getString(R.string.msg_audiobook_no_bookmarks) }
+        title =
+            TextView(context).apply {
+                setTextAppearance(MR.style.TextAppearance_Material3_HeadlineSmall)
+            }
+        empty =
+            TextView(context).apply {
+                text = getString(R.string.msg_audiobook_no_bookmarks)
+                setTextAppearance(MR.style.TextAppearance_Material3_BodyLarge)
+                setTextColor(
+                    MaterialColors.getColor(context, MR.attr.colorOnSurfaceVariant, Color.GRAY)
+                )
+                gravity = Gravity.CENTER_HORIZONTAL
+                setPadding(0, 24.dp(), 0, 0)
+            }
         recycler =
             RecyclerView(context).apply {
                 layoutManager = LinearLayoutManager(context)
@@ -78,6 +93,7 @@ class AudiobookBookmarksFragment : Fragment() {
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20.dp(), 24.dp(), 20.dp(), 24.dp())
+            setBackgroundColor(MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK))
             addView(title)
             addView(empty)
             addView(recycler, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
@@ -169,10 +185,29 @@ class AudiobookBookmarksFragment : Fragment() {
         override fun getItemCount() = rows.size
 
         private class ViewHolder(val root: LinearLayout) : RecyclerView.ViewHolder(root) {
-            val title = TextView(root.context).apply { textSize = 17f }
-            val subtitle = TextView(root.context).apply { textSize = 14f }
-            val resume = MaterialButton(root.context).apply { isAllCaps = false }
-            val remove = MaterialButton(root.context).apply { isAllCaps = false }
+            val title =
+                TextView(root.context).apply {
+                    setTextAppearance(MR.style.TextAppearance_Material3_TitleMedium)
+                }
+            val subtitle =
+                TextView(root.context).apply {
+                    setTextAppearance(MR.style.TextAppearance_Material3_BodyMedium)
+                    setTextColor(
+                        MaterialColors.getColor(
+                            root.context,
+                            MR.attr.colorOnSurfaceVariant,
+                            Color.GRAY,
+                        )
+                    )
+                }
+            val resume =
+                MaterialButton(root.context, null, MR.attr.materialButtonTonalStyle).apply {
+                    isAllCaps = false
+                }
+            val remove =
+                MaterialButton(root.context, null, MR.attr.materialButtonOutlinedStyle).apply {
+                    isAllCaps = false
+                }
 
             init {
                 root.addView(title)

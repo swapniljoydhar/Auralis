@@ -24,7 +24,6 @@ package com.auralis.player.audiobooks
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Gravity
@@ -78,10 +77,14 @@ class AudiobookDetailFragment : Fragment() {
             LinearLayout(requireContext()).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(20.dp(), 24.dp(), 20.dp(), 32.dp())
+                setBackgroundColor(
+                    MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK)
+                )
             }
         content = root
         return ScrollView(requireContext()).apply {
             clipToPadding = false
+            setBackgroundColor(MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK))
             addView(root)
         }
     }
@@ -136,12 +139,11 @@ class AudiobookDetailFragment : Fragment() {
         root.addView(
             TextView(colors).apply {
                 text = book.title
-                textSize = 26f
+                setTextAppearance(MR.style.TextAppearance_Material3_HeadlineSmall)
                 maxLines = 3
                 ellipsize = TextUtils.TruncateAt.END
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
                 contentDescription = book.title
-                setTypeface(typeface, Typeface.BOLD)
                 layoutParams = fullWidthParams(top = 16, bottom = 4)
             }
         )
@@ -152,7 +154,7 @@ class AudiobookDetailFragment : Fragment() {
                 root.addView(
                     TextView(colors).apply {
                         text = author
-                        textSize = 16f
+                        setTextAppearance(MR.style.TextAppearance_Material3_TitleMedium)
                         textAlignment = View.TEXT_ALIGNMENT_CENTER
                         layoutParams = fullWidthParams(bottom = 4)
                     }
@@ -167,7 +169,7 @@ class AudiobookDetailFragment : Fragment() {
                         book.totalDurationMs.formatDurationMs(false),
                         book.chapterCount,
                     )
-                textSize = 14f
+                setTextAppearance(MR.style.TextAppearance_Material3_BodyMedium)
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setTextColor(
                     MaterialColors.getColor(colors, MR.attr.colorOnSurfaceVariant, Color.GRAY)
@@ -200,7 +202,7 @@ class AudiobookDetailFragment : Fragment() {
                         listeningSummary.listenedMs.formatDurationMs(false),
                         listeningSummary.remainingMs.formatDurationMs(false),
                     )
-                textSize = 14f
+                setTextAppearance(MR.style.TextAppearance_Material3_BodyMedium)
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setTextColor(
                     MaterialColors.getColor(colors, MR.attr.colorOnSurfaceVariant, Color.GRAY)
@@ -224,7 +226,7 @@ class AudiobookDetailFragment : Fragment() {
         )
 
         root.addView(
-            MaterialButton(colors).apply {
+            MaterialButton(colors, null, MR.attr.materialButtonTonalStyle).apply {
                 text = getString(R.string.lbl_audiobook_bookmarks)
                 isAllCaps = false
                 setOnClickListener {
@@ -239,12 +241,14 @@ class AudiobookDetailFragment : Fragment() {
 
         if (hasSavedProgress) {
             root.addView(
-                MaterialButton(colors).apply {
+                MaterialButton(colors, null, MR.attr.materialButtonOutlinedStyle).apply {
                     text = getString(R.string.lbl_audiobook_reset_progress)
                     isAllCaps = false
-                    setTextColor(
-                        MaterialColors.getColor(colors, MR.attr.colorOnPrimary, Color.WHITE)
-                    )
+                    setTextColor(MaterialColors.getColor(colors, AR.attr.colorError, Color.RED))
+                    strokeColor =
+                        ColorStateList.valueOf(
+                            MaterialColors.getColor(colors, AR.attr.colorError, Color.RED)
+                        )
                     setOnClickListener {
                         lifecycleScope.launch {
                             progressRepository.clearBook(book.key)
@@ -259,8 +263,7 @@ class AudiobookDetailFragment : Fragment() {
         root.addView(
             TextView(colors).apply {
                 text = getString(R.string.lbl_audiobook_chapters)
-                textSize = 20f
-                setTypeface(typeface, Typeface.BOLD)
+                setTextAppearance(MR.style.TextAppearance_Material3_TitleLarge)
                 layoutParams = fullWidthParams(bottom = 8)
             }
         )

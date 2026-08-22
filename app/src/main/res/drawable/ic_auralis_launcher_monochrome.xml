@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Single-color silhouette for Android themed icons. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M22,29C33,28 42,31 51,37L51,78C42,72 33,70 22,71ZM57,37C66,31 75,28 86,29L86,71C75,70 66,72 57,78Z" />
+</vector>

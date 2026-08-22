@@ -17,15 +17,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/home_no_music"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center_horizontal"
-            android:visibility="invisible"
-            android:orientation="vertical"
-            android:padding="@dimen/spacing_medium">
+            android:layout_margin="@dimen/spacing_medium"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+            app:cardElevation="0dp"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraLarge">
+
+            <LinearLayout
+                android:id="@+id/home_no_music"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_medium"
+                android:visibility="invisible">
 
             <com.auralis.player.home.list.CookieImageView
                 android:id="@+id/home_no_music_placeholder"
@@ -48,11 +56,14 @@
 
             <com.auralis.player.ui.RippleFixMaterialButton
                 android:id="@+id/home_no_music_action"
+                style="@style/Widget.Auralis.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/set_locations" />
 
-        </LinearLayout>
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </com.auralis.player.ui.EdgeFrameLayout>
 </FrameLayout>

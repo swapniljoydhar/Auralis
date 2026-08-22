@@ -66,3 +66,6 @@
 - [x] Review public Voice and Auxio architecture, organization, metadata, and feature-scope principles for Auralis without copying code or product identity.
 - [x] Add an Audiobooks-only organization preference for separate book folders, selected-folder-as-one-book, and author/book hierarchy.
 - [x] Add focused grouping and Music-snapshot isolation regressions for all Audiobooks organization strategies.
+- [x] Establish a coherent native Material 3 visual foundation and original adaptive Auralis icon system.
+- [x] Modernize shared navigation, Music, Audiobooks, playback, settings, dialogs, widget, and state surfaces without crossing PlaybackDomain boundaries.
+- [x] Verify accessibility, theme resilience, domain isolation, signed packaging, and standalone publication for the Material 3 experience release.

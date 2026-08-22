@@ -36,6 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
+                    android:background="?attr/colorSurfaceContainerLow"
                     android:paddingStart="@dimen/spacing_medium"
                     android:paddingTop="?attr/actionBarSize"
                     android:paddingEnd="@dimen/spacing_medium"

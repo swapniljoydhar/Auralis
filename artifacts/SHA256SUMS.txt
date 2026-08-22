@@ -16,3 +16,4 @@ d901aadec04622f0aeb72feebce5371b7ecc1fc9919e40353416cebade8a30b5  artifacts/aura
 91d7c32af96b46c8fc77e82af8b2d34e14d2ec79548cd9c9ba72ee8f2a0a986d  artifacts/auralis-4.1.19-release-signed.apk
 
 9b9c84fedcda981104ee65dd874ed1d8782d538c6a1a2f064bcd6ed4a018ca15  artifacts/auralis-4.1.20-release-signed.apk
+12c3a9e23c5e71653c7c8e1857deffde11f8a39e09c4ea086a431799f7ad8a89  artifacts/auralis-4.1.21-material3-release-signed.apk

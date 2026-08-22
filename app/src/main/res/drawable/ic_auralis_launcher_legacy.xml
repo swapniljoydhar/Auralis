@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:fillColor="@color/auralis_brand_background"
+        android:pathData="M0,0H108V108H0Z" />
+    <path
+        android:fillColor="#48C7C2"
+        android:pathData="M22,29C33,28 42,31 51,37L51,78C42,72 33,70 22,71Z" />
+    <path
+        android:fillColor="#2FAFAA"
+        android:pathData="M57,37C66,31 75,28 86,29L86,71C75,70 66,72 57,78Z" />
+    <path
+        android:fillColor="#0B1F3A"
+        android:pathData="M48,45L68,54L48,63Z" />
+    <path
+        android:fillColor="#FFC44D"
+        android:pathData="M37,48C37,46.3 38.3,45 40,45C41.7,45 43,46.3 43,48L43,60C43,61.7 41.7,63 40,63C38.3,63 37,61.7 37,60ZM65,48C65,46.3 66.3,45 68,45C69.7,45 71,46.3 71,48L71,60C71,61.7 69.7,63 68,63C66.3,63 65,61.7 65,60Z" />
+</vector>
