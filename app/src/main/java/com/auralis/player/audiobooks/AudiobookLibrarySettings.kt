@@ -37,4 +37,13 @@ enum class AudiobookLibraryPresentation(private val preferenceValue: Int) {
 object AudiobookFolderScope {
     fun includes(directory: String, enabled: Boolean, selectedFolders: Set<String>) =
         !enabled || directory in selectedFolders
+
+    fun <T> filterSnapshot(
+        snapshot: Collection<T>,
+        enabled: Boolean,
+        selectedFolders: Set<String>,
+        directory: (T) -> String,
+    ): List<T> =
+        if (!enabled) snapshot.toList()
+        else snapshot.filter { includes(directory(it), enabled = true, selectedFolders) }
 }

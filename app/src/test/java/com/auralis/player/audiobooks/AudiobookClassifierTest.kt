@@ -70,6 +70,40 @@ class AudiobookClassifierTest {
     }
 
     @Test
+    fun supportedNonM4bFormatsClassifyWithAudiobookMarker() {
+        listOf("m4a", "ogg", "oga", "opus").forEach { extension ->
+            assertTrue(
+                "Expected .$extension in an Audiobooks folder to classify as an audiobook",
+                AudiobookClassifier.isAudiobook(
+                    AudiobookFileSignals(
+                        extension = extension,
+                        path = "Audiobooks/The Hobbit/01.$extension",
+                        album = "The Hobbit",
+                        genres = emptyList(),
+                    )
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun supportedNonM4bFormatsDoNotClassifyOrdinaryMusicWithoutMarker() {
+        listOf("m4a", "ogg", "oga", "opus").forEach { extension ->
+            assertFalse(
+                "Expected ordinary .$extension music to remain outside Audiobooks",
+                AudiobookClassifier.isAudiobook(
+                    AudiobookFileSignals(
+                        extension = extension,
+                        path = "Music/Radiohead/In Rainbows/01.$extension",
+                        album = "In Rainbows",
+                        genres = listOf("Alternative Rock"),
+                    )
+                ),
+            )
+        }
+    }
+
+    @Test
     fun ordinaryMusicMp3IsNotAudiobook() {
         assertFalse(
             AudiobookClassifier.isAudiobook(

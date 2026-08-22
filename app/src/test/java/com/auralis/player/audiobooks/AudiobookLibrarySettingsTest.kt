@@ -24,6 +24,7 @@ package com.auralis.player.audiobooks
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -69,5 +70,41 @@ class AudiobookLibrarySettingsTest {
             AudiobookLibraryPresentation.GRID,
             AudiobookLibraryPresentation.fromPreference(1),
         )
+    }
+
+    @Test
+    fun folderScopeCreatesAnAudiobooksProjectionWithoutChangingMusicSnapshot() {
+        val musicSnapshot = listOf("/storage/emulated/0/Music", "/storage/emulated/0/Audiobooks")
+        val beforeFolderScope = musicSnapshot.toList()
+
+        val audiobookProjection =
+            AudiobookFolderScope.filterSnapshot(
+                snapshot = musicSnapshot,
+                enabled = true,
+                selectedFolders = setOf("/storage/emulated/0/Audiobooks"),
+            ) {
+                it
+            }
+
+        assertEquals(listOf("/storage/emulated/0/Audiobooks"), audiobookProjection)
+        assertEquals(beforeFolderScope, musicSnapshot)
+        assertNotSame(musicSnapshot, audiobookProjection)
+    }
+
+    @Test
+    fun disabledFolderScopeStillCopiesMusicSnapshotForAudiobooksProjection() {
+        val musicSnapshot = listOf("/storage/emulated/0/Music", "/storage/emulated/0/Audiobooks")
+
+        val audiobookProjection =
+            AudiobookFolderScope.filterSnapshot(
+                snapshot = musicSnapshot,
+                enabled = false,
+                selectedFolders = emptySet(),
+            ) {
+                it
+            }
+
+        assertEquals(musicSnapshot, audiobookProjection)
+        assertNotSame(musicSnapshot, audiobookProjection)
     }
 }

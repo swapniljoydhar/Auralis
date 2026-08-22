@@ -51,5 +51,7 @@
 - [x] Build a dedicated local bookmark destination with contextual chapter labels, direct resume, in-place deletion, and stale-bookmark visibility.
 - [x] Build focused Audiobooks settings groups for local library, playback, and appearance without changing Music settings.
 - [x] Add Audiobooks-only selected-folder behavior, configurable auto-rewind, and compact or grid library presentation preferences.
-- [ ] Add focused regression coverage confirming Audiobooks settings do not alter Music playback or Music library behavior.
+- [x] Add focused regression coverage confirming Audiobooks settings do not alter Music playback or Music library behavior.
 - [x] Refine Audiobooks-only loading, empty, finished, metadata, and long-title presentation with calm Auralis-specific treatment.
+- [x] Add a focused regression suite proving Audiobooks folder scope cannot alter Music library snapshots.
+- [x] Extend conservative local Audiobooks classification to supported M4A, OGG, OGA, and OPUS formats without admitting ordinary Music.

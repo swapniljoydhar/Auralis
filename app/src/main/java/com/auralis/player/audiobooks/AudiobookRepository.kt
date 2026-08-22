@@ -42,15 +42,13 @@ constructor(
         musicRepository.library?.songs?.let {
             val selected = audiobookSettings.selectedFolders
             val source =
-                if (audiobookSettings.useSelectedFolders) {
-                    it.filter { song ->
-                        AudiobookFolderScope.includes(
-                            song.path.directory.components.unixString,
-                            enabled = true,
-                            selectedFolders = selected,
-                        )
-                    }
-                } else it
+                AudiobookFolderScope.filterSnapshot(
+                    snapshot = it,
+                    enabled = audiobookSettings.useSelectedFolders,
+                    selectedFolders = selected,
+                ) { song ->
+                    song.path.directory.components.unixString
+                }
             AudiobookCatalog.fromSongs(source, audiobookSettings.manualSongUids)
         } ?: emptyList()
 

@@ -61,11 +61,13 @@ data class AudiobookFileSignals(
 )
 
 /**
- * Conservative audiobook detection that works for M4B and MP3 without re-scanning files.
+ * Conservative audiobook detection that works with locally indexed M4B, MP3, M4A, OGG, OGA, and
+ * OPUS files without re-scanning files.
  *
- * M4B is a strong signal because it is the audiobook-oriented MPEG-4 extension. MP3 is
- * intentionally classified only when its path, album, or genre carries an explicit audiobook
- * marker, preventing ordinary music albums from leaking into the Audiobooks section.
+ * M4B is a strong signal because it is the audiobook-oriented MPEG-4 extension. Other supported
+ * local audio containers are intentionally classified only when their path, album, or genre carries
+ * an explicit audiobook marker, preventing ordinary music albums from leaking into the Audiobooks
+ * section.
  */
 object AudiobookClassifier {
     private val audiobookExtensions = setOf("m4b")
