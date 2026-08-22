@@ -32,15 +32,20 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.oxycblt.musikr.Song
 
 @Singleton
 class AudiobookPlaybackController
 @Inject
-constructor(private val playbackManager: PlaybackStateManager) {
+constructor(
+    private val playbackManager: PlaybackStateManager,
+    private val embeddedChapterReader: EmbeddedChapterReader,
+) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var sleepTimerJob: Job? = null
     private var scheduledDomain: PlaybackDomain? = null
     private var sleepAtChapterEnd = false
+    private var embeddedSleepBoundary: EmbeddedSleepBoundary? = null
 
     val isSleepTimerActive: Boolean
         get() = scheduledDomain == PlaybackDomain.AUDIOBOOKS
@@ -53,7 +58,9 @@ constructor(private val playbackManager: PlaybackStateManager) {
         sleepTimerJob =
             scope.launch {
                 delay(durationMs.coerceAtLeast(0L))
-                if (scheduledDomain == domain && playbackManager.domain == domain) {
+                if (
+                    AudiobookSleepTimerPolicy.shouldPause(scheduledDomain, playbackManager.domain)
+                ) {
                     playbackManager.playing(false)
                 }
                 clearSleepTimer()
@@ -61,14 +68,23 @@ constructor(private val playbackManager: PlaybackStateManager) {
     }
 
     fun scheduleSleepAtChapterEnd() {
-        if (
-            playbackManager.domain != PlaybackDomain.AUDIOBOOKS ||
-                playbackManager.currentSong == null
-        )
-            return
+        val song = playbackManager.currentSong ?: return
+        if (playbackManager.domain != PlaybackDomain.AUDIOBOOKS) return
         cancelSleepTimer()
         scheduledDomain = PlaybackDomain.AUDIOBOOKS
         sleepAtChapterEnd = true
+        scope.launch {
+            val chapters = embeddedChapterReader.read(song)
+            if (
+                chapters.isEmpty() ||
+                    scheduledDomain != PlaybackDomain.AUDIOBOOKS ||
+                    playbackManager.domain != PlaybackDomain.AUDIOBOOKS ||
+                    playbackManager.currentSong?.uid != song.uid
+            )
+                return@launch
+            embeddedSleepBoundary = EmbeddedSleepBoundary(song, chapters)
+            refreshEmbeddedSleepBoundary(playbackManager.progression.calculateElapsedPositionMs())
+        }
     }
 
     /** Called by the player service only for an automatic chapter-file transition. */
@@ -76,6 +92,30 @@ constructor(private val playbackManager: PlaybackStateManager) {
         if (sleepAtChapterEnd && scheduledDomain == domain && domain == PlaybackDomain.AUDIOBOOKS) {
             playbackManager.playing(false)
             clearSleepTimer()
+        }
+    }
+
+    fun onPlaybackPositionChanged(domain: PlaybackDomain, song: Song?, positionMs: Long) {
+        if (domain != PlaybackDomain.AUDIOBOOKS || scheduledDomain != domain) return
+        val boundary = embeddedSleepBoundary ?: return
+        if (song?.uid != boundary.song.uid) return
+        refreshEmbeddedSleepBoundary(positionMs)
+    }
+
+    fun onPlaybackStateChanged(
+        domain: PlaybackDomain,
+        song: Song?,
+        positionMs: Long,
+        isPlaying: Boolean,
+    ) {
+        if (domain != PlaybackDomain.AUDIOBOOKS || scheduledDomain != domain) return
+        val boundary = embeddedSleepBoundary ?: return
+        if (song?.uid != boundary.song.uid) return
+        if (isPlaying) {
+            refreshEmbeddedSleepBoundary(positionMs)
+        } else {
+            sleepTimerJob?.cancel()
+            sleepTimerJob = null
         }
     }
 
@@ -102,5 +142,42 @@ constructor(private val playbackManager: PlaybackStateManager) {
         sleepTimerJob = null
         scheduledDomain = null
         sleepAtChapterEnd = false
+        embeddedSleepBoundary = null
     }
+
+    private fun refreshEmbeddedSleepBoundary(positionMs: Long) {
+        val boundary = embeddedSleepBoundary ?: return
+        val nextStartMs =
+            AudiobookSleepTimerPolicy.nextEmbeddedChapterStart(boundary.chapters, positionMs)
+                ?: return
+        sleepTimerJob?.cancel()
+        sleepTimerJob =
+            scope.launch {
+                delay((nextStartMs - positionMs).coerceAtLeast(0L))
+                val currentSong = playbackManager.currentSong
+                if (
+                    scheduledDomain == PlaybackDomain.AUDIOBOOKS &&
+                        playbackManager.domain == PlaybackDomain.AUDIOBOOKS &&
+                        currentSong?.uid == boundary.song.uid
+                ) {
+                    val currentPosition = playbackManager.progression.calculateElapsedPositionMs()
+                    if (currentPosition >= nextStartMs) {
+                        playbackManager.playing(false)
+                        clearSleepTimer()
+                    } else {
+                        refreshEmbeddedSleepBoundary(currentPosition)
+                    }
+                }
+            }
+    }
+
+    private data class EmbeddedSleepBoundary(val song: Song, val chapters: List<EmbeddedChapter>)
+}
+
+internal object AudiobookSleepTimerPolicy {
+    fun shouldPause(scheduledDomain: PlaybackDomain?, activeDomain: PlaybackDomain) =
+        scheduledDomain == PlaybackDomain.AUDIOBOOKS && activeDomain == PlaybackDomain.AUDIOBOOKS
+
+    fun nextEmbeddedChapterStart(chapters: Collection<EmbeddedChapter>, positionMs: Long): Long? =
+        chapters.asSequence().map(EmbeddedChapter::startMs).filter { it > positionMs }.minOrNull()
 }

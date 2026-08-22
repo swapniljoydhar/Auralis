@@ -588,6 +588,7 @@ class ExoPlaybackStateHolder(
         super.onPlaybackStateChanged(playbackState)
 
         if (playbackState == Player.STATE_ENDED && player.repeatMode == Player.REPEAT_MODE_OFF) {
+            audiobookPlaybackController.onPlaybackEnded(activeDomain)
             goto(0)
             player.pause()
         }
@@ -611,6 +612,11 @@ class ExoPlaybackStateHolder(
         reason: Int,
     ) {
         super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+        audiobookPlaybackController.onPlaybackPositionChanged(
+            activeDomain,
+            newPosition.mediaItem?.song,
+            newPosition.positionMs,
+        )
 
         if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) {
             synchronized(pendingAudiobookProgress) {
@@ -637,6 +643,12 @@ class ExoPlaybackStateHolder(
                 Player.EVENT_POSITION_DISCONTINUITY,
             )
         ) {
+            audiobookPlaybackController.onPlaybackStateChanged(
+                activeDomain,
+                player.currentMediaItem?.song,
+                player.currentPosition,
+                player.isPlaying,
+            )
             L.d("Player state changed, must synchronize state")
             playbackManager.ack(this, StateAck.ProgressionChanged)
         }
