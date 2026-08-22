@@ -47,6 +47,18 @@ interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
     /** Whether long silent sections should be skipped during audiobook playback. */
     val skipSilence: Boolean
 
+    /** Whether the Audiobooks library should include only the user-selected local folders. */
+    val useSelectedFolders: Boolean
+
+    /** Local folder identifiers selected for the Audiobooks-only library projection. */
+    val selectedFolders: Set<String>
+
+    /** Whether the Audiobooks library uses the two-column cover grid presentation. */
+    val useGridPresentation: Boolean
+
+    /** The presentation used only by the Audiobooks listening library. */
+    val libraryPresentation: AudiobookLibraryPresentation
+
     fun addSongs(songs: Collection<Song>)
 
     fun removeSongs(songs: Collection<Song>)
@@ -55,6 +67,10 @@ interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
         fun onAudiobookAssignmentsChanged()
 
         fun onAudiobookPlaybackSettingsChanged() {}
+
+        fun onAudiobookLibrarySettingsChanged() {}
+
+        fun onAudiobookAppearanceSettingsChanged() {}
     }
 }
 
@@ -65,6 +81,11 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
     private val defaultSpeedKey = context.getString(R.string.set_key_audiobook_default_speed)
     private val autoRewindKey = context.getString(R.string.set_key_audiobook_auto_rewind)
     private val skipSilenceKey = context.getString(R.string.set_key_audiobook_skip_silence)
+    private val selectedFoldersEnabledKey =
+        context.getString(R.string.set_key_audiobook_selected_folders_enabled)
+    private val selectedFoldersKey = context.getString(R.string.set_key_audiobook_selected_folders)
+    private val libraryPresentationKey =
+        context.getString(R.string.set_key_audiobook_library_presentation)
 
     override val manualSongUids: Set<String>
         get() = sharedPreferences.getStringSet(key, emptySet()).orEmpty()
@@ -85,6 +106,21 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
     override val skipSilence: Boolean
         get() = sharedPreferences.getBoolean(skipSilenceKey, false)
 
+    override val useSelectedFolders: Boolean
+        get() = sharedPreferences.getBoolean(selectedFoldersEnabledKey, false)
+
+    override val selectedFolders: Set<String>
+        get() = sharedPreferences.getStringSet(selectedFoldersKey, emptySet()).orEmpty()
+
+    override val useGridPresentation: Boolean
+        get() = libraryPresentation == AudiobookLibraryPresentation.GRID
+
+    override val libraryPresentation: AudiobookLibraryPresentation
+        get() =
+            AudiobookLibraryPresentation.fromPreference(
+                sharedPreferences.getInt(libraryPresentationKey, COMPACT_PRESENTATION)
+            )
+
     override fun addSongs(songs: Collection<Song>) {
         update(songs) { current -> current + songs.map { it.uid.toString() } }
     }
@@ -102,12 +138,19 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         ) {
             listener.onAudiobookPlaybackSettingsChanged()
         }
+        if (key == selectedFoldersEnabledKey || key == selectedFoldersKey) {
+            listener.onAudiobookLibrarySettingsChanged()
+        }
+        if (key == libraryPresentationKey) {
+            listener.onAudiobookAppearanceSettingsChanged()
+        }
     }
 
     private companion object {
         const val DEFAULT_SKIP_SECONDS = 30
         const val DEFAULT_SPEED_PERCENT = 100
         const val DEFAULT_REWIND_SECONDS = 2
+        const val COMPACT_PRESENTATION = 0
     }
 
     private fun update(songs: Collection<Song>, transform: (Set<String>) -> Set<String>) {

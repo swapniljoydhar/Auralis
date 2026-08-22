@@ -5,6 +5,7 @@
     <string name="set_key_personalize" translatable="false">auralis_personalize</string>
     <string name="set_key_music" translatable="false">auralis_music</string>
     <string name="set_key_audio" translatable="false">auralis_audio</string>
+    <string name="set_key_audiobooks" translatable="false">auralis_audiobooks</string>
 
     <string name="set_key_theme" translatable="false">KEY_THEME2</string>
     <string name="set_key_black_theme" translatable="false">KEY_BLACK_THEME</string>
@@ -48,6 +49,9 @@
     <string name="set_key_audiobook_default_speed" translatable="false">auralis_audiobook_default_speed</string>
     <string name="set_key_audiobook_auto_rewind" translatable="false">auralis_audiobook_auto_rewind</string>
     <string name="set_key_audiobook_skip_silence" translatable="false">auralis_audiobook_skip_silence</string>
+    <string name="set_key_audiobook_selected_folders_enabled" translatable="false">auralis_audiobook_selected_folders_enabled</string>
+    <string name="set_key_audiobook_selected_folders" translatable="false">auralis_audiobook_selected_folders</string>
+    <string name="set_key_audiobook_library_presentation" translatable="false">auralis_audiobook_library_presentation</string>
     <string name="set_key_library_mode" translatable="false">auralis_library_mode</string>
     <string name="set_key_hide_collaborators" translatable="false">auralis_hide_collaborators</string>
     <string name="set_key_round_mode" translatable="false">auralis_round_covers</string>
@@ -147,6 +151,16 @@
         <item>2</item>
         <item>5</item>
         <item>10</item>
+    </integer-array>
+
+    <string-array name="entries_audiobook_library_presentation">
+        <item>@string/set_audiobook_presentation_compact</item>
+        <item>@string/set_audiobook_presentation_grid</item>
+    </string-array>
+
+    <integer-array name="values_audiobook_library_presentation">
+        <item>0</item>
+        <item>1</item>
     </integer-array>
 
     <string-array name="entries_bar_action">

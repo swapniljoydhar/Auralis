@@ -125,6 +125,14 @@ private class HomeGeneratorImpl(
         invalidator.invalidateMusic(MusicType.AUDIOBOOKS, UpdateInstructions.Replace(0))
     }
 
+    override fun onAudiobookLibrarySettingsChanged() {
+        invalidator.invalidateMusic(MusicType.AUDIOBOOKS, UpdateInstructions.Replace(0))
+    }
+
+    override fun onAudiobookAppearanceSettingsChanged() {
+        invalidator.invalidateMusic(MusicType.AUDIOBOOKS, UpdateInstructions.Replace(0))
+    }
+
     override fun onHideCollaboratorsChanged() {
         // Changes in the hide collaborator setting will change the artist contents
         // of the library, consider it a library update.

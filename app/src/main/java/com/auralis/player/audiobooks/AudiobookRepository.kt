@@ -40,8 +40,28 @@ constructor(
 ) {
     fun books(): List<AudiobookBook> =
         musicRepository.library?.songs?.let {
-            AudiobookCatalog.fromSongs(it, audiobookSettings.manualSongUids)
+            val selected = audiobookSettings.selectedFolders
+            val source =
+                if (audiobookSettings.useSelectedFolders) {
+                    it.filter { song ->
+                        AudiobookFolderScope.includes(
+                            song.path.directory.components.unixString,
+                            enabled = true,
+                            selectedFolders = selected,
+                        )
+                    }
+                } else it
+            AudiobookCatalog.fromSongs(source, audiobookSettings.manualSongUids)
         } ?: emptyList()
 
     fun book(key: String): AudiobookBook? = books().firstOrNull { it.key == key }
+
+    fun folders(): List<String> =
+        musicRepository.library
+            ?.songs
+            ?.let { AudiobookCatalog.fromSongs(it, audiobookSettings.manualSongUids) }
+            ?.flatMap { book -> book.chapters.map { it.song.path.directory.components.unixString } }
+            ?.distinct()
+            ?.sorted()
+            .orEmpty()
 }

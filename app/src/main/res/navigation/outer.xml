@@ -46,6 +46,9 @@
             android:id="@+id/audio_peferences"
             app:destination="@id/audio_preferences_fragment" />
         <action
+            android:id="@+id/audiobook_preferences"
+            app:destination="@id/audiobook_preferences_fragment" />
+        <action
             android:id="@+id/music_locations_settings"
             app:destination="@id/music_locations_dialog" />
     </fragment>
@@ -85,6 +88,11 @@
             android:id="@+id/pre_amp_settings"
             app:destination="@id/pre_amp_dialog" />
     </fragment>
+
+    <fragment
+        android:id="@+id/audiobook_preferences_fragment"
+        android:name="com.auralis.player.settings.categories.AudiobookPreferenceFragment"
+        android:label="audiobook_preferences_fragment" />
 
     <dialog
         android:id="@+id/accent_dialog"

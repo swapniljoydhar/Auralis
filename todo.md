@@ -39,8 +39,8 @@
 - [x] P1: Make embedded-MP3 chapter progress and bookmarks durable at embedded-chapter granularity rather than only at the enclosing file position.
 - [x] P1: Create a first-class bookmark view with contextual chapter labels, optional notes, in-place deletion, stale-bookmark handling, and direct resume.
 - [x] P1: Complete the Audiobooks lifecycle with Current, Not started, and Finished states, percentage/time progress, and a one-tap resume path; retain Music as an independent mode.
-- [ ] P2: Separate audiobook settings into focused local-library, playback, and appearance groups, including configurable skip, auto-rewind, and selected-folder behavior.
-- [ ] P2: Replace generic loading and empty states with Auralis-specific progress feedback and add a compact/grid audiobook-library preference without importing Voice branding.
+- [x] P2: Separate audiobook settings into focused local-library, playback, and appearance groups, including configurable skip, auto-rewind, and selected-folder behavior.
+- [x] P2: Replace generic loading and empty states with Auralis-specific progress feedback and add a compact/grid audiobook-library preference without importing Voice branding.
 - [x] Implement true end-of-embedded-ID3-chapter sleep behavior for single-MP3 audiobooks.
 - [x] Verify and regression-test sleep timer isolation across explicit Audiobooks and Music queue switches.
 - [x] Expand focused automated chapter-navigation coverage for embedded chapter boundaries, malformed offsets, short chapters, and stale picker state.
@@ -49,3 +49,6 @@
 - [x] Add Finished lifecycle classification plus percentage/time progress and one-tap quick resume for local audiobooks.
 - [x] Persist embedded ID3 chapter identity with audiobook progress and bookmark locations so resume and bookmarks retain subchapter context.
 - [x] Build a dedicated local bookmark destination with contextual chapter labels, direct resume, in-place deletion, and stale-bookmark visibility.
+- [x] Build focused Audiobooks settings groups for local library, playback, and appearance without changing Music settings.
+- [x] Add Audiobooks-only selected-folder behavior, configurable auto-rewind, and compact or grid library presentation preferences.
+- [ ] Add focused regression coverage confirming Audiobooks settings do not alter Music playback or Music library behavior.

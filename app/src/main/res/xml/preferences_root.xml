@@ -20,6 +20,12 @@
         app:summary="@string/set_audio_desc"
         app:title="@string/set_audio" />
 
+    <Preference
+        app:icon="@drawable/ic_album_24"
+        app:key="@string/set_key_audiobooks"
+        app:summary="@string/set_audiobooks_desc"
+        app:title="@string/set_audiobooks" />
+
     <PreferenceCategory app:title="@string/set_library">
 
         <com.auralis.player.settings.ui.WrappedDialogPreference

@@ -29,40 +29,6 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/set_audiobook_playback">
-
-        <com.auralis.player.settings.ui.IntListPreference
-            app:defaultValue="30"
-            app:entries="@array/entries_audiobook_skip_duration"
-            app:entryValues="@array/values_audiobook_skip_duration"
-            app:key="@string/set_key_audiobook_skip_duration"
-            app:summary="@string/set_audiobook_skip_duration_desc"
-            app:title="@string/set_audiobook_skip_duration" />
-
-        <com.auralis.player.settings.ui.IntListPreference
-            app:defaultValue="100"
-            app:entries="@array/entries_audiobook_default_speed"
-            app:entryValues="@array/values_audiobook_default_speed"
-            app:key="@string/set_key_audiobook_default_speed"
-            app:summary="@string/set_audiobook_default_speed_desc"
-            app:title="@string/set_audiobook_default_speed" />
-
-        <com.auralis.player.settings.ui.IntListPreference
-            app:defaultValue="2"
-            app:entries="@array/entries_audiobook_auto_rewind"
-            app:entryValues="@array/values_audiobook_auto_rewind"
-            app:key="@string/set_key_audiobook_auto_rewind"
-            app:summary="@string/set_audiobook_auto_rewind_desc"
-            app:title="@string/set_audiobook_auto_rewind" />
-
-        <SwitchPreferenceCompat
-            app:defaultValue="false"
-            app:key="@string/set_key_audiobook_skip_silence"
-            app:summary="@string/set_audiobook_skip_silence_desc"
-            app:title="@string/set_audiobook_skip_silence" />
-
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/set_replay_gain">
 
         <com.auralis.player.settings.ui.IntListPreference

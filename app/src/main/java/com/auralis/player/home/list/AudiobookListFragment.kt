@@ -36,6 +36,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.auralis.player.R
@@ -46,6 +48,7 @@ import com.auralis.player.audiobooks.AudiobookListeningSummary
 import com.auralis.player.audiobooks.AudiobookProgress
 import com.auralis.player.audiobooks.AudiobookProgressInput
 import com.auralis.player.audiobooks.AudiobookProgressRepository
+import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.databinding.FragmentHomeListBinding
 import com.auralis.player.home.HomeFragmentDirections
 import com.auralis.player.home.HomeViewModel
@@ -70,6 +73,7 @@ class AudiobookListFragment : Fragment() {
     private val musicModel: MusicViewModel by activityViewModels()
 
     @Inject lateinit var progressRepository: AudiobookProgressRepository
+    @Inject lateinit var audiobookSettings: AudiobookSettings
     @Inject lateinit var commandFactory: PlaybackCommand.Factory
     @Inject lateinit var playbackManager: PlaybackStateManager
 
@@ -93,6 +97,7 @@ class AudiobookListFragment : Fragment() {
             adapter = this@AudiobookListFragment.adapter
             setHasFixedSize(true)
         }
+        applyLibraryPresentation()
         current.homeNoMusicPlaceholder.apply {
             setImageResource(R.drawable.ic_album_48)
             contentDescription = getString(R.string.lbl_audiobooks)
@@ -112,6 +117,7 @@ class AudiobookListFragment : Fragment() {
 
     private fun updateBooks(books: List<AudiobookBook>) {
         val current = binding ?: return
+        applyLibraryPresentation()
         adapter.setBooks(books)
         current.homeRecycler.isInvisible = books.isEmpty()
         current.homeNoMusic.isVisible = books.isEmpty()
@@ -124,6 +130,24 @@ class AudiobookListFragment : Fragment() {
                 }
             adapter.setProgress(progress)
         }
+    }
+
+    private fun applyLibraryPresentation() {
+        val recycler = binding?.homeRecycler ?: return
+        val useGrid = audiobookSettings.useGridPresentation
+        adapter.setGridPresentation(useGrid)
+        recycler.layoutManager =
+            if (useGrid) {
+                GridLayoutManager(requireContext(), GRID_COLUMNS).apply {
+                    spanSizeLookup =
+                        object : GridLayoutManager.SpanSizeLookup() {
+                            override fun getSpanSize(position: Int) =
+                                if (adapter.isHeader(position)) GRID_COLUMNS else 1
+                        }
+                }
+            } else {
+                LinearLayoutManager(requireContext())
+            }
     }
 
     private fun updateEmpty(empty: Boolean, indexingState: IndexingState?) {
@@ -168,6 +192,7 @@ class AudiobookListFragment : Fragment() {
     ) : ListAdapter<AudiobookRow, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
         private var books = emptyList<AudiobookBook>()
         private var progress = emptyMap<String, Map<Music.UID, AudiobookProgress>>()
+        private var gridPresentation = false
 
         val bookCount: Int
             get() = books.size
@@ -182,23 +207,39 @@ class AudiobookListFragment : Fragment() {
             submitRows()
         }
 
+        fun setGridPresentation(value: Boolean) {
+            if (gridPresentation == value) return
+            gridPresentation = value
+            notifyDataSetChanged()
+        }
+
         override fun getItemViewType(position: Int) =
             when (getItem(position)) {
                 is AudiobookRow.Header -> VIEW_TYPE_HEADER
-                is AudiobookRow.Book -> VIEW_TYPE_BOOK
+                is AudiobookRow.Book ->
+                    if (gridPresentation) VIEW_TYPE_GRID_BOOK else VIEW_TYPE_COMPACT_BOOK
             }
+
+        fun isHeader(position: Int) =
+            position in 0 until itemCount && getItem(position) is AudiobookRow.Header
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
             when (viewType) {
                 VIEW_TYPE_HEADER -> HeaderViewHolder(parent)
-                VIEW_TYPE_BOOK -> AudiobookViewHolder(parent, onClick, onResume)
+                VIEW_TYPE_COMPACT_BOOK -> AudiobookViewHolder(parent, onClick, onResume)
+                VIEW_TYPE_GRID_BOOK -> AudiobookGridViewHolder(parent, onClick, onResume)
                 else -> error("Unknown audiobook row type: $viewType")
             }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             when (val row = getItem(position)) {
                 is AudiobookRow.Header -> (holder as HeaderViewHolder).bind(row)
-                is AudiobookRow.Book -> (holder as AudiobookViewHolder).bind(row)
+                is AudiobookRow.Book ->
+                    when (holder) {
+                        is AudiobookViewHolder -> holder.bind(row)
+                        is AudiobookGridViewHolder -> holder.bind(row)
+                        else -> error("Unknown audiobook book holder")
+                    }
             }
         }
 
@@ -356,9 +397,94 @@ class AudiobookListFragment : Fragment() {
             }
         }
 
+        private class AudiobookGridViewHolder(
+            parent: ViewGroup,
+            private val onClick: (AudiobookBook) -> Unit,
+            private val onResume: (AudiobookBook, Map<Music.UID, AudiobookProgress>) -> Unit,
+        ) :
+            RecyclerView.ViewHolder(
+                LinearLayout(parent.context).apply {
+                    orientation = LinearLayout.VERTICAL
+                    gravity = android.view.Gravity.CENTER_HORIZONTAL
+                    minimumHeight = 250.dp()
+                    setPadding(12.dp(), 12.dp(), 12.dp(), 12.dp())
+                    isClickable = true
+                    isFocusable = true
+                }
+            ) {
+            private val root = itemView as LinearLayout
+            private val cover = CoverView(parent.context)
+            private val title =
+                TextView(parent.context).apply {
+                    gravity = android.view.Gravity.CENTER_HORIZONTAL
+                    maxLines = 2
+                    textSize = 16f
+                }
+            private val subtitle =
+                TextView(parent.context).apply {
+                    gravity = android.view.Gravity.CENTER_HORIZONTAL
+                    maxLines = 2
+                    textSize = 13f
+                }
+            private val resume = MaterialButton(parent.context).apply { isAllCaps = false }
+
+            init {
+                root.addView(cover, LinearLayout.LayoutParams(144.dp(), 144.dp()))
+                root.addView(
+                    title,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ),
+                )
+                root.addView(
+                    subtitle,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ),
+                )
+                root.addView(
+                    resume,
+                    LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 48.dp()),
+                )
+            }
+
+            fun bind(row: AudiobookRow.Book) {
+                val context = root.context
+                val book = row.book
+                cover.bind(
+                    book.chapters.map { it.song },
+                    context.getString(R.string.desc_audiobook_cover),
+                    R.drawable.ic_album_24,
+                    book.key.hashCode(),
+                )
+                title.text = book.title
+                subtitle.text =
+                    when (row.summary.lifecycle) {
+                        AudiobookLifecycle.CURRENT ->
+                            "${row.summary.percentage}% · ${row.summary.remainingMs.formatDurationMs(false)} remaining"
+                        AudiobookLifecycle.FINISHED ->
+                            "Finished · ${book.totalDurationMs.formatDurationMs(false)}"
+                        AudiobookLifecycle.NOT_STARTED ->
+                            "${book.chapterCount} chapters · ${book.totalDurationMs.formatDurationMs(false)}"
+                    }
+                root.setOnClickListener { onClick(book) }
+                root.contentDescription = book.title
+                resume.visibility =
+                    if (row.summary.lifecycle == AudiobookLifecycle.CURRENT) View.VISIBLE
+                    else View.GONE
+                resume.text = context.getString(R.string.lbl_audiobook_resume)
+                resume.contentDescription =
+                    context.getString(R.string.desc_audiobook_resume, book.title)
+                resume.setOnClickListener { onResume(book, row.progress) }
+            }
+        }
+
         private companion object {
             const val VIEW_TYPE_HEADER = 0
-            const val VIEW_TYPE_BOOK = 1
+            const val VIEW_TYPE_COMPACT_BOOK = 1
+            const val VIEW_TYPE_GRID_BOOK = 2
             val DIFF_CALLBACK =
                 object : DiffUtil.ItemCallback<AudiobookRow>() {
                     override fun areItemsTheSame(old: AudiobookRow, new: AudiobookRow) =
@@ -374,6 +500,10 @@ class AudiobookListFragment : Fragment() {
                         old == new
                 }
         }
+    }
+
+    private companion object {
+        const val GRID_COLUMNS = 2
     }
 }
 
