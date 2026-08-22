@@ -1,6 +1,10 @@
 /*
- * Copyright (c) 2024 Auralis Project
+ * Copyright (c) 2024 Auralis Contributors
  * ExoPlaybackStateHolder.kt is part of Auralis.
+ *
+ * Auralis is a derivative work of the Auxio Project and incorporates
+ * audiobook-oriented work inspired by Voice. Original copyright and GPL
+ * attribution are retained in PROVENANCE.md and the repository history.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,9 +123,10 @@ class ExoPlaybackStateHolder(
         val currentPosition = player.currentPosition
         // Drain any pending audiobook progress snapshots before saving.
         // Must synchronize since onPositionDiscontinuity may still be writing.
-        val snapshots = synchronized(pendingAudiobookProgress) {
-            pendingAudiobookProgress.toList().also { pendingAudiobookProgress.clear() }
-        }
+        val snapshots =
+            synchronized(pendingAudiobookProgress) {
+                pendingAudiobookProgress.toList().also { pendingAudiobookProgress.clear() }
+            }
         runBlocking(Dispatchers.IO) {
             for (snapshot in snapshots) {
                 saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs)

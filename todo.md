@@ -9,3 +9,7 @@
 - [x] Replace the launcher icon asset that displays a visible transparent-background artifact.
 - [x] Reduce the About screen to Auralis-specific, essential information only.
 - [x] Remove unrelated settings from the native Auralis settings surface while retaining local playback essentials.
+- [x] Restore original upstream copyright and author provenance while retaining Auralis product branding.
+- [x] Resolve native C++ formatter failures introduced by the identity rewrite.
+- [x] Strengthen listener snapshot publication and bottom-sheet initialization safety.
+- [ ] Verify, sign, and publish the follow-up native Auralis repair release.

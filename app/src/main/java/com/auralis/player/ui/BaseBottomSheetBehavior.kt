@@ -1,6 +1,10 @@
 /*
- * Copyright (c) 2022 Auralis Project
+ * Copyright (c) 2022 Auralis Contributors
  * BaseBottomSheetBehavior.kt is part of Auralis.
+ *
+ * Auralis is a derivative work of the Auxio Project and incorporates
+ * audiobook-oriented work inspired by Voice. Original copyright and GPL
+ * attribution are retained in PROVENANCE.md and the repository history.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,12 +47,20 @@ import timber.log.Timber as L
  */
 abstract class BaseBottomSheetBehavior<V : View>(context: Context, attributeSet: AttributeSet?) :
     BackportBottomSheetBehavior<V>(context, attributeSet) {
-    private var initalized = false
+    private var initialized = false
+    private var initializedChild: V? = null
+    private var missingSettingsLogged = false
     private val idealBottomGestureInsets = context.getDimenPixels(R.dimen.spacing_medium)
 
     // I can't manually inject this, MainFragment must be the one to do it.
-    // TODO: Just use another library. Tired of Hilt.
     var uiSettings: UISettings? = null
+        set(value) {
+            field = value
+            if (value != null && !initialized) {
+                missingSettingsLogged = false
+                initializedChild?.requestLayout()
+            }
+        }
 
     init {
         // Disable isFitToContents to make the bottom sheet expand to the top of the screen and
@@ -98,19 +110,28 @@ abstract class BaseBottomSheetBehavior<V : View>(context: Context, attributeSet:
 
     override fun onLayoutChild(parent: CoordinatorLayout, child: V, layoutDirection: Int): Boolean {
         val layout = super.onLayoutChild(parent, child, layoutDirection)
-        // Don't repeat redundant initialization.
+        initializedChild = child
         val settings = uiSettings
-        if (!initalized && settings != null) {
-            L.d("Not initialized, setting up child")
-            child.apply {
-                // Set up compat elevation attributes. These are only shown below API 28.
-                translationZ = context.getDimen(MR.dimen.m3_sys_elevation_level1)
-                // Background differs depending on concrete implementation.
-                background = createBackground(context, settings)
-                setOnApplyWindowInsetsListener(::applyWindowInsets)
+        if (!initialized) {
+            if (settings == null) {
+                if (!missingSettingsLogged) {
+                    L.w(
+                        "Bottom sheet laid out before UI settings were attached; waiting to initialize"
+                    )
+                    missingSettingsLogged = true
+                }
+            } else {
+                L.d("Not initialized, setting up child")
+                child.apply {
+                    // Set up compat elevation attributes. These are only shown below API 28.
+                    translationZ = context.getDimen(MR.dimen.m3_sys_elevation_level1)
+                    // Background differs depending on concrete implementation.
+                    background = createBackground(context, settings)
+                    setOnApplyWindowInsetsListener(::applyWindowInsets)
+                }
+                initialized = true
+                peekHeight = getIdealBarHeight(child.context) + idealBottomGestureInsets
             }
-            initalized = true
-            peekHeight = getIdealBarHeight(child.context) + idealBottomGestureInsets
         }
         // Sometimes CoordinatorLayout doesn't dispatch window insets to us, likely due to how
         // much we overload it. Ensure that we get them.

@@ -1,6 +1,10 @@
 /*
- * Copyright (c) 2023 Auralis Project
+ * Copyright (c) 2023 Auralis Contributors
  * PlaybackStateManager.kt is part of Auralis.
+ *
+ * Auralis is a derivative work of the Auxio Project and incorporates
+ * audiobook-oriented work inspired by Voice. Original copyright and GPL
+ * attribution are retained in PROVENANCE.md and the repository history.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -365,7 +369,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     private val listeners = mutableListOf<Listener>()
     // Snapshot for safe iteration: copied before dispatching callbacks so that
     // concurrent add/removeListener calls don't cause ConcurrentModificationException.
-    private var listenersSnapshot = emptyList<Listener>()
+    @Volatile private var listenersSnapshot = emptyList<Listener>()
 
     @Volatile
     private var stateMirror =

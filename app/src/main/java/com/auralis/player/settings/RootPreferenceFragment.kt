@@ -1,6 +1,10 @@
 /*
- * Copyright (c) 2021 Auralis Project
+ * Copyright (c) 2021 Auralis Contributors
  * RootPreferenceFragment.kt is part of Auralis.
+ *
+ * Auralis is a derivative work of the Auxio Project and incorporates
+ * audiobook-oriented work inspired by Voice. Original copyright and GPL
+ * attribution are retained in PROVENANCE.md and the repository history.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
