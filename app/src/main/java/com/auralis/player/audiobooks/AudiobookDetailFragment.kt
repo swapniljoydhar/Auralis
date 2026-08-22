@@ -26,6 +26,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -136,6 +137,8 @@ class AudiobookDetailFragment : Fragment() {
             TextView(colors).apply {
                 text = book.title
                 textSize = 26f
+                maxLines = 3
+                ellipsize = TextUtils.TruncateAt.END
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
                 contentDescription = book.title
                 setTypeface(typeface, Typeface.BOLD)

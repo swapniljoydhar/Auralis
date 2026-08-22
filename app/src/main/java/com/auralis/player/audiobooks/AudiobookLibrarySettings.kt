@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package com.auralis.player.audiobooks
 
 /** The presentation used only by the Audiobooks listening library. */

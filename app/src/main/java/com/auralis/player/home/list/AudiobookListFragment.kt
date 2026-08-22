@@ -24,11 +24,13 @@ package com.auralis.player.home.list
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -79,6 +81,7 @@ class AudiobookListFragment : Fragment() {
 
     private var binding: FragmentHomeListBinding? = null
     private val adapter = AudiobookAdapter(::openBook, ::resumeBook)
+    private var indexingState: IndexingState? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,7 +105,7 @@ class AudiobookListFragment : Fragment() {
             setImageResource(R.drawable.ic_album_48)
             contentDescription = getString(R.string.lbl_audiobooks)
         }
-        current.homeNoMusicMsg.text = getString(R.string.msg_no_audiobooks)
+        renderEmptyState()
         current.homeNoMusicAction.isVisible = false
 
         collectImmediately(homeModel.audiobookList, ::updateBooks)
@@ -119,9 +122,7 @@ class AudiobookListFragment : Fragment() {
         val current = binding ?: return
         applyLibraryPresentation()
         adapter.setBooks(books)
-        current.homeRecycler.isInvisible = books.isEmpty()
-        current.homeNoMusic.isVisible = books.isEmpty()
-        current.homeNoMusicAction.isVisible = false
+        renderEmptyState()
         lifecycleScope.launch {
             val progress =
                 books.associate { book ->
@@ -151,11 +152,19 @@ class AudiobookListFragment : Fragment() {
     }
 
     private fun updateEmpty(empty: Boolean, indexingState: IndexingState?) {
+        this.indexingState = indexingState
+        renderEmptyState()
+    }
+
+    private fun renderEmptyState() {
         val current = binding ?: return
         val booksEmpty = adapter.bookCount == 0
-        current.homeRecycler.isInvisible = empty || booksEmpty
-        current.homeNoMusic.isVisible = empty || booksEmpty
+        val isLoading = booksEmpty && indexingState is IndexingState.Indexing
+        current.homeRecycler.isInvisible = booksEmpty
+        current.homeNoMusic.isVisible = booksEmpty
         current.homeNoMusicAction.isVisible = false
+        current.homeNoMusicMsg.text =
+            getString(if (isLoading) R.string.msg_audiobook_loading else R.string.msg_no_audiobooks)
     }
 
     private fun openBook(book: AudiobookBook) {
@@ -177,7 +186,7 @@ class AudiobookListFragment : Fragment() {
     }
 
     private sealed interface AudiobookRow {
-        data class Header(val title: String) : AudiobookRow
+        data class Header(@StringRes val titleRes: Int) : AudiobookRow
 
         data class Book(
             val book: AudiobookBook,
@@ -273,7 +282,7 @@ class AudiobookListFragment : Fragment() {
             submitList(
                 buildList {
                     if (current.isNotEmpty()) {
-                        add(AudiobookRow.Header("Current"))
+                        add(AudiobookRow.Header(R.string.lbl_audiobook_current))
                         current.forEach { book ->
                             add(
                                 AudiobookRow.Book(
@@ -285,7 +294,7 @@ class AudiobookListFragment : Fragment() {
                         }
                     }
                     if (notStarted.isNotEmpty()) {
-                        add(AudiobookRow.Header("Not started"))
+                        add(AudiobookRow.Header(R.string.lbl_audiobook_not_started))
                         notStarted.forEach { book ->
                             add(
                                 AudiobookRow.Book(
@@ -297,7 +306,7 @@ class AudiobookListFragment : Fragment() {
                         }
                     }
                     if (finished.isNotEmpty()) {
-                        add(AudiobookRow.Header("Finished"))
+                        add(AudiobookRow.Header(R.string.lbl_audiobook_finished))
                         finished.forEach { book ->
                             add(
                                 AudiobookRow.Book(
@@ -321,7 +330,7 @@ class AudiobookListFragment : Fragment() {
                 }
             ) {
             fun bind(row: AudiobookRow.Header) {
-                (itemView as TextView).text = row.title
+                (itemView as TextView).text = itemView.context.getString(row.titleRes)
             }
         }
 
@@ -342,8 +351,24 @@ class AudiobookListFragment : Fragment() {
             ) {
             private val root = itemView as LinearLayout
             private val cover = CoverView(parent.context)
-            private val title = TextView(parent.context).apply { textSize = 17f }
-            private val subtitle = TextView(parent.context).apply { textSize = 14f }
+            private val title =
+                TextView(parent.context).apply {
+                    textSize = 17f
+                    maxLines = 2
+                    ellipsize = TextUtils.TruncateAt.END
+                }
+            private val subtitle =
+                TextView(parent.context).apply {
+                    textSize = 14f
+                    maxLines = 1
+                    ellipsize = TextUtils.TruncateAt.END
+                }
+            private val state =
+                TextView(parent.context).apply {
+                    textSize = 14f
+                    maxLines = 1
+                    ellipsize = TextUtils.TruncateAt.END
+                }
             private val resume = MaterialButton(parent.context).apply { isAllCaps = false }
 
             init {
@@ -356,6 +381,7 @@ class AudiobookListFragment : Fragment() {
                         orientation = LinearLayout.VERTICAL
                         addView(title)
                         addView(subtitle)
+                        addView(state)
                     },
                     LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f),
                 )
@@ -375,15 +401,31 @@ class AudiobookListFragment : Fragment() {
                     book.key.hashCode(),
                 )
                 title.text = book.title
-                val author = book.author?.takeIf { it.isNotBlank() }?.let { "$it · " }.orEmpty()
                 subtitle.text =
+                    listOfNotNull(
+                            book.author?.takeIf { it.isNotBlank() },
+                            context.getString(R.string.lbl_audiobook_local),
+                        )
+                        .joinToString(" · ")
+                state.text =
                     when (row.summary.lifecycle) {
                         AudiobookLifecycle.CURRENT ->
-                            "${row.summary.percentage}% · ${row.summary.remainingMs.formatDurationMs(false)} remaining"
+                            context.getString(
+                                R.string.lbl_audiobook_current_summary,
+                                row.summary.percentage,
+                                row.summary.remainingMs.formatDurationMs(false),
+                            )
                         AudiobookLifecycle.FINISHED ->
-                            "Finished · ${book.totalDurationMs.formatDurationMs(false)}"
+                            context.getString(
+                                R.string.lbl_audiobook_finished_summary,
+                                book.totalDurationMs.formatDurationMs(false),
+                            )
                         AudiobookLifecycle.NOT_STARTED ->
-                            "$author${book.chapterCount} chapters · ${book.totalDurationMs.formatDurationMs(false)}"
+                            context.getString(
+                                R.string.lbl_audiobook_not_started_summary,
+                                book.chapterCount,
+                                book.totalDurationMs.formatDurationMs(false),
+                            )
                     }
                 root.setOnClickListener { onClick(book) }
                 root.contentDescription = book.title
@@ -418,12 +460,21 @@ class AudiobookListFragment : Fragment() {
                 TextView(parent.context).apply {
                     gravity = android.view.Gravity.CENTER_HORIZONTAL
                     maxLines = 2
+                    ellipsize = TextUtils.TruncateAt.END
                     textSize = 16f
                 }
             private val subtitle =
                 TextView(parent.context).apply {
                     gravity = android.view.Gravity.CENTER_HORIZONTAL
+                    maxLines = 1
+                    ellipsize = TextUtils.TruncateAt.END
+                    textSize = 13f
+                }
+            private val state =
+                TextView(parent.context).apply {
+                    gravity = android.view.Gravity.CENTER_HORIZONTAL
                     maxLines = 2
+                    ellipsize = TextUtils.TruncateAt.END
                     textSize = 13f
                 }
             private val resume = MaterialButton(parent.context).apply { isAllCaps = false }
@@ -439,6 +490,13 @@ class AudiobookListFragment : Fragment() {
                 )
                 root.addView(
                     subtitle,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ),
+                )
+                root.addView(
+                    state,
                     LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -461,13 +519,30 @@ class AudiobookListFragment : Fragment() {
                 )
                 title.text = book.title
                 subtitle.text =
+                    listOfNotNull(
+                            book.author?.takeIf { it.isNotBlank() },
+                            context.getString(R.string.lbl_audiobook_local),
+                        )
+                        .joinToString(" · ")
+                state.text =
                     when (row.summary.lifecycle) {
                         AudiobookLifecycle.CURRENT ->
-                            "${row.summary.percentage}% · ${row.summary.remainingMs.formatDurationMs(false)} remaining"
+                            context.getString(
+                                R.string.lbl_audiobook_current_summary,
+                                row.summary.percentage,
+                                row.summary.remainingMs.formatDurationMs(false),
+                            )
                         AudiobookLifecycle.FINISHED ->
-                            "Finished · ${book.totalDurationMs.formatDurationMs(false)}"
+                            context.getString(
+                                R.string.lbl_audiobook_finished_summary,
+                                book.totalDurationMs.formatDurationMs(false),
+                            )
                         AudiobookLifecycle.NOT_STARTED ->
-                            "${book.chapterCount} chapters · ${book.totalDurationMs.formatDurationMs(false)}"
+                            context.getString(
+                                R.string.lbl_audiobook_not_started_summary,
+                                book.chapterCount,
+                                book.totalDurationMs.formatDurationMs(false),
+                            )
                     }
                 root.setOnClickListener { onClick(book) }
                 root.contentDescription = book.title
@@ -490,7 +565,7 @@ class AudiobookListFragment : Fragment() {
                     override fun areItemsTheSame(old: AudiobookRow, new: AudiobookRow) =
                         when {
                             old is AudiobookRow.Header && new is AudiobookRow.Header ->
-                                old.title == new.title
+                                old.titleRes == new.titleRes
                             old is AudiobookRow.Book && new is AudiobookRow.Book ->
                                 old.book.key == new.book.key
                             else -> false
