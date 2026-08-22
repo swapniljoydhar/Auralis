@@ -2,29 +2,41 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/set_root_title">
-    <Preference
-        app:icon="@drawable/ic_accent_24"
-        app:key="@string/set_key_ui"
-        app:summary="@string/set_ui_desc"
-        app:title="@string/set_ui" />
+    <PreferenceCategory app:title="@string/set_shared">
 
-    <Preference
-        app:icon="@drawable/ic_song_24"
-        app:key="@string/set_key_music"
-        app:summary="@string/set_content_desc"
-        app:title="@string/set_content" />
+        <Preference
+            app:icon="@drawable/ic_accent_24"
+            app:key="@string/set_key_ui"
+            app:summary="@string/set_ui_desc"
+            app:title="@string/set_ui" />
 
-    <Preference
-        app:icon="@drawable/ic_play_24"
-        app:key="@string/set_key_audio"
-        app:summary="@string/set_audio_desc"
-        app:title="@string/set_audio" />
+    </PreferenceCategory>
 
-    <Preference
-        app:icon="@drawable/ic_album_24"
-        app:key="@string/set_key_audiobooks"
-        app:summary="@string/set_audiobooks_desc"
-        app:title="@string/set_audiobooks" />
+    <PreferenceCategory app:title="@string/set_music">
+
+        <Preference
+            app:icon="@drawable/ic_song_24"
+            app:key="@string/set_key_music"
+            app:summary="@string/set_content_desc"
+            app:title="@string/set_content" />
+
+        <Preference
+            app:icon="@drawable/ic_play_24"
+            app:key="@string/set_key_audio"
+            app:summary="@string/set_audio_desc"
+            app:title="@string/set_audio" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/set_audiobooks">
+
+        <Preference
+            app:icon="@drawable/ic_album_24"
+            app:key="@string/set_key_audiobooks"
+            app:summary="@string/set_audiobooks_desc"
+            app:title="@string/set_audiobooks" />
+
+    </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/set_library">
 

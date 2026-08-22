@@ -66,7 +66,6 @@ import com.auralis.player.util.dampen
 import com.auralis.player.util.navigateSafe
 import com.auralis.player.util.showToast
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
@@ -184,9 +183,6 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
         collectImmediately(musicModel.playlistMessage.flow, ::handlePlaylistMessage)
         collect(playbackModel.playbackDecision.flow, ::handlePlaybackDecision)
         updateModeAction(homeModel.currentTabType.value)
-        if (homeModel.preferredMode == null) {
-            binding.root.post { showModeChooser() }
-        }
     }
 
     override fun onDestroyBinding(binding: FragmentHomeBinding) {
@@ -321,20 +317,6 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                     R.string.lbl_audiobook_mode
                 }
             )
-    }
-
-    private fun showModeChooser() {
-        if (!isAdded || homeModel.preferredMode != null) return
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.lbl_choose_library_mode)
-            .setMessage(R.string.msg_choose_library_mode)
-            .setItems(
-                arrayOf(getString(R.string.lbl_music_mode), getString(R.string.lbl_audiobook_mode))
-            ) { _, which ->
-                homeModel.selectMode(if (which == 1) MusicType.AUDIOBOOKS else MusicType.SONGS)
-            }
-            .setOnCancelListener { homeModel.selectMode(MusicType.SONGS) }
-            .show()
     }
 
     private fun handleRecreate(recreate: Unit?) {

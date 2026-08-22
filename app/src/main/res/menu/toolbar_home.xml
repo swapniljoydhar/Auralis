@@ -16,8 +16,9 @@
 
     <item
         android:id="@+id/action_switch_library_mode"
+        android:icon="@drawable/ic_swap_horiz_24"
         android:title="@string/lbl_switch_library_mode"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_settings"

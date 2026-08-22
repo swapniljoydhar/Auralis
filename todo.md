@@ -58,3 +58,7 @@
 - [x] Audit and fix confirmed M4A, OGG, OGA, and OPUS parity gaps across local indexing, metadata, playback, chapters, progress, and bookmarks.
 - [x] Strengthen Music/Audiobooks isolation coverage for repeated and concurrent shared-library snapshot refreshes.
 - [x] Document the verified Auralis 4.1.17 Audiobooks discovery and P0-P2 listening flow.
+- [x] Define and apply one native Auralis design system across Music and Audiobooks without sharing mode-specific controls.
+- [x] Replace the hard initial Music/Audiobooks decision with fluid persistent native mode navigation that preserves independent mode state.
+- [x] Refine the native settings root so shared appearance/local-library controls and mode-specific settings are easy to understand.
+- [x] Verify the cohesive native Music/Audiobooks design pass preserves PlaybackDomain isolation, accessibility, and local-only behavior.

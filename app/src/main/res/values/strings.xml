@@ -86,7 +86,7 @@
     <string name="lbl_audiobooks">Audiobooks</string>
     <string name="lbl_music_mode">Music</string>
     <string name="lbl_audiobook_mode">Audiobooks</string>
-    <string name="lbl_switch_library_mode">Switch library mode</string>
+    <string name="lbl_switch_library_mode">Switch between Music and Audiobooks</string>
     <string name="lbl_choose_library_mode">What do you want to explore?</string>
     <string name="msg_choose_library_mode">Choose Music for songs and albums, or Audiobooks for chapter-based listening. You can switch at any time.</string>
     <string name="msg_hub_subtitle">Choose how you want to listen</string>
@@ -307,8 +307,9 @@
 
     <string name="set_root_title">Settings</string>
 
-    <string name="set_ui">Look and feel</string>
-    <string name="set_ui_desc">Change the theme and colors of the app</string>
+    <string name="set_shared">Auralis</string>
+    <string name="set_ui">Appearance</string>
+    <string name="set_ui_desc">Theme, color, and cover presentation</string>
     <string name="set_theme">Theme</string>
     <string name="set_theme_auto">Automatic</string>
     <string name="set_theme_day">Light</string>
@@ -342,8 +343,8 @@
     <string name="set_task_exit">Always exit on close</string>
     <string name="set_task_exit_desc">Stop playback when removed from recents, even if playing</string>
 
-    <string name="set_content">Content</string>
-    <string name="set_content_desc">Control how music and images are loaded</string>
+    <string name="set_content">Music library</string>
+    <string name="set_content_desc">How local music and artwork are organized</string>
     <string name="set_music">Music</string>
     <string name="set_observing">Automatic reloading</string>
     <string name="set_observing_desc">Reload the music library whenever it changes (requires persistent notification)</string>
@@ -375,8 +376,8 @@
     <string name="set_square_covers">Force square album covers</string>
     <string name="set_square_covers_desc">Crop all album covers to a 1:1 aspect ratio</string>
 
-    <string name="set_audio">Audio</string>
-    <string name="set_audio_desc">Configure sound and playback behavior</string>
+    <string name="set_audio">Music playback</string>
+    <string name="set_audio_desc">Sound and playback behavior for Music</string>
     <string name="set_playback">Playback</string>
     <string name="set_audiobooks">Audiobooks</string>
     <string name="set_audiobooks_desc">Configure your local audiobook library and long-form listening</string>
@@ -432,9 +433,9 @@
     <string name="set_pre_amp_without">Adjustment without tags</string>
     <string name="set_pre_amp_warning">Warning: Changing the pre-amp to a high positive value may result in peaking on some audio tracks.</string>
 
-    <string name="set_library">Library</string>
-    <string name="set_locations">Music sources</string>
-    <string name="set_locations_desc">Manage where music should be loaded from</string>
+    <string name="set_library">Local library</string>
+    <string name="set_locations">Local media sources</string>
+    <string name="set_locations_desc">Manage device folders scanned for local audio</string>
     <string name="set_load_from">Load from</string>
     <string name="set_file_picker">File picker</string>
     <string name="set_system_database">System</string>
