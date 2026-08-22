@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PlaylistListFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ import org.oxycblt.musikr.Song
 /**
  * A [ListFragment] that shows a list of [Playlist]s.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class PlaylistListFragment :
     ListFragment<Playlist, FragmentHomeListBinding>(),

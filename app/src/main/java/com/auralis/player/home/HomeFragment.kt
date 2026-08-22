@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * HomeFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -76,7 +76,7 @@ import timber.log.Timber as L
  * The starting [SelectionFragment] of Auralis. Shows the user's music library and enables
  * navigation to other views.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class HomeFragment : SelectionFragment<FragmentHomeBinding>() {

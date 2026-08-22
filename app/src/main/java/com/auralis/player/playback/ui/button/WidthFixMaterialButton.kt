@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Auxio Project
+ * Copyright (c) 2026 Auralis Project
  * WidthFixMaterialButton.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import com.google.android.material.R
  * [com.auralis.player.ui.RippleFixMaterialButton] that works around another bug where switching the
  * icon during a press breaks width expansion animations.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  *
  * TODO: Should animate icon transitions to make this look less bad.
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PlaylistChoiceAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ class PlaylistChoiceAdapter(val listener: ClickableListListener<PlaylistChoice>)
  * A [DialogRecyclerView.ViewHolder] that displays an individual playlist choice. Use [from] to
  * create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class PlaylistChoiceViewHolder private constructor(private val binding: ItemPickerChoiceBinding) :
     DialogRecyclerView.ViewHolder(binding.root) {

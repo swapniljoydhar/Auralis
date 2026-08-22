@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * MusicSettings.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import timber.log.Timber as L
 /**
  * User configuration specific to music system.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface MusicSettings : Settings<MusicSettings.Listener> {
     /** The current library revision. */

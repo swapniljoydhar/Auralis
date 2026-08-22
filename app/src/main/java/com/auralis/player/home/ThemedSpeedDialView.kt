@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Auxio Project
+ * Copyright (c) 2018 Auralis Project
  * ThemedSpeedDialView.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ import kotlinx.parcelize.Parcelize
  * - Removed dynamic theme changes based on the MaterialFile's Material 3 setting
  * - Adapted code to the extensions in this project
  *
- * @author Hai Zhang, Alexander Capehart (OxygenCobalt)
+ * @author Hai Zhang, Auralis Contributors
  */
 class ThemedSpeedDialView : SpeedDialView {
     private var mainFabAnimation: MainFabAnimation? = null

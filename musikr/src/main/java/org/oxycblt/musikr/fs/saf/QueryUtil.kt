@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * QueryUtil.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import android.net.Uri
 
 /**
  * Get a content resolver that will not mangle MediaStore queries on certain devices. See
- * https://github.com/OxygenCobalt/Auralis/issues/50 for more info.
+ * https://github.com/Auralis/Auralis/issues/50 for more info.
  */
 internal val Context.contentResolverSafe: ContentResolver
     get() = applicationContext.contentResolver

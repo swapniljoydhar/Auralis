@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * SquareCropTransformation.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import kotlin.math.min
  * A [Transformation] that performs a center crop-style transformation on an image. Allowing this
  * behavior to be intrinsic without any view configuration.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class SquareCropTransformation : Transformation() {
     override val cacheKey: String

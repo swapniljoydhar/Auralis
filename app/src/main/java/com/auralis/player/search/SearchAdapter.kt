@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * SearchAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ import org.oxycblt.musikr.Song
  * An adapter that displays search results.
  *
  * @param listener An [SelectableListListener] to bind interactions to.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class SearchAdapter(private val listener: SelectableListListener<Music>) :
     SelectionIndicatorAdapter<Item, RecyclerView.ViewHolder>(DIFF_CALLBACK) {

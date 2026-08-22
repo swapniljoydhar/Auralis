@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * ExternalPlaylistManager.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import org.oxycblt.musikr.playlist.m3u.M3U
  *
  * @see ImportedPlaylist
  * @see M3U
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface ExternalPlaylistManager {
     /**

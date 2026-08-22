@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PlaybackSettings.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import timber.log.Timber as L
 /**
  * User configuration specific to the playback system.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface PlaybackSettings : Settings<PlaybackSettings.Listener> {
     /** The action to display on the playback bar. */

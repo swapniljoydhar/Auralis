@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PlaybackStateManager.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ import timber.log.Timber as L
  * Internal consumers should usually use [Listener], however the component that manages the player
  * itself should instead use [PlaybackStateHolder].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface PlaybackStateManager {
     /** The explicit local-library domain that owns the active session. */
@@ -363,6 +363,9 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     )
 
     private val listeners = mutableListOf<Listener>()
+    // Snapshot for safe iteration: copied before dispatching callbacks so that
+    // concurrent add/removeListener calls don't cause ConcurrentModificationException.
+    private var listenersSnapshot = emptyList<Listener>()
 
     @Volatile
     private var stateMirror =
@@ -453,6 +456,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     override fun addListener(listener: Listener) {
         L.d("Adding $listener to listeners")
         listeners.add(listener)
+        listenersSnapshot = listeners.toList()
 
         if (isInitialized) {
             L.d("Sending initial state to $listener")
@@ -473,6 +477,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
         if (!listeners.remove(listener)) {
             L.w("Listener $listener was not added prior, cannot remove")
         }
+        listenersSnapshot = listeners.toList()
     }
 
     @Synchronized
@@ -676,25 +681,24 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
             is StateAck.IndexMoved -> {
                 val rawQueue = stateHolder.resolveQueue()
                 stateMirror = stateMirror.copy(index = rawQueue.resolveIndex(), rawQueue = rawQueue)
-                listeners.forEach { it.onIndexMoved(stateMirror.index) }
+                val snap = listenersSnapshot
+                for (l in snap) l.onIndexMoved(stateMirror.index)
             }
             is StateAck.PlayNext -> {
                 val rawQueue = stateHolder.resolveQueue()
                 val change =
                     QueueChange(QueueChange.Type.MAPPING, UpdateInstructions.Add(ack.at, ack.size))
                 stateMirror = stateMirror.copy(queue = rawQueue.resolveSongs(), rawQueue = rawQueue)
-                listeners.forEach {
-                    it.onQueueChanged(stateMirror.queue, stateMirror.index, change)
-                }
+                val snap = listenersSnapshot
+                for (l in snap) l.onQueueChanged(stateMirror.queue, stateMirror.index, change)
             }
             is StateAck.AddToQueue -> {
                 val rawQueue = stateHolder.resolveQueue()
                 val change =
                     QueueChange(QueueChange.Type.MAPPING, UpdateInstructions.Add(ack.at, ack.size))
                 stateMirror = stateMirror.copy(queue = rawQueue.resolveSongs(), rawQueue = rawQueue)
-                listeners.forEach {
-                    it.onQueueChanged(stateMirror.queue, stateMirror.index, change)
-                }
+                val snap = listenersSnapshot
+                for (l in snap) l.onQueueChanged(stateMirror.queue, stateMirror.index, change)
             }
             is StateAck.Move -> {
                 val rawQueue = stateHolder.resolveQueue()
@@ -713,9 +717,8 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
                         rawQueue = rawQueue,
                     )
 
-                listeners.forEach {
-                    it.onQueueChanged(stateMirror.queue, stateMirror.index, change)
-                }
+                val snap = listenersSnapshot
+                for (l in snap) l.onQueueChanged(stateMirror.queue, stateMirror.index, change)
             }
             is StateAck.Remove -> {
                 val rawQueue = stateHolder.resolveQueue()
@@ -737,9 +740,8 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
                         rawQueue = rawQueue,
                     )
 
-                listeners.forEach {
-                    it.onQueueChanged(stateMirror.queue, stateMirror.index, change)
-                }
+                val snap = listenersSnapshot
+                for (l in snap) l.onQueueChanged(stateMirror.queue, stateMirror.index, change)
             }
             is StateAck.QueueReordered -> {
                 val rawQueue = stateHolder.resolveQueue()
@@ -750,13 +752,12 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
                         isShuffled = rawQueue.isShuffled,
                         rawQueue = rawQueue,
                     )
-                listeners.forEach {
-                    it.onQueueReordered(
-                        stateMirror.queue,
-                        stateMirror.index,
-                        stateMirror.isShuffled,
-                    )
-                }
+                val snap = listenersSnapshot
+                for (l in snap) l.onQueueReordered(
+                    stateMirror.queue,
+                    stateMirror.index,
+                    stateMirror.isShuffled,
+                )
             }
             is StateAck.NewPlayback -> {
                 val rawQueue = stateHolder.resolveQueue()
@@ -768,22 +769,23 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
                         isShuffled = rawQueue.isShuffled,
                         rawQueue = rawQueue,
                     )
-                listeners.forEach {
-                    it.onNewPlayback(
-                        stateMirror.parent,
-                        stateMirror.queue,
-                        stateMirror.index,
-                        stateMirror.isShuffled,
-                    )
-                }
+                val snap = listenersSnapshot
+                for (l in snap) l.onNewPlayback(
+                    stateMirror.parent,
+                    stateMirror.queue,
+                    stateMirror.index,
+                    stateMirror.isShuffled,
+                )
             }
             is StateAck.ProgressionChanged -> {
                 stateMirror = stateMirror.copy(progression = stateHolder.progression)
-                listeners.forEach { it.onProgressionChanged(stateMirror.progression) }
+                val snap = listenersSnapshot
+                for (l in snap) l.onProgressionChanged(stateMirror.progression)
             }
             is StateAck.RepeatModeChanged -> {
                 stateMirror = stateMirror.copy(repeatMode = stateHolder.repeatMode)
-                listeners.forEach { it.onRepeatModeChanged(stateMirror.repeatMode) }
+                val snap = listenersSnapshot
+                for (l in snap) l.onRepeatModeChanged(stateMirror.repeatMode)
             }
             is StateAck.SessionEnded -> {
                 val endedDomain = stateMirror.domain
@@ -799,9 +801,10 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
                         rawQueue = RawQueue.nil(),
                     )
                 currentPlaybackSpeed = 1.0f
-                listeners.forEach { it.onNewPlayback(null, emptyList(), -1, false) }
-                listeners.forEach { it.onProgressionChanged(stateMirror.progression) }
-                listeners.forEach { it.onSessionEnded() }
+                val snap = listenersSnapshot
+                for (l in snap) l.onNewPlayback(null, emptyList(), -1, false)
+                for (l in snap) l.onProgressionChanged(stateMirror.progression)
+                for (l in snap) l.onSessionEnded()
             }
         }
     }

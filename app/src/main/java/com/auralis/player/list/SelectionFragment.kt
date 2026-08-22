@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * SelectionFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import com.auralis.player.util.showToast
 /**
  * A subset of ListFragment that implements aspects of the selection UI.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class SelectionFragment<VB : ViewBinding> :
     ViewBindingFragment<VB>(), Toolbar.OnMenuItemClickListener {

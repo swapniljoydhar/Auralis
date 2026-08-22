@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * WrappedDialogPreference.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import androidx.preference.DialogPreference
  * Wraps a [DialogPreference] to be instantiatable. This has no purpose other to ensure that custom
  * dialog preferences are handled.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class WrappedDialogPreference
 @JvmOverloads

@@ -23,5 +23,5 @@
 debug.zip
 
 #### Due diligence
-- [ ] I have read the [Contribution Guidelines](https://github.com/swapniljoydhar/Auxio/blob/dev/.github/CONTRIBUTING.md).
-- [ ] I have read the [Auralis architecture](https://github.com/swapniljoydhar/Auxio/blob/dev/docs/ARCHITECTURE.md) page.
+- [ ] I have read the [Contribution Guidelines](https://github.com/swapniljoydhar/Auralis/blob/dev/.github/CONTRIBUTING.md).
+- [ ] I have read the [Auralis architecture](https://github.com/swapniljoydhar/Auralis/blob/dev/docs/ARCHITECTURE.md) page.

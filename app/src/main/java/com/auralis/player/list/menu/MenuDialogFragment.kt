@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * MenuDialogFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import timber.log.Timber as L
  * A [ViewBindingBottomSheetDialogFragment] that displays basic music information and a series of
  * options.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  *
  * TODO: Extend the amount of music info shown in the dialog
  */

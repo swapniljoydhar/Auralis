@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * AlbumImpl.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ internal interface AlbumCore {
 /**
  * Library-backed implementation of [Album].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class AlbumImpl internal constructor(private val core: AlbumCore) : Album {
     private val preAlbum = core.preAlbum

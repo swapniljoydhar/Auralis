@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * PlaybackBarFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ import timber.log.Timber as L
 /**
  * A [ViewBindingFragment] that shows the current playback state in a compact manner.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class PlaybackBarFragment : ViewBindingFragment<FragmentPlaybackBarBinding>() {

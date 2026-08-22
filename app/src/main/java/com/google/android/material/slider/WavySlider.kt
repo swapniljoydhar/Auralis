@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Auxio Project
+ * Copyright (c) 2026 Auralis Project
  * WavySlider.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ import timber.log.Timber
  * Slider with active-track wave rendering that ports MDC LinearProgressIndicator's wavy draw
  * behavior.
  *
- * @author Codex, Alexander Capehart (OxygenCobalt) (Clean Up/Rewrite/Cognitive Ownership)
+ * @author Codex, Auralis Contributors (Clean Up/Rewrite/Cognitive Ownership)
  */
 class WavySlider
 @JvmOverloads

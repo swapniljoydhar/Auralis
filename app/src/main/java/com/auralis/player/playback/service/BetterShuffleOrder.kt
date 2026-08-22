@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Auxio Project
+ * Copyright (c) 2017 Auralis Project
  * BetterShuffleOrder.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import androidx.media3.exoplayer.source.ShuffleOrder
  * the default implementation will randomly spread out added media items, this implementation will
  * insert them in the order they are added contiguously.
  *
- * @author media3 team, Alexander Capehart (OxygenCobalt)
+ * @author media3 team, Auralis Contributors
  */
 @OptIn(UnstableApi::class)
 class BetterShuffleOrder(private val shuffled: IntArray) : ShuffleOrder {

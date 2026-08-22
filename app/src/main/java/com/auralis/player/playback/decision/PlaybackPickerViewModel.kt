@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PlaybackPickerViewModel.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import timber.log.Timber as L
 /**
  * A [ViewModel] that stores the choices shown in the playback picker dialogs.
  *
- * @author OxygenCobalt (Alexander Capehart)
+ * @author Auralis Contributors
  */
 @HiltViewModel
 class PlaybackPickerViewModel @Inject constructor(private val musicRepository: MusicRepository) :

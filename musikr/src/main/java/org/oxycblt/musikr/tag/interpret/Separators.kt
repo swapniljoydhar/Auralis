@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * Separators.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import org.oxycblt.musikr.util.splitEscaped
  * Defines the user-specified parsing of multi-value tags. This should be used to parse any tags
  * that may be delimited with a separator character.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface Separators {
     /**

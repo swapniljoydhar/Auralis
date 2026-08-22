@@ -34,7 +34,7 @@
     <string name="lbl_version">Versión</string>
     <string name="lbl_code">Código fuente</string>
     <string name="lbl_licenses">Licencias</string>
-    <string name="lbl_author_name">Desarrollado por Alexander Capehart</string>
+    <string name="lbl_author_name">Desarrollado por Auralis Contributors</string>
     <string name="set_root_title">Configuración</string>
     <string name="set_ui">Aspecto y comportamiento</string>
     <string name="set_theme">Tema</string>

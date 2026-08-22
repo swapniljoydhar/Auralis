@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * TabCustomizeDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import timber.log.Timber as L
  * A [ViewBindingMaterialDialogFragment] that allows the user to modify the home [Tab]
  * configuration.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class TabCustomizeDialog :

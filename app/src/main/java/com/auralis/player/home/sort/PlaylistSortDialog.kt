@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PlaylistSortDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 /**
  * A [SortDialog] that controls the [Sort] of [HomeViewModel.playlistList].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class PlaylistSortDialog : SortDialog() {

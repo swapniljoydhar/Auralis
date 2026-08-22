@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * ViewBindingMaterialDialogFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import timber.log.Timber as L
  * A lifecycle-aware [DialogFragment] that automatically manages the [ViewBinding] lifecycle as a
  * material dialog.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class ViewBindingMaterialDialogFragment<VB : ViewBinding> : DialogFragment() {
     private var _binding: VB? = null

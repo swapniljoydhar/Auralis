@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * BaseBottomSheetBehavior.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import timber.log.Timber as L
  * 2. Strange corner radius behaviors.
  * 3. Inability to skip half-expanded state when full-screen.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class BaseBottomSheetBehavior<V : View>(context: Context, attributeSet: AttributeSet?) :
     BackportBottomSheetBehavior<V>(context, attributeSet) {
@@ -48,7 +48,7 @@ abstract class BaseBottomSheetBehavior<V : View>(context: Context, attributeSet:
 
     // I can't manually inject this, MainFragment must be the one to do it.
     // TODO: Just use another library. Tired of Hilt.
-    lateinit var uiSettings: UISettings
+    var uiSettings: UISettings? = null
 
     init {
         // Disable isFitToContents to make the bottom sheet expand to the top of the screen and
@@ -99,13 +99,14 @@ abstract class BaseBottomSheetBehavior<V : View>(context: Context, attributeSet:
     override fun onLayoutChild(parent: CoordinatorLayout, child: V, layoutDirection: Int): Boolean {
         val layout = super.onLayoutChild(parent, child, layoutDirection)
         // Don't repeat redundant initialization.
-        if (!initalized) {
+        val settings = uiSettings
+        if (!initalized && settings != null) {
             L.d("Not initialized, setting up child")
             child.apply {
                 // Set up compat elevation attributes. These are only shown below API 28.
                 translationZ = context.getDimen(MR.dimen.m3_sys_elevation_level1)
                 // Background differs depending on concrete implementation.
-                background = createBackground(context, uiSettings)
+                background = createBackground(context, settings)
                 setOnApplyWindowInsetsListener(::applyWindowInsets)
             }
             initalized = true

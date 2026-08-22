@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * ErrorDetailsDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import com.auralis.player.util.showToast
 /**
  * A dialog that shows a stack trace for a music loading error.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  *
  * TODO: Extend to other errors
  */
@@ -88,7 +88,7 @@ class ErrorDetailsDialog : ViewBindingMaterialDialogFragment<DialogErrorDetailsB
     private companion object {
         /** The URL to the bug report issue form */
         const val LINK_ISSUES =
-            "https://github.com/OxygenCobalt/Auralis/issues/new" +
-                "?assignees=OxygenCobalt&labels=bug&projects=&template=bug-crash-report.yml"
+            "https://github.com/Auralis/Auralis/issues/new" +
+                "?assignees=Auralis&labels=bug&projects=&template=bug-crash-report.yml"
     }
 }

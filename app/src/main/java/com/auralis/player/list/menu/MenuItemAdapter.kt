@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * MenuItemAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ import com.auralis.player.util.inflater
  * Displays a list of [MenuItem]s as custom list items.
  *
  * @param listener A [ClickableListListener] to bind interactions to.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class MenuItemAdapter(private val listener: ClickableListListener<MenuItem>) :
     FlexibleListAdapter<MenuItem, MenuItemViewHolder>(MenuItemViewHolder.DIFF_CALLBACK) {
@@ -46,7 +46,7 @@ class MenuItemAdapter(private val listener: ClickableListListener<MenuItem>) :
 /**
  * A [DialogRecyclerView.ViewHolder] that displays a [MenuItem].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class MenuItemViewHolder private constructor(private val binding: ItemMenuOptionBinding) :
     DialogRecyclerView.ViewHolder(binding.root) {

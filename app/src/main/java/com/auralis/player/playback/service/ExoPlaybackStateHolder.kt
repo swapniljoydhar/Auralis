@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * ExoPlaybackStateHolder.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -94,7 +94,7 @@ class ExoPlaybackStateHolder(
     private val saveJob = Job()
     private val saveScope = CoroutineScope(Dispatchers.IO + saveJob)
     private val restoreScope = CoroutineScope(Dispatchers.IO + saveJob)
-    private var currentSaveJob: Job? = null
+    @Volatile private var currentSaveJob: Job? = null
     private var openAudioEffectSession = false
     private val pendingAudiobookProgress = mutableListOf<AudiobookProgressSnapshot>()
     private var pausedAudiobookPositionMs: Long? = null
@@ -117,8 +117,15 @@ class ExoPlaybackStateHolder(
         currentSaveJob?.cancel()
         val currentMediaItem = player.currentMediaItem
         val currentPosition = player.currentPosition
+        // Drain any pending audiobook progress snapshots before saving.
+        // Must synchronize since onPositionDiscontinuity may still be writing.
+        val snapshots = synchronized(pendingAudiobookProgress) {
+            pendingAudiobookProgress.toList().also { pendingAudiobookProgress.clear() }
+        }
         runBlocking(Dispatchers.IO) {
-            savePendingAudiobookProgress()
+            for (snapshot in snapshots) {
+                saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs)
+            }
             saveAudiobookProgress(currentMediaItem, currentPosition)
         }
         saveJob.cancel()
@@ -353,7 +360,7 @@ class ExoPlaybackStateHolder(
 
     override fun goto(index: Int) {
         val indices = player.unscrambleQueueIndices()
-        if (indices.isEmpty()) {
+        if (indices.isEmpty() || index !in indices.indices) {
             return
         }
 
@@ -396,7 +403,7 @@ class ExoPlaybackStateHolder(
 
     override fun move(from: Int, to: Int, ack: StateAck.Move) {
         val indices = player.unscrambleQueueIndices()
-        if (indices.isEmpty()) {
+        if (indices.isEmpty() || from !in indices.indices || to !in indices.indices) {
             return
         }
 
@@ -420,7 +427,7 @@ class ExoPlaybackStateHolder(
 
     override fun remove(at: Int, ack: StateAck.Remove) {
         val indices = player.unscrambleQueueIndices()
-        if (indices.isEmpty()) {
+        if (indices.isEmpty() || at !in indices.indices) {
             return
         }
 

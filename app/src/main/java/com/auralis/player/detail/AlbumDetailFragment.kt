@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * AlbumDetailFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ import timber.log.Timber as L
 /**
  * A [ListFragment] that shows information about an [Album].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class AlbumDetailFragment : DetailFragment<Album, Song>() {

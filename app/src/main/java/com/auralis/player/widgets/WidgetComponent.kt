@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * WidgetComponent.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ import timber.log.Timber as L
  * A component that manages the "Now Playing" state. This is kept separate from the [WidgetProvider]
  * itself to prevent possible memory leaks and enable extension to more widgets in the future.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class WidgetComponent
 private constructor(

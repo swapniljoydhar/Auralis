@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * MenuDialogFragmentImpl.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ import org.oxycblt.musikr.Song
 /**
  * [MenuDialogFragment] implementation for a [Song].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class SongMenuDialogFragment : MenuDialogFragment<Menu.ForSong>() {
@@ -95,7 +95,7 @@ class SongMenuDialogFragment : MenuDialogFragment<Menu.ForSong>() {
 /**
  * [MenuDialogFragment] implementation for a [AlbumMenuDialogFragment].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class AlbumMenuDialogFragment : MenuDialogFragment<Menu.ForAlbum>() {
@@ -144,7 +144,7 @@ class AlbumMenuDialogFragment : MenuDialogFragment<Menu.ForAlbum>() {
 /**
  * [MenuDialogFragment] implementation for a [Artist].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class ArtistMenuDialogFragment : MenuDialogFragment<Menu.ForArtist>() {
@@ -218,7 +218,7 @@ class ArtistMenuDialogFragment : MenuDialogFragment<Menu.ForArtist>() {
 /**
  * [MenuDialogFragment] implementation for a [Genre].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class GenreMenuDialogFragment : MenuDialogFragment<Menu.ForGenre>() {
@@ -270,7 +270,7 @@ class GenreMenuDialogFragment : MenuDialogFragment<Menu.ForGenre>() {
 /**
  * [MenuDialogFragment] implementation for a [Playlist].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class PlaylistMenuDialogFragment : MenuDialogFragment<Menu.ForPlaylist>() {
@@ -340,7 +340,7 @@ class PlaylistMenuDialogFragment : MenuDialogFragment<Menu.ForPlaylist>() {
 /**
  * [MenuDialogFragment] implementation for a [Song] selection.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class SelectionMenuDialogFragment : MenuDialogFragment<Menu.ForSelection>() {

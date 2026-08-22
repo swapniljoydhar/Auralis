@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * ContinuousAppBarLayoutBehavior.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify

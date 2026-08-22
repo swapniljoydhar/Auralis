@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * IntegerTable.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ package com.auralis.player
  * A table containing all of the magic integer codes that the codebase has currently reserved. May
  * be non-contiguous.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 object IntegerTable {
     /** SongViewHolder */

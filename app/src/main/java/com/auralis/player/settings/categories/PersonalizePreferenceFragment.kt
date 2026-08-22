@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PersonalizePreferenceFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import timber.log.Timber as L
 /**
  * Personalization settings interface.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class PersonalizePreferenceFragment : BasePreferenceFragment(R.xml.preferences_personalize) {
     override fun onOpenDialogPreference(preference: WrappedDialogPreference) {

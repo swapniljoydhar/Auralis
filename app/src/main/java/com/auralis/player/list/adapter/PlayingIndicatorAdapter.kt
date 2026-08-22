@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * PlayingIndicatorAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import timber.log.Timber as L
  * A [RecyclerView.Adapter] that supports indicating the playback status of a particular item.
  *
  * @param diffCallback A [DiffUtil.ItemCallback] to compare list updates with.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class PlayingIndicatorAdapter<T, VH : RecyclerView.ViewHolder>(
     diffCallback: DiffUtil.ItemCallback<T>

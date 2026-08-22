@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * PlaybackCommand.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import org.oxycblt.musikr.Song
 /**
  * A playback command that can be passed to [PlaybackStateManager] to start new playback.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface PlaybackCommand {
     /** The local-library domain that owns this queue. */

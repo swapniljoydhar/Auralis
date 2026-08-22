@@ -3,7 +3,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {'.kt', '.java', '.xml', '.gradle', '.properties', '.md', '.yml', '.yaml', '.json', '.txt'}
-OLD_PACKAGE = 'org.oxycblt.auxio'
+OLD_PACKAGE = 'org.oxycblt.auralis'
 NEW_PACKAGE = 'com.auralis.player'
 
 
@@ -30,17 +30,17 @@ def rewrite_source(text: str, suffix: str) -> str:
             body = text[end:]
 
     body = body.replace(OLD_PACKAGE, NEW_PACKAGE)
-    body = body.replace('org/oxycblt/auxio', 'com/auralis/player')
-    body = body.replace('Theme.Auxio', 'Theme.Auralis')
+    body = body.replace('org/oxycblt/auralis', 'com/auralis/player')
+    body = body.replace('Theme.Auralis', 'Theme.Auralis')
     body = body.replace('ic_auxio', 'ic_auralis')
     body = body.replace('AuxioService', 'AuralisService')
     body = body.replace('AuxioRecyclerView', 'AuralisRecyclerView')
-    body = body.replace('class Auxio', 'class Auralis')
-    body = body.replace('Auxio.INTENT', 'Auralis.INTENT')
+    body = body.replace('class Auralis', 'class Auralis')
+    body = body.replace('Auralis.INTENT', 'Auralis.INTENT')
     body = body.replace('AuxioService.', 'AuralisService.')
-    body = body.replace('Auxio', 'Auralis')
-    body = body.replace('auxio', 'auralis')
-    body = body.replace('OxygenCobalt/Auxio', 'swapniljoydhar/Auxio')
+    body = body.replace('Auralis', 'Auralis')
+    body = body.replace('auralis', 'auralis')
+    body = body.replace('Auralis/Auralis', 'swapniljoydhar/Auralis')
     return preserved + body
 
 
@@ -62,12 +62,12 @@ for path in sorted(tracked_files(), key=lambda p: len(p.parts), reverse=True):
         continue
     rel = path.relative_to(ROOT)
     rel_text = str(rel)
-    new_rel_text = rel_text.replace('org/oxycblt/auxio', 'com/auralis/player')
+    new_rel_text = rel_text.replace('org/oxycblt/auralis', 'com/auralis/player')
     new_rel_text = new_rel_text.replace('AuxioService', 'AuralisService')
     new_rel_text = new_rel_text.replace('AuxioRecyclerView', 'AuralisRecyclerView')
-    new_rel_text = new_rel_text.replace('Auxio.kt', 'Auralis.kt')
-    new_rel_text = new_rel_text.replace('Auxio', 'Auralis')
-    new_rel_text = new_rel_text.replace('auxio', 'auralis')
+    new_rel_text = new_rel_text.replace('Auralis.kt', 'Auralis.kt')
+    new_rel_text = new_rel_text.replace('Auralis', 'Auralis')
+    new_rel_text = new_rel_text.replace('auralis', 'auralis')
     destination = ROOT / new_rel_text
     if destination != path:
         destination.parent.mkdir(parents=True, exist_ok=True)

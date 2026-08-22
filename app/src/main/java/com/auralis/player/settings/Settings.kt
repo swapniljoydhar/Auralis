@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * Settings.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import timber.log.Timber as L
  * Abstract user configuration information. This interface has no functionality whatsoever. Concrete
  * implementations should be preferred instead.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface Settings<Listener> {
     /**

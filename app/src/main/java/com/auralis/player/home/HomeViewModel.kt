@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * HomeViewModel.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ import timber.log.Timber as L
 /**
  * The ViewModel for managing the tab data and lists of the home view.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @HiltViewModel
 class HomeViewModel

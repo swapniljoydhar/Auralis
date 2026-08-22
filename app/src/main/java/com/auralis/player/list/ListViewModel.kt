@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * ListViewModel.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@ import timber.log.Timber as L
 /**
  * A [ViewModel] that orchestrates menu dialogs and selection state.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @HiltViewModel
 class ListViewModel

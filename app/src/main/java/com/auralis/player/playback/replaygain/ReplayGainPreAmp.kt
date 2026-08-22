@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * ReplayGainPreAmp.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,6 @@ package com.auralis.player.playback.replaygain
  *
  * @param with The pre-amp (in dB) to use when ReplayGain tags are present.
  * @param without The pre-amp (in dB) to use when ReplayGain tags are not present.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 data class ReplayGainPreAmp(val with: Float, val without: Float)

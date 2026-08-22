@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * ReplayGainMode.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import com.auralis.player.IntegerTable
 /**
  * The current ReplayGain configuration.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 enum class ReplayGainMode {
     /** Do not apply any ReplayGain adjustments. */

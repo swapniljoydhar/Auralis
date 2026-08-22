@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * QueueBottomSheetBehavior.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import com.google.android.material.shape.ShapeAppearanceModel
  * The [BaseBottomSheetBehavior] for the queue bottom sheet. This is placed within the playback
  * sheet and automatically arranges itself to show the playback bar at the top.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class QueueBottomSheetBehavior<V : View>(context: Context, attributeSet: AttributeSet?) :
     BaseBottomSheetBehavior<V>(context, attributeSet) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * IndexerNotifications.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import timber.log.Timber as L
  * A dynamic [ForegroundServiceNotification] that shows the current music loading state.
  *
  * @param context [Context] required to create the notification.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class IndexingNotification(private val context: Context) :
     ForegroundServiceNotification(context, indexerChannel) {
@@ -96,7 +96,7 @@ class IndexingNotification(private val context: Context) :
  * A static [ForegroundServiceNotification] that signals to the user that the app is currently
  * monitoring the music library for changes.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class ObservingNotification(context: Context) :
     ForegroundServiceNotification(context, indexerChannel) {

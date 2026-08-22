@@ -116,7 +116,7 @@
     <string name="lbl_live_group">Gyvai</string>
     <string name="set_headset_autoplay_desc">Visada pradėti leisti, kai ausinės prijungtos (gali neveikti visuose įrenginiuose).</string>
     <string name="cdc_ogg">Ogg garsas</string>
-    <string name="lbl_author_name">Aleksandras Keiphartas (angl. Alexander Capehart)</string>
+    <string name="lbl_author_name">Aleksandras Keiphartas (angl. Auralis Contributors)</string>
     <string name="set_replay_gain_mode_track">Pageidauti takelį</string>
     <string name="err_bad_location">Šis aplankas nepalaikomas.</string>
     <string name="desc_play_pause">Leisti arba pristabdyti</string>

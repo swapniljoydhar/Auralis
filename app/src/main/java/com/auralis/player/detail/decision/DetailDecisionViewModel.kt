@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * DetailDecisionViewModel.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import timber.log.Timber as L
  * A [ViewModel] that stores choice information for [ShowArtistDialog], and possibly others in the
  * future.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @HiltViewModel
 class DetailPickerViewModel @Inject constructor(private val musicRepository: MusicRepository) :
@@ -91,7 +91,7 @@ class DetailPickerViewModel @Inject constructor(private val musicRepository: Mus
 /**
  * The current list of choices to show in the artist navigation picker dialog.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 sealed interface ArtistShowChoices {
     /** The UID of the item. */

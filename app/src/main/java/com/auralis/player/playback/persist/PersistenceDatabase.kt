@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PersistenceDatabase.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import org.oxycblt.musikr.Music
 /**
  * Provides raw access to the database storing the persisted playback state.
  *
- * @author Alexander Capehart
+ * @author Auralis Contributors
  */
 @Database(
     entities =
@@ -163,7 +163,7 @@ abstract class PersistenceDatabase : RoomDatabase() {
 /**
  * Provides control of the persisted playback state table.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @Dao
 interface PlaybackStateDao {
@@ -188,7 +188,7 @@ interface PlaybackStateDao {
 /**
  * Provides control of the persisted queue state tables.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @Dao
 interface QueueDao {

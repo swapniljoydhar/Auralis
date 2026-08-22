@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * StyledSeekBar.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ import timber.log.Timber as L
  * A wrapper around [Slider] that shows position and duration values and sanitizes input to reduce
  * crashes from invalid values.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class StyledSeekBar
 @JvmOverloads

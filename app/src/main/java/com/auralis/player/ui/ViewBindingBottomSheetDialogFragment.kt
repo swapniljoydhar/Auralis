@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * ViewBindingBottomSheetDialogFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import timber.log.Timber as L
  * A lifecycle-aware [DialogFragment] that automatically manages the [ViewBinding] lifecycle as a
  * [BottomSheetDialogFragment].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class ViewBindingBottomSheetDialogFragment<VB : ViewBinding> :
     BackportBottomSheetDialogFragment() {

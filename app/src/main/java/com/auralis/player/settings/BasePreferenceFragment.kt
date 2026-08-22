@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * BasePreferenceFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import timber.log.Timber as L
 /**
  * Shared [PreferenceFragmentCompat] used across all preference screens.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class BasePreferenceFragment(@XmlRes private val screen: Int) :
     PreferenceFragmentCompat() {

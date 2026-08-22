@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * WidgetProvider.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import timber.log.Timber as L
  * The [AppWidgetProvider] for the "Now Playing" widget. This widget shows the current playback
  * state alongside actions to control it.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class WidgetProvider : AppWidgetProvider() {
     override fun onUpdate(

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * QueueFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import timber.log.Timber as L
 /**
  * A [ViewBindingFragment] that displays an editable queue.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class QueueFragment : ViewBindingFragment<FragmentQueueBinding>(), EditClickListListener<Song> {

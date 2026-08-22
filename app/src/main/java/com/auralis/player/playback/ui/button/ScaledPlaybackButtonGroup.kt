@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Auxio Project
+ * Copyright (c) 2026 Auralis Project
  * ScaledPlaybackButtonGroup.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import kotlin.math.min
  *
  * Fix this by just force-scaling down buttons.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class ScaledPlaybackButtonGroup
 @JvmOverloads

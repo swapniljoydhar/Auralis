@@ -279,7 +279,7 @@
     <string name="lbl_mixtape">混音帶</string>
     <string name="lbl_demos">試聽帶</string>
     <string name="lbl_author">作者</string>
-    <string name="lbl_author_name">由 Alexander Capehart 開發</string>
+    <string name="lbl_author_name">由 Auralis Contributors 開發</string>
     <string name="set_play_song_from_artist">播放演出者</string>
     <string name="set_play_song_from_genre">播放類型</string>
     <string name="set_with_hidden_desc">讀取隱藏音訊檔案（例如 .cache）</string>

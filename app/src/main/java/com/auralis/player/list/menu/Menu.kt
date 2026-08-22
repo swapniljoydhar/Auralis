@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * Menu.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import org.oxycblt.musikr.Song
 /**
  * Command to navigate to a specific menu dialog configuration.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 sealed interface Menu {
     /** The menu resource to inflate in the menu dialog. */

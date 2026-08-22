@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * UISettings.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import timber.log.Timber as L
 /**
  * User configuration for the general app UI.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface UISettings : Settings<UISettings.Listener> {
     /** The current theme. Represented by the AppCompatDelegate constants. */

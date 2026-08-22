@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * FlexibleListAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ import timber.log.Timber as L
  * A variant of ListDiffer with more flexible updates.
  *
  * @param diffCallback A [DiffUtil.ItemCallback] to compare list updates with.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class FlexibleListAdapter<T, VH : RecyclerView.ViewHolder>(
     diffCallback: DiffUtil.ItemCallback<T>
@@ -45,7 +45,15 @@ abstract class FlexibleListAdapter<T, VH : RecyclerView.ViewHolder>(
         get() = differ.currentList
 
     /** @see currentList */
-    fun getItem(at: Int) = differ.currentList[at]
+    fun getItem(at: Int): T {
+        val list = differ.currentList
+        if (at < 0 || at >= list.size) {
+            throw IndexOutOfBoundsException(
+                "Index: $at, Size: ${list.size} (adapter may have been updated since getItemCount was called)"
+            )
+        }
+        return list[at]
+    }
 
     /**
      * Update the adapter with new data.
@@ -68,7 +76,7 @@ abstract class FlexibleListAdapter<T, VH : RecyclerView.ViewHolder>(
  * Arbitrary instructions that can be given to a [FlexibleListAdapter] to direct how it updates
  * data.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 sealed interface UpdateInstructions {
     /** Use an asynchronous diff. Useful for unpredictable updates, but looks chaotic and janky. */
@@ -109,7 +117,7 @@ sealed interface UpdateInstructions {
 /**
  * Vendor of AsyncListDiffer with more flexible update functionality.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 private class FlexibleListDiffer<T>(
     adapter: RecyclerView.Adapter<*>,

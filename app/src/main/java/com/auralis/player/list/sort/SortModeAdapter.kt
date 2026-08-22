@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * SortModeAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import com.auralis.player.util.inflater
  * A [FlexibleListAdapter] that displays a list of [Sort.Mode]s.
  *
  * @param listener A [ClickableListListener] to bind interactions to.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class SortModeAdapter(private val listener: ClickableListListener<Sort.Mode>) :
     FlexibleListAdapter<Sort.Mode, SortModeViewHolder>(SortModeViewHolder.DIFF_CALLBACK) {
@@ -82,7 +82,7 @@ class SortModeAdapter(private val listener: ClickableListListener<Sort.Mode>) :
 /**
  * A [DialogRecyclerView.ViewHolder] that displays a [Sort.Mode].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class SortModeViewHolder private constructor(private val binding: ItemSortModeBinding) :
     DialogRecyclerView.ViewHolder(binding.root) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * ErrorCrossfadeTransitionFactory.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import coil3.transition.TransitionTarget
 /**
  * A copy of [CrossfadeTransition.Factory] that also applies a transition to error results.
  *
- * @author Coil Team, Alexander Capehart (OxygenCobalt)
+ * @author Coil Team, Auralis Contributors
  */
 class ErrorCrossfadeTransitionFactory : Transition.Factory {
     override fun create(target: TransitionTarget, result: ImageResult): Transition {

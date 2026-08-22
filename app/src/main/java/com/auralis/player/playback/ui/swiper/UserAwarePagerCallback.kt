@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Auxio Project
+ * Copyright (c) 2026 Auralis Project
  * UserAwarePagerCallback.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import androidx.viewpager2.widget.ViewPager2
  *
  * @param viewPager [ViewPager2] that this will be attached to (must do this separately)
  * @param userCallback The callback to run on a user-driven swipe
- * @author Alexander Capehart (OxygenCobalt), Idea from GPT-5.5 (Rewritten)
+ * @author Auralis Contributors, Idea from GPT-5.5 (Rewritten)
  */
 class UserAwarePagerCallback(
     private val viewPager: ViewPager2,

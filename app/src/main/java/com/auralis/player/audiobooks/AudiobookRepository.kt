@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Auxio Project
+ * Copyright (c) 2026 Auralis Project
  * AudiobookRepository.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify

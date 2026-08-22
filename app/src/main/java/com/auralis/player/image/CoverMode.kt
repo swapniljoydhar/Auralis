@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * CoverMode.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ import com.auralis.player.IntegerTable
 /**
  * Represents the options available for album cover loading.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 enum class CoverMode {
     OFF,

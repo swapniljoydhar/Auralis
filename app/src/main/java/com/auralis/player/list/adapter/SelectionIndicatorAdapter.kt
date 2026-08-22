@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * SelectionIndicatorAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import timber.log.Timber as L
  * items.
  *
  * @param diffCallback A [DiffUtil.ItemCallback] to compare list updates with.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class SelectionIndicatorAdapter<T, VH : RecyclerView.ViewHolder>(
     diffCallback: DiffUtil.ItemCallback<T>
@@ -38,7 +38,7 @@ abstract class SelectionIndicatorAdapter<T, VH : RecyclerView.ViewHolder>(
 
     override fun onBindViewHolder(holder: VH, position: Int, payloads: List<Any>) {
         super.onBindViewHolder(holder, position, payloads)
-        if (holder is ViewHolder) {
+        if (holder is ViewHolder && position in currentList.indices) {
             holder.updateSelectionIndicator(selectedItems.contains(currentList[position]))
         }
     }

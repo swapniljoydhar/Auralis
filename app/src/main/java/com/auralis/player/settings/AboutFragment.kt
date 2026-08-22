@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * AboutFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 /**
  * A [ViewBindingFragment] that displays information about the app and the current music library.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class AboutFragment : ViewBindingFragment<FragmentAboutBinding>() {
@@ -60,7 +60,7 @@ class AboutFragment : ViewBindingFragment<FragmentAboutBinding>() {
     }
 
     private companion object {
-        const val LINK_SOURCE = "https://github.com/swapniljoydhar/Auxio"
+        const val LINK_SOURCE = "https://github.com/swapniljoydhar/Auralis"
         const val LINK_LICENSES = "$LINK_SOURCE/blob/dev/LICENSE"
     }
 }

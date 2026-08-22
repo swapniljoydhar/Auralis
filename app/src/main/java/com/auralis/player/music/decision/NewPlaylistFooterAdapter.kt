@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * NewPlaylistFooterAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import com.auralis.player.util.inflater
  * A purely-visual [RecyclerView.Adapter] that acts as a footer providing a "New Playlist" choice in
  * [AddToPlaylistDialog].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class NewPlaylistFooterAdapter(private val listener: Listener) :
     RecyclerView.Adapter<NewPlaylistFooterViewHolder>() {
@@ -55,7 +55,7 @@ class NewPlaylistFooterAdapter(private val listener: Listener) :
  * A [RecyclerView.ViewHolder] that displays a "New Playlist" choice in [NewPlaylistFooterAdapter].
  * Use [from] to create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class NewPlaylistFooterViewHolder
 private constructor(private val binding: ItemNewPlaylistChoiceBinding) :

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Auxio Project
+ * Copyright (c) 2026 Auralis Project
  * ScaledPlaybackButton.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import kotlin.math.max
 /**
  * Companion scalable button to [ScaledPlaybackButtonGroup], see that.
  *
- * @author Codex w/cleanup + cognitive ownership by Alexander Capehart (OxygenCobalt)
+ * @author Codex w/cleanup + cognitive ownership by Auralis Contributors
  */
 @SuppressLint("RestrictedApi")
 class ScaledPlaybackButton

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * ExportPlaylistDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import timber.log.Timber as L
 /**
  * A dialog that allows the user to configure how a playlist will be exported to a file.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class ExportPlaylistDialog : ViewBindingMaterialDialogFragment<DialogPlaylistExportBinding>() {

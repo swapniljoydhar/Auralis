@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * EdgeFrameLayout.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import com.auralis.player.util.systemBarInsetsCompat
 /**
  * A [FrameLayout] that automatically applies bottom insets.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class EdgeFrameLayout
 @JvmOverloads

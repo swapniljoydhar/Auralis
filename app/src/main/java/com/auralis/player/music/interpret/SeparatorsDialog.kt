@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * SeparatorsDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ import timber.log.Timber as L
  * A [ViewBindingMaterialDialogFragment] that allows the user to configure the separator characters
  * used to split tags with multiple values.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  *
  * TODO: Replace with unsplit names dialog
  */

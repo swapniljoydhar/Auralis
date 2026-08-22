@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * ArtistPlaybackChoiceAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ class ArtistPlaybackChoiceAdapter(private val listener: ClickableListListener<Ar
  * A [DialogRecyclerView.ViewHolder] that displays a smaller variant of a typical [Artist] item, for
  * use [ArtistPlaybackChoiceAdapter]. Use [from] to create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class ArtistPlaybackChoiceViewHolder
 private constructor(private val binding: ItemPickerChoiceBinding) :

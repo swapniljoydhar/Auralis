@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * MaterialDragCallback.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import timber.log.Timber as L
  * such as an animation when lifting items. Note that this requires a [ViewHolder] implementation in
  * order to function.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class MaterialDragCallback : ItemTouchHelper.Callback() {
     data class AnimBundle(

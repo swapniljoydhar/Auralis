@@ -84,7 +84,7 @@
     <string name="lbl_version">Utgåve</string>
     <string name="lbl_library_counts">Samlingsstatistikk</string>
     <string name="lbl_report">Rapporter</string>
-    <string name="lbl_author_name">Utvikla av Alexander Capehart</string>
+    <string name="lbl_author_name">Utvikla av Auralis Contributors</string>
     <string name="lbl_indexing">Lader inn musikk</string>
     <string name="lbl_retry">Prøv atter</string>
     <string name="lbl_single_live">Live-singel</string>

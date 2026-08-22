@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * UIPreferenceFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import timber.log.Timber as L
 /**
  * Display preferences.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class UIPreferenceFragment : BasePreferenceFragment(R.xml.preferences_ui) {

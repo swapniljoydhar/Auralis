@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * DialogAwareNavigationListener.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import androidx.navigation.NavDestination
  * Note: This only works because of special naming used in Auralis's navigation graphs. Keep this in
  * mind when porting to other projects.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class DialogAwareNavigationListener(private val callback: () -> Unit) :
     NavController.OnDestinationChangedListener {

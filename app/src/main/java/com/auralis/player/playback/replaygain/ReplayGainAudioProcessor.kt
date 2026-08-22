@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * ReplayGainAudioProcessor.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,7 @@ import timber.log.Timber as L
  * Note: This audio processor must be attached to a respective [Player] instance as a
  * [Player.Listener] to function properly.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @SuppressLint("UnsafeOptInUsageError")
 class ReplayGainAudioProcessor

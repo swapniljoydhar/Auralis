@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * PlaybackPanelFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -87,7 +87,7 @@ import timber.log.Timber as L
  * A [ViewBindingFragment] more information about the currently playing song, alongside all
  * available controls.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  *
  * TODO: Improve flickering situation on play button
  */

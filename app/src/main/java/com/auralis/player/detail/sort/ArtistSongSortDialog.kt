@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * ArtistSongSortDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import timber.log.Timber as L
 /**
  * A [SortDialog] that controls the [Sort] of [DetailViewModel.artistSongSort].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class ArtistSongSortDialog : SortDialog() {

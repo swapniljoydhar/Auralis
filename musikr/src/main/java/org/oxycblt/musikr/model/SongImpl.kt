@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * SongImpl.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ internal interface SongCore {
 /**
  * Library-backed implementation of [Song].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 internal class SongImpl(private val handle: SongCore) : Song {
     private val preSong = handle.preSong

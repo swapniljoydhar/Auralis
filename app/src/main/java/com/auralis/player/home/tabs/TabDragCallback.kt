@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * TabDragCallback.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * An [ItemTouchHelper.Callback] that implements dragging in the [TabAdapter].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class TabDragCallback(private val adapter: TabAdapter) : ItemTouchHelper.Callback() {
     override fun getMovementFlags(

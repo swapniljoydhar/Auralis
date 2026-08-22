@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * AddToPlaylistDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ import timber.log.Timber as L
 /**
  * A dialog that allows the user to pick a specific playlist to add song(s) to.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class AddToPlaylistDialog :

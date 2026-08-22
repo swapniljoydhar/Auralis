@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * PlaybackBottomSheetBehavior.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import com.google.android.material.shape.ShapeAppearanceModel
 /**
  * The [BaseBottomSheetBehavior] for the playback bottom sheet. This bottom sheet
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class PlaybackBottomSheetBehavior<V : View>(context: Context, attributeSet: AttributeSet?) :
     BaseBottomSheetBehavior<V>(context, attributeSet) {
@@ -50,7 +50,7 @@ class PlaybackBottomSheetBehavior<V : View>(context: Context, attributeSet: Attr
             MaterialShapeDrawable.createWithElevationOverlay(context).apply {
                 fillColor = context.getAttrColorCompat(MR.attr.colorSurfaceContainerLow)
                 shapeAppearanceModel =
-                    if (uiSettings.roundMode) {
+                    if (uiSettings?.roundMode == true) {
                         ShapeAppearanceModel.builder(
                                 context,
                                 R.style.ShapeAppearance_Auralis_BottomSheet,

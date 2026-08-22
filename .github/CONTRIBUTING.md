@@ -1,7 +1,7 @@
 # Auralis contribution guidelines
 
 ## Crashes & Bugs
-Log them in the [Issues](https://github.com/swapniljoydhar/Auxio/issues) tab.
+Log them in the [Issues](https://github.com/swapniljoydhar/Auralis/issues) tab.
 
 Please keep in mind when reporting an issue:
 - **Has it been reported?** Make sure an issue for the issue is not already there.
@@ -13,23 +13,23 @@ If you do make an issue, Make sure to provide:
 - A summary of the steps to create the bug/crash
 - A stack trace/logcat if possible, the longer the better.
 
-If you have knowledge of Android/Kotlin in general, you could also go about fixing the bug yourself and opening a [Pull Request](https://github.com/swapniljoydhar/Auxio/pulls).
+If you have knowledge of Android/Kotlin in general, you could also go about fixing the bug yourself and opening a [Pull Request](https://github.com/swapniljoydhar/Auralis/pulls).
 
 ## Feature Requests
-These should also be logged in the [Issues](https://github.com/swapniljoydhar/Auxio/issues) tab.
+These should also be logged in the [Issues](https://github.com/swapniljoydhar/Auralis/issues) tab.
 
 Please keep in mind when requesting a feature:
 - **Has it already been requested?** Make sure request for this feature is not already here.
 - **Has it been already added?** Make sure this feature has not already been added in the most recent release.
-- **Will it be accepted?** Read the [Auralis architecture](https://github.com/swapniljoydhar/Auxio/blob/dev/docs/ARCHITECTURE.md) in order to see the likelihood that your request will be implemented.
+- **Will it be accepted?** Read the [Auralis architecture](https://github.com/swapniljoydhar/Auralis/blob/dev/docs/ARCHITECTURE.md) in order to see the likelihood that your request will be implemented.
 
 If you do make a request, provide the following:
 - What is it that you want?
 - Is it related to some problem? If so, describe why.
 - Why do you think it will benefit everyone's usage of the app?
 
-If you have the knowledge, you can also implement the feature yourself and create a [Pull Request](https://github.com/swapniljoydhar/Auxio/pulls), but its recommended that **you create an issue beforehand to give me a heads up.**
-Its also recommended that you read about [Auralis's Architecture](https://github.com/swapniljoydhar/Auxio/blob/dev/docs/ARCHITECTURE.md) as well to make changes better and more efficient.
+If you have the knowledge, you can also implement the feature yourself and create a [Pull Request](https://github.com/swapniljoydhar/Auralis/pulls), but its recommended that **you create an issue beforehand to give me a heads up.**
+Its also recommended that you read about [Auralis's Architecture](https://github.com/swapniljoydhar/Auralis/blob/dev/docs/ARCHITECTURE.md) as well to make changes better and more efficient.
 
 ## Translations
 Translation support is being reorganized under the Auralis project. Please open an issue in this repository before adding or changing translation resources.

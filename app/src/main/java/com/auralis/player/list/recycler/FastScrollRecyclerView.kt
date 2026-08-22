@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * FastScrollRecyclerView.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ import kotlin.math.roundToInt
  * Attributions as per the Apache 2.0 license:
  * - ORIGINAL AUTHOR: Hai Zhang [https://github.com/zhanghai]
  * - PROJECT: Android Fast Scroll [https://github.com/zhanghai/AndroidFastScroll]
- * - MODIFIER: OxygenCobalt [https://github.com/oxygencobalt]
+ * - MODIFIER: Auralis [https://github.com/oxygencobalt]
  *
  * !!! MODIFICATIONS !!!:
  * - Scroller will no longer show itself on startup or relayouts, which looked unpleasant with
@@ -99,7 +99,7 @@ import kotlin.math.roundToInt
  * - M3 (Expressive) Redesign
  * - Dynamic popups
  *
- * @author Hai Zhang, Alexander Capehart (OxygenCobalt)
+ * @author Hai Zhang, Auralis Contributors
  */
 class FastScrollRecyclerView
 @JvmOverloads

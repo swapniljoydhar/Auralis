@@ -2,4 +2,4 @@ Auralis 4.0.0 completely overhauls the user experience, with a refreshed design 
 and a brand new music loader with signifigant improvements to device and tag support.
 This patch reintroduces the faster, but less reliable pre-v4.0.0 music loader for use with large libraries,
 enables full date added support, and fixes a variety of UI/UX issues.
-For more information, see https://github.com/OxygenCobalt/Auralis/releases/tag/v4.0.8.
+For more information, see https://github.com/Auralis/Auralis/releases/tag/v4.0.8.

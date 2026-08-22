@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * CoverView.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -82,7 +82,7 @@ import org.oxycblt.musikr.covers.CoverCollection
  * disabled with the "playbackIndicatorEnabled" and "selectionBadgeEnabled" attributes, and image
  * itself can be overridden if populated like a normal [FrameLayout].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 open class CoverView

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * GenreDetailListAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import org.oxycblt.musikr.Song
  * A [DetailListAdapter] implementing the header and sub-items for the [Genre] detail view.
  *
  * @param listener A [DetailListAdapter.Listener] to bind interactions to.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class GenreDetailListAdapter(private val listener: Listener<Music>) :
     DetailListAdapter(listener, DIFF_CALLBACK) {

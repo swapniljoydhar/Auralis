@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * SimpleDiffCallback.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import com.auralis.player.list.Item
  * A [DiffUtil.ItemCallback] that automatically implements the [areItemsTheSame] method. Use this
  * whenever creating [DiffUtil.ItemCallback] implementations with an [Item] subclass.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class SimpleDiffCallback<T : Item> : DiffUtil.ItemCallback<T>() {
     final override fun areItemsTheSame(oldItem: T, newItem: T) = oldItem == newItem

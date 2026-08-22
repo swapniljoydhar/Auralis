@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * AccentAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import com.google.android.material.R as MR
  * A [RecyclerView.Adapter] that displays [Accent] choices.
  *
  * @param listener A [ClickableListListener] to bind interactions to.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class AccentAdapter(private val listener: ClickableListListener<Accent>) :
     RecyclerView.Adapter<AccentViewHolder>() {
@@ -91,7 +91,7 @@ class AccentAdapter(private val listener: ClickableListListener<Accent>) :
 /**
  * A [RecyclerView.ViewHolder] that displays an [Accent] choice. Use [from] to create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class AccentViewHolder private constructor(private val binding: ItemAccentBinding) :
     RecyclerView.ViewHolder(binding.root) {

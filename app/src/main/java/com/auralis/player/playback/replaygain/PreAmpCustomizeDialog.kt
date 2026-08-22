@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * PreAmpCustomizeDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import timber.log.Timber as L
  * aa [ViewBindingMaterialDialogFragment] that allows user configuration of the current
  * [ReplayGainPreAmp].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class PreAmpCustomizeDialog : ViewBindingMaterialDialogFragment<DialogPreAmpBinding>() {

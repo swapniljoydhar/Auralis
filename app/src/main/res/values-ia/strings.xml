@@ -85,7 +85,7 @@
     <string name="lbl_error_info">Information re le error</string>
     <string name="lbl_report">Signalar</string>
     <string name="lbl_author">Autor</string>
-    <string name="lbl_author_name">Alexander Capehart</string>
+    <string name="lbl_author_name">Auralis Contributors</string>
     <string name="lng_widget">Vider e controlar le reproduction de musica</string>
     <string name="lng_queue_added">Addite al cauda</string>
     <string name="lng_playlist_created">Lista de reproduction create</string>

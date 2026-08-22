@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * SortDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify

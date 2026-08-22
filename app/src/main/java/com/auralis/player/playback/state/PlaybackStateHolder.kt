@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * PlaybackStateHolder.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import org.oxycblt.musikr.Song
  * The designated "source of truth" for the current playback state. Should only be used by
  * [PlaybackStateManager], which mirrors a more refined version of the state held here.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface PlaybackStateHolder {
     /** The current [Progression] state of the audio player. */
@@ -168,7 +168,7 @@ interface PlaybackStateHolder {
  * [PlaybackStateManager] once an operation in [PlaybackStateHolder] has completed so that the new
  * state can be mirrored to the rest of the application.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 sealed interface StateAck {
     /**

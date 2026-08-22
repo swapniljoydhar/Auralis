@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PlaylistDatabase.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import org.oxycblt.musikr.Music
 /**
  * Allows persistence of all user-created music information.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @Database(
     entities = [PlaylistInfo::class, PlaylistSong::class, PlaylistSongCrossRef::class],
@@ -126,7 +126,7 @@ internal abstract class PlaylistDatabase : RoomDatabase() {
 /**
  * The DAO for persisted playlist information.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @Dao
 internal abstract class PlaylistDao {

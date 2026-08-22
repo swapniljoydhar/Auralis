@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * QueueViewModel.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import timber.log.Timber as L
 /**
  * A [ViewModel] that manages the current queue state and allows navigation through the queue.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @HiltViewModel
 class QueueViewModel @Inject constructor(private val playbackManager: PlaybackStateManager) :

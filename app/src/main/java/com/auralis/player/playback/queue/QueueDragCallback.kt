@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * QueueDragCallback.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import com.auralis.player.list.recycler.MaterialDragCallback
  * A highly customized [ItemTouchHelper.Callback] that enables some extra eye candy in the queue UI,
  * such as an animation when lifting items.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class QueueDragCallback(private val queueModel: QueueViewModel) : MaterialDragCallback() {
     override fun onMove(

@@ -1,1 +1,1 @@
-A simple, rational music player
+A private, local-first player for music and audiobooks on Android.

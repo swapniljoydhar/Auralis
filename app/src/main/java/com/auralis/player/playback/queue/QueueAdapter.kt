@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * QueueAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ import timber.log.Timber as L
  * A [RecyclerView.Adapter] that shows an editable list of queue items.
  *
  * @param listener A [EditClickListListener] to bind interactions to.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class QueueAdapter(private val listener: EditClickListListener<Song>) :
     FlexibleListAdapter<Song, QueueSongViewHolder>(QueueSongViewHolder.DIFF_CALLBACK) {
@@ -110,7 +110,7 @@ class QueueAdapter(private val listener: EditClickListListener<Song>) :
  * A [PlayingIndicatorAdapter.ViewHolder] that displays an queue [Song] which can be re-ordered and
  * removed. Use [from] to create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class QueueSongViewHolder private constructor(private val binding: ItemEditableSongBinding) :
     PlayingIndicatorAdapter.ViewHolder(binding.root), MaterialDragCallback.ViewHolder {

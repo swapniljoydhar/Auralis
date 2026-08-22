@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * Listeners.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * A basic listener for list interactions.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface ClickableListListener<in T> {
     /**
@@ -52,7 +52,7 @@ interface ClickableListListener<in T> {
 /**
  * A listener for lists that can be edited.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface EditableListListener {
     /**
@@ -82,7 +82,7 @@ interface EditableListListener {
 /**
  * A listener for lists that can be clicked and edited at the same time.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface EditClickListListener<in T> : ClickableListListener<T>, EditableListListener {
     /**
@@ -108,7 +108,7 @@ interface EditClickListListener<in T> : ClickableListListener<T>, EditableListLi
 /**
  * An extension of [ClickableListListener] that enables menu and selection functionality.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface SelectableListListener<in T> : ClickableListListener<T> {
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * StateUtil.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 /**
  * A wrapper around [StateFlow] exposing a one-time consumable event.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface Event<T> {
     /** The inner [StateFlow] contained by the [Event]. */
@@ -49,7 +49,7 @@ interface Event<T> {
  * A wrapper around [StateFlow] exposing a one-time consumable event that can be modified by it's
  * owner.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class MutableEvent<T> : Event<T> {
     override val flow = MutableStateFlow<T?>(null)

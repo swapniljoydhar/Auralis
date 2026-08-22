@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * BluetoothHeadsetReceiver.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ import android.content.Intent
 /**
  * A [BroadcastReceiver] that starts music playback when a bluetooth headset is connected.
  *
- * @author seijikun, OxygenCobalt
+ * @author seijikun, Auralis
  */
 class BluetoothHeadsetReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

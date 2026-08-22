@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * ReleaseType.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ package org.oxycblt.musikr.tag
  * This class is derived from the MusicBrainz Release Group Type specification. It can be found at:
  * https://musicbrainz.org/doc/Release_Group/Type
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 sealed interface ReleaseType {
     /**

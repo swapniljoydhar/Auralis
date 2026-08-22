@@ -42,7 +42,7 @@
     <string name="lbl_version">Verze</string>
     <string name="lbl_code">Zdrojový kód</string>
     <string name="lbl_licenses">Licence</string>
-    <string name="lbl_author_name">Vytvořil Alexander Capehart</string>
+    <string name="lbl_author_name">Vytvořil Auralis Contributors</string>
     <string name="lbl_library_counts">Statistiky knihovny</string>
     <string name="set_root_title">Nastavení</string>
     <string name="set_ui">Vzhled a chování</string>

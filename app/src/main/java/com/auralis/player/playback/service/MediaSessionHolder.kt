@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * MediaSessionHolder.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ import timber.log.Timber as L
  * A component that mirrors the current playback state into the [MediaSessionCompat] and
  * [PlaybackNotification].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class MediaSessionHolder
 private constructor(
@@ -379,7 +379,7 @@ private constructor(
  * The playback notification component. Due to race conditions regarding notification updates, this
  * component is not self-sufficient. [MediaSessionHolder] should be used instead of manage it.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @SuppressLint("RestrictedApi")
 private class PlaybackNotification(

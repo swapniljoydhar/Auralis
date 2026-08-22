@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * IntListPreference.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import java.lang.reflect.Field
  * The dialog this preference corresponds to is not handled automatically, so a preference screen
  * must override onDisplayPreferenceDialog in order to handle it.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class IntListPreference
 @JvmOverloads

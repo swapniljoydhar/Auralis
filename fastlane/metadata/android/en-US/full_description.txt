@@ -1,6 +1,6 @@
-Auralis is a local music player with a fast, reliable UI/UX without the many useless features present in other music players. Built off of modern media playback libraries, Auralis has superior library support and listening quality compared to other apps that use outdated Android functionality. In short, <b>It plays music.</b>
+Auralis brings music and audiobooks together in one focused, private application. The opening hub lets you choose Music or Audiobooks, and each mode exposes the controls that fit that medium.
 
-<b>Features</b>
+<b>Music</b>
 
 - Playback based on Media3 ExoPlayer
 - Snappy UI derived from the latest Material Design guidelines
@@ -20,5 +20,22 @@ Auralis is a local music player with a fast, reliable UI/UX without the many use
 - Search functionality
 - Headset autoplay
 - Stylish widgets that automatically adapt to their size
+
+<b>Audiobooks</b>
+
+- M4B book and MP3 chapter folder support
+- Chapter navigation with duration and completion state
+- Resume from last position
+- Bookmarks with jump-to-bookmark
+- Configurable skip intervals
+- Playback speed control
+- Auto-rewind on resume
+- Silence skipping
+- Sleep timer (15/30/60 minutes or end of chapter)
+
+<b>Privacy</b>
+
 - Completely private and offline
-- No rounded album covers (if you want them)
+- No account required
+- No cloud synchronization
+- Library metadata, playback state, bookmarks, and settings stay on your device

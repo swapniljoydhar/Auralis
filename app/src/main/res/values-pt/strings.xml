@@ -128,7 +128,7 @@
     <string name="set_replay_gain">Normalização de volume</string>
     <string name="lbl_replaygain_track">Ajuste de faixa ReplayGain</string>
     <string name="lbl_replaygain_album">Ajuste do álbum ReplayGain</string>
-    <string name="lbl_author_name">Desenvolvido por Alexander Capehart</string>
+    <string name="lbl_author_name">Desenvolvido por Auralis Contributors</string>
     <string name="lbl_supporters">Apoiadores</string>
     <string name="set_display">Mostrar</string>
     <string name="set_bar_action">Personalizar a barra de reprodução</string>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Auxio Project
+ * Copyright (c) 2025 Auralis Project
  * EatInsetsFrameLayout.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ import androidx.annotation.AttrRes
  * A [FrameLayout] that works around the pre-Android 10 behavior of propagating mutated insets to
  * sibling views. Wrap this around views that to isolate mutated window insets.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class EatInsetsFrameLayout
 @JvmOverloads

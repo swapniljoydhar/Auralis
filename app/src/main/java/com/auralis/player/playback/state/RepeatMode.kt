@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * RepeatMode.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import com.auralis.player.R
 /**
  * Represents the current repeat mode of the player.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 enum class RepeatMode {
     /**

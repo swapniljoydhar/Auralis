@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * ActionMode.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import com.auralis.player.IntegerTable
  * Represents a configuration option for what kind of "secondary" action to show in a particular UI
  * context.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 enum class ActionMode {
     /** Use a "Skip next" button for the secondary action. */

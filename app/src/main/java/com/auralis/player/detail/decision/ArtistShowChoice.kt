@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * ArtistShowChoice.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ class ArtistShowChoice(private val listener: ClickableListListener<Artist>) :
  * A [DialogRecyclerView.ViewHolder] that displays a smaller variant of a typical [Artist] item, for
  * use [ArtistShowChoice]. Use [from] to create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class ArtistNavigationChoiceViewHolder
 private constructor(private val binding: ItemPickerChoiceBinding) :

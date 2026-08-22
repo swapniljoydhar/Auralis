@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * Sort.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import org.oxycblt.musikr.Song
  *
  * @param mode A [Mode] dictating how to sort the list.
  * @param direction The [Direction] to sort in.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 data class Sort(val mode: Mode, val direction: Direction) {
     /**

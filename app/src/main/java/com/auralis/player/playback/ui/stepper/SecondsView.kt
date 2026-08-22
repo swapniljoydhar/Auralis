@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Auxio Project
+ * Copyright (c) 2025 Auralis Project
  * SecondsView.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * SongListFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ import org.oxycblt.musikr.Song
 /**
  * A [ListFragment] that shows a list of [Song]s.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class SongListFragment :

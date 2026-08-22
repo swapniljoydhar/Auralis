@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * RippleFixMaterialButton.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import com.google.android.material.button.MaterialButton
  * Fixes an issue where double ripples appear on [MaterialButton] from AppCompat 1.5 afterwards due
  * to a currently unfixed change.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 open class RippleFixMaterialButton
 @JvmOverloads

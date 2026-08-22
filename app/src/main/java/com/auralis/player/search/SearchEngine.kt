@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * SearchEngine.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ import timber.log.Timber as L
 /**
  * Implements the fuzzy-ish searching algorithm used in the search view.
  *
- * @author Alexander Capehart
+ * @author Auralis Contributors
  */
 interface SearchEngine {
     /**

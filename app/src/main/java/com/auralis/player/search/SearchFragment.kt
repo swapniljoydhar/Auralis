@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * SearchFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -70,7 +70,7 @@ import timber.log.Timber as L
 /**
  * The [ListFragment] providing search functionality for the music library.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  *
  * TODO: Better keyboard management
  */

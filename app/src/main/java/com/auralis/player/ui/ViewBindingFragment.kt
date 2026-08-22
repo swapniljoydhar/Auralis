@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * ViewBindingFragment.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ import timber.log.Timber as L
 /**
  * A fragment enabling ViewBinding inflation and usage across the fragment lifecycle.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class ViewBindingFragment<VB : ViewBinding> : Fragment() {
     private var _binding: VB? = null

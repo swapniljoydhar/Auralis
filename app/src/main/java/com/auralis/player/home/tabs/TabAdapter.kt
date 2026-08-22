@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * TabAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -95,7 +95,7 @@ class TabAdapter(private val listener: EditClickListListener<Tab>) :
 /**
  * A [RecyclerView.ViewHolder] that displays a [Tab]. Use [from] to create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class TabViewHolder private constructor(private val binding: ItemTabBinding) :
     DialogRecyclerView.ViewHolder(binding.root) {

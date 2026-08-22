@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * MediaStorePathInterpreter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ import org.oxycblt.musikr.fs.Path
 /**
  * Wrapper around a [Cursor] that interprets path information on a per-API/manufacturer basis.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 internal sealed interface MediaStorePathInterpreter {
     /**

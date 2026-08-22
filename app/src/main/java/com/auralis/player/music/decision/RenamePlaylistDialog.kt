@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * RenamePlaylistDialog.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import timber.log.Timber as L
 /**
  * A dialog allowing the name of a new playlist to be chosen before committing it to the database.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @AndroidEntryPoint
 class RenamePlaylistDialog : ViewBindingMaterialDialogFragment<DialogPlaylistNameBinding>() {

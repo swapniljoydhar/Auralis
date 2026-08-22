@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * DetailListAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ import org.oxycblt.musikr.Music
  *
  * @param listener A [Listener] to bind interactions to.
  * @param diffCallback A [DiffUtil.ItemCallback] to compare list updates with.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class DetailListAdapter(
     private val listener: Listener<*>,
@@ -107,7 +107,7 @@ abstract class DetailListAdapter(
  * A header variation that displays a button to open a sort menu.
  *
  * @param titleRes The string resource to use as the header title
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 data class SortHeader(@StringRes override val titleRes: Int) : PlainHeader
 
@@ -115,7 +115,7 @@ data class SortHeader(@StringRes override val titleRes: Int) : PlainHeader
  * A [RecyclerView.ViewHolder] that displays a [SortHeader] and it's actions. Use [from] to create
  * an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 private class SortHeaderViewHolder(private val binding: ItemSortHeaderBinding) :
     RecyclerView.ViewHolder(binding.root) {

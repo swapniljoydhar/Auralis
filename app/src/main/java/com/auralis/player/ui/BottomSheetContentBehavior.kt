@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * BottomSheetContentBehavior.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ import kotlin.math.abs
  * bottom sheet. Ideally, we would only want to re-inset content, but that has too many issues to
  * sensibly implement.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class BottomSheetContentBehavior<V : View>(context: Context, attributeSet: AttributeSet?) :
     CoordinatorLayout.Behavior<V>(context, attributeSet) {

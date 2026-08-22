@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * MenuViewModel.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ import timber.log.Timber as L
 /**
  * Manages the state information for [MenuDialogFragment] implementations.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @HiltViewModel
 class MenuViewModel @Inject constructor(private val musicRepository: MusicRepository) :

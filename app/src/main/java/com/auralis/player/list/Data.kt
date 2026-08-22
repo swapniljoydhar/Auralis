@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * Data.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ interface Header
 /**
  * A "header" used for delimiting groups of data.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface PlainHeader : Header {
     /** The string resource used for the header's title. */
@@ -40,7 +40,7 @@ interface PlainHeader : Header {
  * A basic header with no additional actions.
  *
  * @param titleRes The string resource used for the header's title.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 data class BasicHeader(@StringRes override val titleRes: Int) : PlainHeader
 

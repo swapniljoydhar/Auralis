@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * MusicViewModel.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ import timber.log.Timber as L
 /**
  * A [ViewModel] providing data specific to the music loading process.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @HiltViewModel
 class MusicViewModel
@@ -378,7 +378,7 @@ constructor(
 /**
  * Navigation command for when a [Playlist] must have some operation performed on it by the user.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 sealed interface PlaylistDecision {
     /**

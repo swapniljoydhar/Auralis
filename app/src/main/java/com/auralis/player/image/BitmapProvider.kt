@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Auxio Project
+ * Copyright (c) 2022 Auralis Project
  * BitmapProvider.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import org.oxycblt.musikr.Song
  * request is queued or if another, competing request is newer.
  *
  * @param context [Context] required to load images.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class BitmapProvider
 @Inject

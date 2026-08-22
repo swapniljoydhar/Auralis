@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * HomeSettings.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import timber.log.Timber as L
 /**
  * User configuration specific to the home UI.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 interface HomeSettings : Settings<HomeSettings.Listener> {
     /** The tabs to show in the home UI. */

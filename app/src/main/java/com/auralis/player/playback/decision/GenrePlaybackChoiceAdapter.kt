@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * GenrePlaybackChoiceAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ class GenrePlaybackChoiceAdapter(private val listener: ClickableListListener<Gen
  * A [DialogRecyclerView.ViewHolder] that displays a smaller variant of a typical [Genre] item, for
  * use [GenrePlaybackChoiceAdapter]. Use [from] to create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class GenrePlaybackChoiceViewHolder
 private constructor(private val binding: ItemPickerChoiceBinding) :

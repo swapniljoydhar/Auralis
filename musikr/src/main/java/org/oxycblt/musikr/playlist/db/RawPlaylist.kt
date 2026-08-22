@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * RawPlaylist.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ import org.oxycblt.musikr.Music
 /**
  * Raw playlist information persisted to [PlaylistDatabase].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 internal data class RawPlaylist(
     @Embedded val playlistInfo: PlaylistInfo,
@@ -44,21 +44,21 @@ internal data class RawPlaylist(
 /**
  * UID and name information corresponding to a [RawPlaylist] entry.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @Entity internal data class PlaylistInfo(@PrimaryKey val playlistUid: Music.UID, val name: String)
 
 /**
  * Song information corresponding to a [RawPlaylist] entry.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @Entity internal data class PlaylistSong(@PrimaryKey val songUid: Music.UID)
 
 /**
  * Links individual songs to a playlist entry.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @Entity
 internal data class PlaylistSongCrossRef(

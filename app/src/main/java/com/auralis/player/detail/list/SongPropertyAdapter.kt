@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * SongPropertyAdapter.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ import org.oxycblt.musikr.tag.Date
 /**
  * An adapter for [SongProperty] instances.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class SongPropertyAdapter :
     FlexibleListAdapter<SongProperty, SongPropertyViewHolder>(
@@ -61,7 +61,7 @@ class SongPropertyAdapter :
  *
  * @param name The contextual title to use for the property.
  * @param value The value of the property.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 data class SongProperty(@StringRes val name: Int, val value: Value) {
     sealed interface Value {
@@ -92,7 +92,7 @@ data class SongProperty(@StringRes val name: Int, val value: Value) {
 /**
  * A [RecyclerView.ViewHolder] that displays a [SongProperty]. Use [from] to create an instance.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class SongPropertyViewHolder private constructor(private val binding: ItemSongPropertyBinding) :
     DialogRecyclerView.ViewHolder(binding.root) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * ArtistImpl.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ internal interface ArtistCore {
 /**
  * Library-backed implementation of [Artist].
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 internal class ArtistImpl(private val core: ArtistCore) : Artist {
     override val uid = core.preArtist.uid

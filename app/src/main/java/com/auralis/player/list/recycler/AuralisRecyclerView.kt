@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * AuralisRecyclerView.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ import com.auralis.player.util.systemBarInsetsCompat
  * - Automatic edge-to-edge support
  * - Automatic [setHasFixedSize] setup
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 open class AuralisRecyclerView
 @JvmOverloads

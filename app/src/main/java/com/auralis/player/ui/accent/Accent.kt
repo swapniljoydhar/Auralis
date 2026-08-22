@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * Accent.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -112,7 +112,7 @@ private val accentPrimaryColors =
  * option in nearly all cases.
  *
  * @param index The unique number for this particular accent.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class Accent private constructor(val index: Int) {
     /** The name of this [Accent]. */

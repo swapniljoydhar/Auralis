@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * StackCompositionFetcher.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ data class StackCoverComposition(
  * A fetcher that stacks covers towards the upper left corner, creating an orderly feeling. Used for
  * playlists.
  *
- * @author OxygenCobalt (Alexander Capehart)
+ * @author Auralis Contributors
  */
 class StackCompositionFetcher
 private constructor(context: Context, val data: StackCoverComposition, size: Size) :

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Auxio Project
+ * Copyright (c) 2023 Auralis Project
  * PlaylistDragCallback.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import com.auralis.player.list.recycler.MaterialDragCallback
 /**
  * A [MaterialDragCallback] extension for playlist-specific item editing.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 class PlaylistDragCallback(private val detailModel: DetailViewModel) : MaterialDragCallback() {
     override fun onMove(

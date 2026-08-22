@@ -325,7 +325,7 @@
     <string name="fmt_lib_artist_count">هنرمندان بارگیری شده: %d</string>
     <string name="fmt_lib_genre_count">انواع بارگیری شده: %d</string>
     <string name="fmt_lib_total_duration">مجموع زمان: %s</string>
-    <string name="lbl_author_name">Alexander Capehart</string>
+    <string name="lbl_author_name">Auralis Contributors</string>
     <string name="cdc_mp3">MPEG-1 audio</string>
     <string name="cdc_mp4">MPEG-4 audio</string>
     <string name="cnt_mp4">MPEG-4 containing %s</string>

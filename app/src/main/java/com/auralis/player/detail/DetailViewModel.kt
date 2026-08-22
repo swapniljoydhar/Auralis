@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * DetailViewModel.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -58,7 +58,7 @@ import timber.log.Timber as L
  * [ViewModel] that manages the Song, Album, Artist, and Genre detail views. Keeps track of the
  * current item they are showing, sub-data to display, and configuration.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 @HiltViewModel
 class DetailViewModel
@@ -654,7 +654,7 @@ constructor(
  * A command for navigation to detail views. These can be handled partially if a certain command
  * cannot occur in a specific view.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 sealed interface Show {
     /**

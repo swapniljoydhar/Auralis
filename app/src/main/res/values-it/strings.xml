@@ -35,7 +35,7 @@
     <string name="lbl_version">Versione</string>
     <string name="lbl_code">Codice sorgente</string>
     <string name="lbl_licenses">Licenze</string>
-    <string name="lbl_author_name">Alexander Capehart</string>
+    <string name="lbl_author_name">Auralis Contributors</string>
     <string name="lbl_library_counts">Statistiche della libreria</string>
     <string name="set_root_title">Impostazioni</string>
     <string name="set_ui">Aspetto</string>

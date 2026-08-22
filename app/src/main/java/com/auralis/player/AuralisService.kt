@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Auxio Project
+ * Copyright (c) 2024 Auralis Project
  * AuralisService.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -187,7 +187,7 @@ interface ForegroundListener {
  * Wrapper around [NotificationCompat.Builder] intended for use for [NotificationCompat]s that
  * signal a Service's ongoing foreground state.
  *
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 abstract class ForegroundServiceNotification(context: Context, info: ChannelInfo) :
     NotificationCompat.Builder(context, info.id) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Auxio Project
+ * Copyright (c) 2021 Auralis Project
  * Tab.kt is part of Auralis.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ import timber.log.Timber as L
  * A representation of a library tab suitable for configuration.
  *
  * @param type The type of list in the home view this instance corresponds to.
- * @author Alexander Capehart (OxygenCobalt)
+ * @author Auralis Contributors
  */
 sealed class Tab(open val type: MusicType) {
     /**
