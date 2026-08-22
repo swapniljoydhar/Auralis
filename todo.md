@@ -13,3 +13,4 @@
 - [x] Resolve native C++ formatter failures introduced by the identity rewrite.
 - [x] Strengthen listener snapshot publication and bottom-sheet initialization safety.
 - [x] Verify, sign, and publish the follow-up native Auralis repair release.
+- [ ] Migrate the verified Auralis project history and 4.1.8 release into a new standalone private GitHub repository.
