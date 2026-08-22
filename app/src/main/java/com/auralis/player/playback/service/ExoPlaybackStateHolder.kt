@@ -42,7 +42,7 @@ import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.MediaSource
 import com.auralis.player.audiobooks.AudiobookCatalog
-import com.auralis.player.audiobooks.AudiobookClassifier
+import com.auralis.player.audiobooks.AudiobookPlaybackController
 import com.auralis.player.audiobooks.AudiobookProgressRepository
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.image.ImageSettings
@@ -82,6 +82,7 @@ class ExoPlaybackStateHolder(
     private val playbackManager: PlaybackStateManager,
     private val persistenceRepository: PersistenceRepository,
     private val audiobookProgressRepository: AudiobookProgressRepository,
+    private val audiobookPlaybackController: AudiobookPlaybackController,
     private val audiobookSettings: AudiobookSettings,
     private val playbackSettings: PlaybackSettings,
     private val commandFactory: PlaybackCommand.Factory,
@@ -102,6 +103,7 @@ class ExoPlaybackStateHolder(
     private var openAudioEffectSession = false
     private val pendingAudiobookProgress = mutableListOf<AudiobookProgressSnapshot>()
     private var pausedAudiobookPositionMs: Long? = null
+    private var activeDomain = PlaybackDomain.MUSIC
 
     var sessionOngoing = false
         private set
@@ -129,9 +131,9 @@ class ExoPlaybackStateHolder(
             }
         runBlocking(Dispatchers.IO) {
             for (snapshot in snapshots) {
-                saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs)
+                saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs, snapshot.domain)
             }
-            saveAudiobookProgress(currentMediaItem, currentPosition)
+            saveAudiobookProgress(currentMediaItem, currentPosition, activeDomain)
         }
         saveJob.cancel()
         playbackManager.unregisterStateHolder(this)
@@ -288,6 +290,9 @@ class ExoPlaybackStateHolder(
         pausedAudiobookPositionMs = null
         parent = command.parent
         player.shuffleModeEnabled = command.shuffled
+        persistOutgoingAudiobookProgress()
+        activeDomain = command.domain
+        audiobookPlaybackController.onNewPlayback(activeDomain)
         player.setMediaItems(command.queue.map { it.buildMediaItem() })
         playbackManager.playbackSpeed(
             if (command.domain == PlaybackDomain.AUDIOBOOKS) {
@@ -455,11 +460,15 @@ class ExoPlaybackStateHolder(
     ) {
         var sendNewPlaybackEvent = false
         var shouldSeek = false
+        val restoredDomain = playbackManager.domain
         if (this.parent != parent) {
             this.parent = parent
             sendNewPlaybackEvent = true
         }
         if (rawQueue != resolveQueue()) {
+            persistOutgoingAudiobookProgress()
+            activeDomain = restoredDomain
+            audiobookPlaybackController.onPlaybackDomainChanged(activeDomain)
             player.setMediaItems(rawQueue.heap.map { it.buildMediaItem() })
             if (rawQueue.isShuffled) {
                 player.shuffleModeEnabled = true
@@ -474,6 +483,9 @@ class ExoPlaybackStateHolder(
             shouldSeek = true
         }
 
+        activeDomain = restoredDomain
+        audiobookPlaybackController.onPlaybackDomainChanged(activeDomain)
+
         repeatMode(repeatMode)
         // See if we differ by more than a second. This allows us to avoid a meaningless seek
         // in the case of a "tight restore" (i.e music was reloaded).
@@ -487,7 +499,7 @@ class ExoPlaybackStateHolder(
 
         val restoredSong = rawQueue.heap.getOrNull(rawQueue.heapIndex)
         playbackManager.playbackSpeed(
-            if (restoredSong != null && AudiobookClassifier.isAudiobook(restoredSong)) {
+            if (restoredSong != null && activeDomain == PlaybackDomain.AUDIOBOOKS) {
                 audiobookSettings.defaultPlaybackSpeed
             } else {
                 1.0f
@@ -504,6 +516,7 @@ class ExoPlaybackStateHolder(
         // session starts.
         player.stop()
         player.clearMediaItems()
+        audiobookPlaybackController.onPlaybackEnded(activeDomain)
         playbackManager.playing(false)
         save {
             // User could feasibly start playing again if they were fast enough, so
@@ -531,7 +544,7 @@ class ExoPlaybackStateHolder(
             !playWhenReady &&
                 sessionOngoing &&
                 currentSong != null &&
-                AudiobookClassifier.isAudiobook(currentSong)
+                activeDomain == PlaybackDomain.AUDIOBOOKS
         ) {
             pausedAudiobookPositionMs = player.currentPosition
         } else if (playWhenReady) {
@@ -539,7 +552,7 @@ class ExoPlaybackStateHolder(
             if (
                 pausedPosition != null &&
                     currentSong != null &&
-                    AudiobookClassifier.isAudiobook(currentSong)
+                    activeDomain == PlaybackDomain.AUDIOBOOKS
             ) {
                 player.seekTo((pausedPosition - audiobookSettings.autoRewindMs).coerceAtLeast(0L))
             }
@@ -560,7 +573,8 @@ class ExoPlaybackStateHolder(
         } else {
             val currentMediaItem = player.currentMediaItem
             val currentPosition = player.currentPosition
-            saveJob { saveAudiobookProgress(currentMediaItem, currentPosition) }
+            val currentDomain = activeDomain
+            saveJob { saveAudiobookProgress(currentMediaItem, currentPosition, currentDomain) }
             if (openAudioEffectSession) {
                 // Make sure to close the audio session when we stop playback.
                 L.d("Closing audio effect session")
@@ -585,6 +599,7 @@ class ExoPlaybackStateHolder(
         pausedAudiobookPositionMs = null
 
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
+            audiobookPlaybackController.onAutomaticChapterTransition(activeDomain)
             playbackManager.ack(this, StateAck.IndexMoved)
             deferSave()
         }
@@ -600,7 +615,11 @@ class ExoPlaybackStateHolder(
         if (oldPosition.mediaItemIndex != newPosition.mediaItemIndex) {
             synchronized(pendingAudiobookProgress) {
                 pendingAudiobookProgress +=
-                    AudiobookProgressSnapshot(oldPosition.mediaItem, oldPosition.positionMs)
+                    AudiobookProgressSnapshot(
+                        oldPosition.mediaItem,
+                        oldPosition.positionMs,
+                        activeDomain,
+                    )
             }
             deferSave()
         }
@@ -661,9 +680,8 @@ class ExoPlaybackStateHolder(
     }
 
     private fun applyAudiobookAudioSettings() {
-        val song = player.currentMediaItem?.song
         player.skipSilenceEnabled =
-            song != null && AudiobookClassifier.isAudiobook(song) && audiobookSettings.skipSilence
+            activeDomain == PlaybackDomain.AUDIOBOOKS && audiobookSettings.skipSilence
     }
 
     override fun onPauseOnRepeatChanged() {
@@ -679,12 +697,13 @@ class ExoPlaybackStateHolder(
     private fun save(cb: () -> Unit) {
         val currentMediaItem = player.currentMediaItem
         val currentPosition = player.currentPosition
+        val currentDomain = activeDomain
         saveJob {
             if (sessionOngoing) {
                 persistenceRepository.saveState(playbackManager.toSavedState())
             }
             savePendingAudiobookProgress()
-            saveAudiobookProgress(currentMediaItem, currentPosition)
+            saveAudiobookProgress(currentMediaItem, currentPosition, currentDomain)
             withContext(Dispatchers.Main) { cb() }
         }
     }
@@ -692,6 +711,7 @@ class ExoPlaybackStateHolder(
     private fun deferSave() {
         val currentMediaItem = player.currentMediaItem
         val currentPosition = player.currentPosition
+        val currentDomain = activeDomain
         saveJob {
             L.d("Waiting for save buffer")
             delay(SAVE_BUFFER)
@@ -701,7 +721,7 @@ class ExoPlaybackStateHolder(
                 persistenceRepository.saveState(playbackManager.toSavedState())
             }
             savePendingAudiobookProgress()
-            saveAudiobookProgress(currentMediaItem, currentPosition)
+            saveAudiobookProgress(currentMediaItem, currentPosition, currentDomain)
         }
     }
 
@@ -711,13 +731,27 @@ class ExoPlaybackStateHolder(
                 synchronized(pendingAudiobookProgress) {
                     pendingAudiobookProgress.removeFirstOrNull()
                 } ?: return
-            saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs)
+            saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs, snapshot.domain)
         }
     }
 
-    private suspend fun saveAudiobookProgress(mediaItem: MediaItem?, positionMs: Long) {
+    private fun persistOutgoingAudiobookProgress() {
+        val outgoingMediaItem = player.currentMediaItem
+        val outgoingPosition = player.currentPosition
+        val outgoingDomain = activeDomain
+        if (outgoingDomain != PlaybackDomain.AUDIOBOOKS) return
+        saveScope.launch {
+            saveAudiobookProgress(outgoingMediaItem, outgoingPosition, outgoingDomain)
+        }
+    }
+
+    private suspend fun saveAudiobookProgress(
+        mediaItem: MediaItem?,
+        positionMs: Long,
+        domain: PlaybackDomain,
+    ) {
         val song = mediaItem?.song ?: return
-        if (!AudiobookClassifier.isAudiobook(song)) return
+        if (domain != PlaybackDomain.AUDIOBOOKS) return
 
         audiobookProgressRepository.save(
             bookKey = AudiobookCatalog.bookKey(song),
@@ -727,7 +761,11 @@ class ExoPlaybackStateHolder(
         )
     }
 
-    private data class AudiobookProgressSnapshot(val mediaItem: MediaItem?, val positionMs: Long)
+    private data class AudiobookProgressSnapshot(
+        val mediaItem: MediaItem?,
+        val positionMs: Long,
+        val domain: PlaybackDomain,
+    )
 
     private fun saveJob(block: suspend () -> Unit) {
         currentSaveJob?.let {
@@ -794,6 +832,7 @@ class ExoPlaybackStateHolder(
         private val playbackManager: PlaybackStateManager,
         private val persistenceRepository: PersistenceRepository,
         private val audiobookProgressRepository: AudiobookProgressRepository,
+        private val audiobookPlaybackController: AudiobookPlaybackController,
         private val audiobookSettings: AudiobookSettings,
         private val playbackSettings: PlaybackSettings,
         private val commandFactory: PlaybackCommand.Factory,
@@ -841,6 +880,7 @@ class ExoPlaybackStateHolder(
                 playbackManager,
                 persistenceRepository,
                 audiobookProgressRepository,
+                audiobookPlaybackController,
                 audiobookSettings,
                 playbackSettings,
                 commandFactory,

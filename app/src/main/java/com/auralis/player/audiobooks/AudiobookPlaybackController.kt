@@ -22,6 +22,7 @@
  
 package com.auralis.player.audiobooks
 
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,27 +39,68 @@ class AudiobookPlaybackController
 constructor(private val playbackManager: PlaybackStateManager) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var sleepTimerJob: Job? = null
+    private var scheduledDomain: PlaybackDomain? = null
+    private var sleepAtChapterEnd = false
+
+    val isSleepTimerActive: Boolean
+        get() = scheduledDomain == PlaybackDomain.AUDIOBOOKS
 
     fun scheduleSleepTimer(durationMs: Long) {
-        sleepTimerJob?.cancel()
+        val domain = playbackManager.domain
+        if (domain != PlaybackDomain.AUDIOBOOKS) return
+        cancelSleepTimer()
+        scheduledDomain = domain
         sleepTimerJob =
             scope.launch {
                 delay(durationMs.coerceAtLeast(0L))
-                playbackManager.playing(false)
-                sleepTimerJob = null
+                if (scheduledDomain == domain && playbackManager.domain == domain) {
+                    playbackManager.playing(false)
+                }
+                clearSleepTimer()
             }
     }
 
     fun scheduleSleepAtChapterEnd() {
-        val song = playbackManager.currentSong ?: return
-        val remainingMs =
-            (song.durationMs - playbackManager.progression.calculateElapsedPositionMs())
-                .coerceAtLeast(0L)
-        scheduleSleepTimer(remainingMs)
+        if (
+            playbackManager.domain != PlaybackDomain.AUDIOBOOKS ||
+                playbackManager.currentSong == null
+        )
+            return
+        cancelSleepTimer()
+        scheduledDomain = PlaybackDomain.AUDIOBOOKS
+        sleepAtChapterEnd = true
+    }
+
+    /** Called by the player service only for an automatic chapter-file transition. */
+    fun onAutomaticChapterTransition(domain: PlaybackDomain) {
+        if (sleepAtChapterEnd && scheduledDomain == domain && domain == PlaybackDomain.AUDIOBOOKS) {
+            playbackManager.playing(false)
+            clearSleepTimer()
+        }
+    }
+
+    /** Prevent a timer created by an audiobook session from affecting another mode or session. */
+    fun onPlaybackDomainChanged(domain: PlaybackDomain) {
+        if (scheduledDomain != null && scheduledDomain != domain) cancelSleepTimer()
+    }
+
+    fun onNewPlayback(domain: PlaybackDomain) {
+        if (scheduledDomain != null) cancelSleepTimer()
+        onPlaybackDomainChanged(domain)
+    }
+
+    fun onPlaybackEnded(domain: PlaybackDomain) {
+        if (sleepAtChapterEnd && scheduledDomain == domain) clearSleepTimer()
     }
 
     fun cancelSleepTimer() {
         sleepTimerJob?.cancel()
+        clearSleepTimer()
+    }
+
+    private fun clearSleepTimer() {
         sleepTimerJob = null
+        scheduledDomain = null
+        sleepAtChapterEnd = false
     }
 }

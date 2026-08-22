@@ -152,6 +152,7 @@
     <string name="lbl_audiobook_remove_bookmark">Remove bookmark</string>
     <string name="lbl_audiobook_bookmark_at">%1$s • %2$s</string>
     <string name="lbl_audiobook_sleep">Sleep timer</string>
+    <string name="lbl_audiobook_sleep_active">Sleep active</string>
     <string name="lbl_audiobook_resume">Resume audiobook</string>
     <string name="lbl_audiobook_continue">Continue</string>
     <string name="lbl_audiobook_start">Start</string>

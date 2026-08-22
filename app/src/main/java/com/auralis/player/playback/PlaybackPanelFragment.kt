@@ -117,6 +117,7 @@ class PlaybackPanelFragment :
     private var currentPagerPosition = 0
     private var audiobookActionRow: LinearLayout? = null
     private var audiobookSpeedButton: MaterialButton? = null
+    private var audiobookSleepButton: MaterialButton? = null
     private var audiobookSessionActive = false
 
     override fun onCreateBinding(inflater: LayoutInflater) =
@@ -227,6 +228,7 @@ class PlaybackPanelFragment :
         binding.playbackAlbum?.isSelected = false
         audiobookActionRow = null
         audiobookSpeedButton = null
+        audiobookSleepButton = null
         audiobookSessionActive = false
         binding.playbackToolbar.setOnMenuItemClickListener(null)
         userAwarePagerCallback?.release()
@@ -294,6 +296,7 @@ class PlaybackPanelFragment :
             binding.playbackArtist.text = song.album.name.resolve(context)
             binding.playbackAlbum?.text = context.getString(R.string.lbl_audiobook_chapter)
             updateAudiobookSpeed()
+            updateAudiobookSleepTimer()
         } else {
             if (audiobookSessionActive) {
                 playbackManager.playbackSpeed(1.0f)
@@ -342,12 +345,9 @@ class PlaybackPanelFragment :
                 },
                 weightedButtonParams(),
             )
-            addView(
-                audiobookButton(getString(R.string.lbl_audiobook_sleep), null) {
-                    showSleepPicker()
-                },
-                weightedButtonParams(),
-            )
+            audiobookSleepButton =
+                audiobookButton(getString(R.string.lbl_audiobook_sleep), null) { showSleepPicker() }
+                    .also { addView(it, weightedButtonParams()) }
             audiobookSpeedButton =
                 audiobookButton(
                         getString(
@@ -379,6 +379,17 @@ class PlaybackPanelFragment :
     private fun updateAudiobookSpeed() {
         audiobookSpeedButton?.text =
             getString(R.string.lbl_audiobook_speed_value, playbackManager.playbackSpeed)
+    }
+
+    private fun updateAudiobookSleepTimer() {
+        audiobookSleepButton?.text =
+            getString(
+                if (audiobookPlaybackController.isSleepTimerActive) {
+                    R.string.lbl_audiobook_sleep_active
+                } else {
+                    R.string.lbl_audiobook_sleep
+                }
+            )
     }
 
     private fun showSpeedPicker() {
@@ -427,6 +438,7 @@ class PlaybackPanelFragment :
                     3 -> audiobookPlaybackController.scheduleSleepAtChapterEnd()
                     else -> audiobookPlaybackController.cancelSleepTimer()
                 }
+                updateAudiobookSleepTimer()
             }
             .show()
     }
@@ -685,6 +697,7 @@ class PlaybackPanelFragment :
 
     private fun updatePosition(positionDs: Long) {
         requireBinding().playbackSeekBar?.positionDs = positionDs
+        updateAudiobookSleepTimer()
     }
 
     private fun updateRepeat(repeatMode: RepeatMode) {

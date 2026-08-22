@@ -29,3 +29,15 @@
 - [x] Resolve conflicting audiobook detail calls to action and preserve a single clear resume/start path.
 - [x] Define and apply domain-specific playback preferences where Music and Audiobooks require different defaults.
 - [x] Improve confirmed library list density, metadata fallbacks, and touch-target clarity without redesigning unrelated screens.
+- [ ] Audit remaining chapter-navigation, sleep-timer, and bookmark edge cases against the confirmed audiobook reference flow.
+- [ ] Define the complete Audiobooks product lifecycle missing from the current Auralis reference implementation, including progress states, navigation, and contextual actions.
+- [ ] Prioritize an implementation-ready next-release backlog that preserves independent Music and Audiobooks modes.
+- [x] P0: Replace remaining classifier-based audiobook behavior in the playback holder with explicit PlaybackDomain checks so auto-discovered long-form local books retain progress, auto-rewind, audio settings, and restored speed.
+- [x] P0: Make sleep timers domain- and session-bound, cancel them on domain or session change, implement true current-chapter-end behavior across seeks and transitions, and expose the active timer state without obscuring artwork.
+- [ ] Build, test, sign, and publish the P0 explicit-PlaybackDomain corrective release.
+- [ ] P1: Make chapter navigation source-aware and accessible: preserve deterministic chapter order, distinguish embedded chapters from chapter files, clamp invalid embedded timestamps, and use adequately sized interactive rows.
+- [ ] P1: Make embedded-MP3 chapter progress and bookmarks durable at embedded-chapter granularity rather than only at the enclosing file position.
+- [ ] P1: Create a first-class bookmark view with contextual chapter labels, optional notes, in-place deletion, stale-bookmark handling, and direct resume.
+- [ ] P1: Complete the Audiobooks lifecycle with Current, Not started, and Finished states, percentage/time progress, and a one-tap resume path; retain Music as an independent mode.
+- [ ] P2: Separate audiobook settings into focused local-library, playback, and appearance groups, including configurable skip, auto-rewind, and selected-folder behavior.
+- [ ] P2: Replace generic loading and empty states with Auralis-specific progress feedback and add a compact/grid audiobook-library preference without importing Voice branding.
