@@ -46,10 +46,16 @@ import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.auralis.player.R
 import com.auralis.player.audiobooks.AudiobookBookmark
 import com.auralis.player.audiobooks.AudiobookBookmarkRepository
 import com.auralis.player.audiobooks.AudiobookCatalog
+import com.auralis.player.audiobooks.AudiobookChapterNavigator
+import com.auralis.player.audiobooks.AudiobookChapterSource
+import com.auralis.player.audiobooks.AudiobookFileChapter
+import com.auralis.player.audiobooks.AudiobookNavigationChapter
 import com.auralis.player.audiobooks.AudiobookPlaybackController
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.audiobooks.EmbeddedChapter
@@ -461,11 +467,141 @@ class PlaybackPanelFragment :
         viewLifecycleOwner.lifecycleScope.launch {
             val embeddedChapters =
                 if (queue.size == 1) embeddedChapterReader.read(currentSong) else emptyList()
-            showChapterPicker(queue, currentSong, embeddedChapters)
+            showChapterNavigator(queue, currentSong, embeddedChapters)
         }
     }
 
-    private fun showChapterPicker(
+    private fun showChapterNavigator(
+        queue: List<Song>,
+        currentSong: Song,
+        embeddedChapters: List<EmbeddedChapter>,
+    ) {
+        val chapters =
+            if (embeddedChapters.isNotEmpty()) {
+                AudiobookChapterNavigator.embedded(
+                    embeddedChapters,
+                    currentSong.durationMs,
+                    playbackManager.progression.calculateElapsedPositionMs(),
+                )
+            } else {
+                AudiobookChapterNavigator.files(
+                    queue.map {
+                        AudiobookFileChapter(it.name.resolve(requireContext()), it.durationMs)
+                    },
+                    playbackManager.index,
+                )
+            }
+        if (chapters.isEmpty()) return
+
+        val expectedQueueUids = queue.map { it.uid.toString() }
+        val expectedSongUid = currentSong.uid.toString()
+        val dialog = AlertDialog.Builder(requireContext()).create()
+        val navigator =
+            RecyclerView(requireContext()).apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter =
+                    ChapterNavigatorAdapter(chapters) { chapter ->
+                        val selectionIsCurrent =
+                            AudiobookChapterNavigator.canSelect(
+                                playbackManager.domain,
+                                expectedSongUid,
+                                playbackManager.currentSong?.uid?.toString(),
+                                expectedQueueUids,
+                                playbackManager.queue.map { it.uid.toString() },
+                            )
+                        if (!selectionIsCurrent) {
+                            requireContext().showToast(R.string.msg_audiobook_chapters_changed)
+                            dialog.dismiss()
+                            return@ChapterNavigatorAdapter
+                        }
+                        when (val source = chapter.source) {
+                            is AudiobookChapterSource.Embedded ->
+                                playbackManager.seekTo(source.startMs)
+                            is AudiobookChapterSource.File ->
+                                playbackManager.goto(source.queueIndex)
+                        }
+                        dialog.dismiss()
+                    }
+            }
+        dialog.setTitle(
+            if (embeddedChapters.isNotEmpty()) {
+                R.string.lbl_audiobook_embedded_chapters
+            } else {
+                R.string.lbl_audiobook_file_chapters
+            }
+        )
+        dialog.setView(navigator)
+        dialog.setOnShowListener {
+            chapters
+                .indexOfFirst(AudiobookNavigationChapter::isCurrent)
+                .takeIf { it >= 0 }
+                ?.let(navigator::scrollToPosition)
+        }
+        dialog.show()
+    }
+
+    private inner class ChapterNavigatorAdapter(
+        private val chapters: List<AudiobookNavigationChapter>,
+        private val onChapterSelected: (AudiobookNavigationChapter) -> Unit,
+    ) : RecyclerView.Adapter<ChapterNavigatorViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            ChapterNavigatorViewHolder(
+                MaterialButton(parent.context).apply {
+                    isAllCaps = false
+                    gravity = Gravity.START or Gravity.CENTER_VERTICAL
+                    textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+                    minimumHeight = (56 * resources.displayMetrics.density).toInt()
+                    setPadding(20, 8, 20, 8)
+                }
+            )
+
+        override fun onBindViewHolder(holder: ChapterNavigatorViewHolder, position: Int) {
+            val chapter = chapters[position]
+            holder.button.apply {
+                val source =
+                    if (chapter.source is AudiobookChapterSource.Embedded) {
+                        getString(R.string.lbl_audiobook_embedded_chapter)
+                    } else {
+                        getString(R.string.lbl_audiobook_file_chapter)
+                    }
+                val range =
+                    chapter.endMs?.let {
+                        "${chapter.startMs.formatDurationMs(true)}–${it.formatDurationMs(true)}"
+                    } ?: chapter.startMs.formatDurationMs(true)
+                text = buildString {
+                    if (chapter.isCurrent) append("▶ ")
+                    append(chapter.number)
+                    append(". ")
+                    append(chapter.title)
+                    append("\n")
+                    append(source)
+                    append(" • ")
+                    append(range)
+                }
+                contentDescription = buildString {
+                    if (chapter.isCurrent) append(getString(R.string.lbl_audiobook_current_chapter))
+                    else append(getString(R.string.lbl_audiobook_chapter))
+                    append(" ")
+                    append(chapter.number)
+                    append(", ")
+                    append(chapter.title)
+                    append(", ")
+                    append(source)
+                    append(", ")
+                    append(range)
+                }
+                alpha = if (chapter.isCurrent) 1f else 0.82f
+                setOnClickListener { onChapterSelected(chapter) }
+            }
+        }
+
+        override fun getItemCount() = chapters.size
+    }
+
+    private class ChapterNavigatorViewHolder(val button: MaterialButton) :
+        RecyclerView.ViewHolder(button)
+
+    private fun showLegacyChapterDialog(
         queue: List<Song>,
         currentSong: Song,
         embeddedChapters: List<EmbeddedChapter>,

@@ -7,3 +7,4 @@
 fdd63792a7cbd935f4bcbe7b912841062660792f0d95591fce3d2732d4af9e09  artifacts/auralis-4.1.10-release-signed.apk
 18c1df150c7452a1eb8d2bf4c741cb4ad4c1cb9f38a872a494919ee878a8f267  artifacts/auralis-4.1.11-release-signed.apk
 2aefaa5748de4da1bc434c56995dc1e5f4bbe5a4d5ec0bf4b33e083eba49b2a8  artifacts/auralis-4.1.12-release-signed.apk
+d901aadec04622f0aeb72feebce5371b7ecc1fc9919e40353416cebade8a30b5  artifacts/auralis-4.1.13-release-signed.apk

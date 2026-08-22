@@ -161,6 +161,12 @@
     <string name="lbl_audiobook_summary">%1$s • %2$d chapters</string>
     <string name="lbl_audiobook_progress">%1$d of %2$d chapters complete</string>
     <string name="lbl_audiobook_chapters">Chapters</string>
+    <string name="lbl_audiobook_embedded_chapters">Embedded chapters</string>
+    <string name="lbl_audiobook_file_chapters">Chapter files</string>
+    <string name="lbl_audiobook_embedded_chapter">Embedded chapter</string>
+    <string name="lbl_audiobook_file_chapter">Chapter file</string>
+    <string name="lbl_audiobook_current_chapter">Current chapter</string>
+    <string name="msg_audiobook_chapters_changed">The audiobook changed. Reopen Chapters to navigate the active book.</string>
     <string name="lbl_audiobook_chapter_duration">%1$s</string>
     <string name="lbl_audiobook_chapter_complete">%1$s • Complete</string>
     <string name="lbl_audiobook_chapter_complete_short">Chapter complete</string>

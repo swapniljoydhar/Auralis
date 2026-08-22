@@ -44,3 +44,5 @@
 - [x] Implement true end-of-embedded-ID3-chapter sleep behavior for single-MP3 audiobooks.
 - [x] Verify and regression-test sleep timer isolation across explicit Audiobooks and Music queue switches.
 - [x] Expand focused automated chapter-navigation coverage for embedded chapter boundaries, malformed offsets, short chapters, and stale picker state.
+- [x] Build a dedicated accessible Audiobooks chapter navigator with validated timestamps, source-aware ordering, current chapter state, and reliable explicit-domain selection.
+- [x] Add focused chapter-navigation tests for invalid embedded timestamps, source ordering, active-state derivation, and selection safety after queue or domain changes.
