@@ -53,6 +53,9 @@ interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
     /** Local folder identifiers selected for the Audiobooks-only library projection. */
     val selectedFolders: Set<String>
 
+    /** The local folder model used only to group Audiobooks into books. */
+    val folderOrganization: AudiobookFolderOrganization
+
     /** Whether the Audiobooks library uses the two-column cover grid presentation. */
     val useGridPresentation: Boolean
 
@@ -84,6 +87,8 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
     private val selectedFoldersEnabledKey =
         context.getString(R.string.set_key_audiobook_selected_folders_enabled)
     private val selectedFoldersKey = context.getString(R.string.set_key_audiobook_selected_folders)
+    private val folderOrganizationKey =
+        context.getString(R.string.set_key_audiobook_folder_organization)
     private val libraryPresentationKey =
         context.getString(R.string.set_key_audiobook_library_presentation)
 
@@ -112,6 +117,12 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
     override val selectedFolders: Set<String>
         get() = sharedPreferences.getStringSet(selectedFoldersKey, emptySet()).orEmpty()
 
+    override val folderOrganization: AudiobookFolderOrganization
+        get() =
+            AudiobookFolderOrganization.fromPreference(
+                sharedPreferences.getInt(folderOrganizationKey, SEPARATE_BOOK_FOLDERS)
+            )
+
     override val useGridPresentation: Boolean
         get() = libraryPresentation == AudiobookLibraryPresentation.GRID
 
@@ -138,7 +149,11 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         ) {
             listener.onAudiobookPlaybackSettingsChanged()
         }
-        if (key == selectedFoldersEnabledKey || key == selectedFoldersKey) {
+        if (
+            key == selectedFoldersEnabledKey ||
+                key == selectedFoldersKey ||
+                key == folderOrganizationKey
+        ) {
             listener.onAudiobookLibrarySettingsChanged()
         }
         if (key == libraryPresentationKey) {
@@ -151,6 +166,7 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         const val DEFAULT_SPEED_PERCENT = 100
         const val DEFAULT_REWIND_SECONDS = 2
         const val COMPACT_PRESENTATION = 0
+        const val SEPARATE_BOOK_FOLDERS = 0
     }
 
     private fun update(songs: Collection<Song>, transform: (Set<String>) -> Set<String>) {

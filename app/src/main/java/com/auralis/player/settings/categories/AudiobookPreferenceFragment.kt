@@ -23,10 +23,12 @@
 package com.auralis.player.settings.categories
 
 import android.os.Bundle
+import androidx.preference.ListPreference
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
 import com.auralis.player.R
+import com.auralis.player.audiobooks.AudiobookFolderOrganization
 import com.auralis.player.audiobooks.AudiobookRepository
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.settings.BasePreferenceFragment
@@ -47,13 +49,28 @@ class AudiobookPreferenceFragment : BasePreferenceFragment(R.xml.preferences_aud
         val folders = audiobookRepository.folders().toTypedArray()
         selectedFolders.entries = folders
         selectedFolders.entryValues = folders
-        selectedFolders.isVisible = audiobookSettings.useSelectedFolders
+        fun updateSelectedFoldersVisibility() {
+            selectedFolders.isVisible =
+                audiobookSettings.useSelectedFolders ||
+                    audiobookSettings.folderOrganization.requiresSelectedRoots
+        }
+        updateSelectedFoldersVisibility()
         findPreference<SwitchPreferenceCompat>(
                 getString(R.string.set_key_audiobook_selected_folders_enabled)
             )
             ?.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, value ->
-                selectedFolders.isVisible = value as Boolean
+                selectedFolders.isVisible =
+                    (value as Boolean) || audiobookSettings.folderOrganization.requiresSelectedRoots
+                true
+            }
+        findPreference<ListPreference>(getString(R.string.set_key_audiobook_folder_organization))
+            ?.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _, value ->
+                selectedFolders.isVisible =
+                    audiobookSettings.useSelectedFolders ||
+                        AudiobookFolderOrganization.fromPreference(value.toString().toInt())
+                            .requiresSelectedRoots
                 true
             }
     }

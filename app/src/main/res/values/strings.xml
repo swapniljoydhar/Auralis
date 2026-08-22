@@ -388,6 +388,11 @@
     <string name="set_audiobook_selected_folders_enabled_desc">Show audiobook files only from folders chosen below</string>
     <string name="set_audiobook_selected_folders">Selected folders</string>
     <string name="set_audiobook_selected_folders_desc">Choose indexed local folders for the Audiobooks library</string>
+    <string name="set_audiobook_folder_organization">Book organization</string>
+    <string name="set_audiobook_folder_organization_desc">How selected local folders are grouped into audiobooks</string>
+    <string name="set_audiobook_organization_separate">Each book folder</string>
+    <string name="set_audiobook_organization_selected">Selected folder is one book</string>
+    <string name="set_audiobook_organization_author">Author and book folders</string>
     <string name="set_audiobook_library_presentation">Library layout</string>
     <string name="set_audiobook_library_presentation_desc">Choose compact rows or a cover grid for the Audiobooks library</string>
     <string name="set_audiobook_presentation_compact">Compact rows</string>

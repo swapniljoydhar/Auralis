@@ -51,6 +51,7 @@
     <string name="set_key_audiobook_skip_silence" translatable="false">auralis_audiobook_skip_silence</string>
     <string name="set_key_audiobook_selected_folders_enabled" translatable="false">auralis_audiobook_selected_folders_enabled</string>
     <string name="set_key_audiobook_selected_folders" translatable="false">auralis_audiobook_selected_folders</string>
+    <string name="set_key_audiobook_folder_organization" translatable="false">auralis_audiobook_folder_organization</string>
     <string name="set_key_audiobook_library_presentation" translatable="false">auralis_audiobook_library_presentation</string>
     <string name="set_key_library_mode" translatable="false">auralis_library_mode</string>
     <string name="set_key_hide_collaborators" translatable="false">auralis_hide_collaborators</string>
@@ -161,6 +162,18 @@
     <integer-array name="values_audiobook_library_presentation">
         <item>0</item>
         <item>1</item>
+    </integer-array>
+
+    <string-array name="entries_audiobook_folder_organization">
+        <item>@string/set_audiobook_organization_separate</item>
+        <item>@string/set_audiobook_organization_selected</item>
+        <item>@string/set_audiobook_organization_author</item>
+    </string-array>
+
+    <integer-array name="values_audiobook_folder_organization">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </integer-array>
 
     <string-array name="entries_bar_action">

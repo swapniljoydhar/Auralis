@@ -118,16 +118,19 @@ object AudiobookCatalog {
     fun fromSongs(
         songs: Collection<Song>,
         manualSongUids: Set<String> = emptySet(),
+        organization: AudiobookFolderOrganization =
+            AudiobookFolderOrganization.SEPARATE_BOOK_FOLDERS,
+        selectedFolders: Set<String> = emptySet(),
     ): List<AudiobookBook> {
         return songs
             .asSequence()
-            .groupBy(::bookKey)
+            .groupBy { song -> bookGroup(song, organization, selectedFolders) }
             .filter { (_, chapters) ->
                 chapters.any { song ->
                     song.uid.toString() in manualSongUids || AudiobookClassifier.isAudiobook(song)
                 } || isLongFormBook(chapters.map(Song::durationMs))
             }
-            .map { (key, chapters) ->
+            .map { (group, chapters) ->
                 val ordered =
                     chapters
                         .sortedWith(
@@ -139,9 +142,9 @@ object AudiobookCatalog {
                             AudiobookChapter(song = song, number = index + 1, title = song.name.raw)
                         }
                 AudiobookBook(
-                    key = key,
-                    title = bookTitle(ordered),
-                    author = bookAuthor(ordered),
+                    key = group.key,
+                    title = group.title ?: bookTitle(ordered),
+                    author = group.author ?: bookAuthor(ordered),
                     chapters = ordered,
                 )
             }
@@ -168,15 +171,23 @@ object AudiobookCatalog {
      * directory remains the fallback for chapter files without a usable book-level album title.
      */
     fun bookKey(song: Song): String {
+        return bookGroup(song, AudiobookFolderOrganization.SEPARATE_BOOK_FOLDERS, emptySet()).key
+    }
+
+    private fun bookGroup(
+        song: Song,
+        organization: AudiobookFolderOrganization,
+        selectedFolders: Set<String>,
+    ): AudiobookFolderGroup {
         val volume = song.path.volume.mediaStoreName ?: song.path.volume.toString()
-        val album = song.album.name.asRawOrNull()?.takeUnless { it.isGenericAlbumName() }
-        if (album != null) {
-            val author =
-                song.album.artists.firstOrNull()?.name.asRawOrNull()
-                    ?: song.artists.firstOrNull()?.name.asRawOrNull()
-            return "$volume:album:${author.orEmpty().lowercase()}:${album.lowercase()}"
-        }
-        return "$volume:${song.path.directory.components.unixString}"
+        val folderGroup =
+            AudiobookFolderOrganizationResolver.group(
+                volume = volume,
+                directory = song.path.directory.components.unixString,
+                organization = organization,
+                selectedFolders = selectedFolders,
+            )
+        return folderGroup
     }
 
     private fun bookTitle(chapters: List<AudiobookChapter>): String {

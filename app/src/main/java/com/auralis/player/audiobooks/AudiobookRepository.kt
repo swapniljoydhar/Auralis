@@ -49,7 +49,12 @@ constructor(
                 ) { song ->
                     song.path.directory.components.unixString
                 }
-            AudiobookCatalog.fromSongs(source, audiobookSettings.manualSongUids)
+            AudiobookCatalog.fromSongs(
+                songs = source,
+                manualSongUids = audiobookSettings.manualSongUids,
+                organization = audiobookSettings.folderOrganization,
+                selectedFolders = audiobookSettings.selectedFolders,
+            )
         } ?: emptyList()
 
     fun book(key: String): AudiobookBook? = books().firstOrNull { it.key == key }

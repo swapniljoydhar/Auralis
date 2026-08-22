@@ -3,6 +3,14 @@
     app:title="@string/set_audiobooks">
 
     <PreferenceCategory app:title="@string/set_audiobook_local_library">
+        <com.auralis.player.settings.ui.IntListPreference
+            app:defaultValue="0"
+            app:entries="@array/entries_audiobook_folder_organization"
+            app:entryValues="@array/values_audiobook_folder_organization"
+            app:key="@string/set_key_audiobook_folder_organization"
+            app:summary="@string/set_audiobook_folder_organization_desc"
+            app:title="@string/set_audiobook_folder_organization" />
+
         <SwitchPreferenceCompat
             app:defaultValue="false"
             app:key="@string/set_key_audiobook_selected_folders_enabled"

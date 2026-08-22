@@ -33,6 +33,78 @@ enum class AudiobookLibraryPresentation(private val preferenceValue: Int) {
     }
 }
 
+/**
+ * The local folder model used only to group Audiobooks after the shared Music snapshot is copied.
+ */
+enum class AudiobookFolderOrganization(private val preferenceValue: Int) {
+    SEPARATE_BOOK_FOLDERS(0),
+    SELECTED_FOLDER_AS_BOOK(1),
+    AUTHOR_BOOK_HIERARCHY(2);
+
+    val requiresSelectedRoots: Boolean
+        get() = this != SEPARATE_BOOK_FOLDERS
+
+    companion object {
+        fun fromPreference(value: Int) =
+            entries.firstOrNull { it.preferenceValue == value } ?: SEPARATE_BOOK_FOLDERS
+    }
+}
+
+/** A deterministic local path grouping result that does not mutate any shared Music snapshot. */
+data class AudiobookFolderGroup(
+    val key: String,
+    val title: String? = null,
+    val author: String? = null,
+)
+
+/** Pure resolver for the three supported local Audiobooks folder models. */
+object AudiobookFolderOrganizationResolver {
+    fun group(
+        volume: String,
+        directory: String,
+        organization: AudiobookFolderOrganization,
+        selectedFolders: Set<String>,
+    ): AudiobookFolderGroup {
+        val normalizedDirectory = directory.trimEnd('/')
+        val selectedRoot =
+            selectedFolders
+                .asSequence()
+                .map { it.trimEnd('/') }
+                .filter { it.isNotEmpty() }
+                .filter { normalizedDirectory == it || normalizedDirectory.startsWith("$it/") }
+                .maxByOrNull(String::length)
+        return when (organization) {
+            AudiobookFolderOrganization.SEPARATE_BOOK_FOLDERS ->
+                separate(volume, normalizedDirectory)
+            AudiobookFolderOrganization.SELECTED_FOLDER_AS_BOOK ->
+                selectedRoot?.let { root ->
+                    AudiobookFolderGroup(
+                        key = "$volume:selected:$root",
+                        title = root.substringAfterLast('/').ifBlank { null },
+                    )
+                } ?: separate(volume, normalizedDirectory)
+            AudiobookFolderOrganization.AUTHOR_BOOK_HIERARCHY ->
+                selectedRoot?.let { root -> authorBook(volume, normalizedDirectory, root) }
+                    ?: separate(volume, normalizedDirectory)
+        }
+    }
+
+    private fun separate(volume: String, directory: String) =
+        AudiobookFolderGroup(key = "$volume:folder:$directory")
+
+    private fun authorBook(volume: String, directory: String, root: String): AudiobookFolderGroup {
+        val relative = directory.removePrefix(root).trim('/').split('/').filter(String::isNotBlank)
+        if (relative.size < 2) return separate(volume, directory)
+        val author = relative.first()
+        val book = relative[1]
+        return AudiobookFolderGroup(
+            key = "$volume:author-book:$root/$author/$book",
+            title = book,
+            author = author,
+        )
+    }
+}
+
 /** Pure folder-scoping contract for the Audiobooks projection over the shared local media index. */
 object AudiobookFolderScope {
     fun includes(directory: String, enabled: Boolean, selectedFolders: Set<String>) =

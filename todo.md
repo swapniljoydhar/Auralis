@@ -62,3 +62,7 @@
 - [x] Replace the hard initial Music/Audiobooks decision with fluid persistent native mode navigation that preserves independent mode state.
 - [x] Refine the native settings root so shared appearance/local-library controls and mode-specific settings are easy to understand.
 - [x] Verify the cohesive native Music/Audiobooks design pass preserves PlaybackDomain isolation, accessibility, and local-only behavior.
+- [x] Package the proven native Auralis audit, domain-isolation, testing, signing, and standalone-release workflow as a reusable skill.
+- [x] Review public Voice and Auxio architecture, organization, metadata, and feature-scope principles for Auralis without copying code or product identity.
+- [x] Add an Audiobooks-only organization preference for separate book folders, selected-folder-as-one-book, and author/book hierarchy.
+- [x] Add focused grouping and Music-snapshot isolation regressions for all Audiobooks organization strategies.

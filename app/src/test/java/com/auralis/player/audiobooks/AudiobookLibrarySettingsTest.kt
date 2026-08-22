@@ -29,10 +29,85 @@ import kotlin.concurrent.thread
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class AudiobookLibrarySettingsTest {
+    @Test
+    fun folderOrganizationMapsUnknownPreferenceToSeparateBookFolders() {
+        assertEquals(
+            AudiobookFolderOrganization.SEPARATE_BOOK_FOLDERS,
+            AudiobookFolderOrganization.fromPreference(99),
+        )
+    }
+
+    @Test
+    fun separateBookFoldersKeepsEachLocalDirectoryIndependent() {
+        val first =
+            AudiobookFolderOrganizationResolver.group(
+                volume = "external",
+                directory = "/Audiobooks/First Book",
+                organization = AudiobookFolderOrganization.SEPARATE_BOOK_FOLDERS,
+                selectedFolders = emptySet(),
+            )
+        val second =
+            AudiobookFolderOrganizationResolver.group(
+                volume = "external",
+                directory = "/Audiobooks/Second Book",
+                organization = AudiobookFolderOrganization.SEPARATE_BOOK_FOLDERS,
+                selectedFolders = emptySet(),
+            )
+
+        assertEquals("external:folder:/Audiobooks/First Book", first.key)
+        assertEquals("external:folder:/Audiobooks/Second Book", second.key)
+        assertFalse(first.key == second.key)
+    }
+
+    @Test
+    fun selectedFolderOrganizationGroupsEveryNestedChapterAsOneBook() {
+        val group =
+            AudiobookFolderOrganizationResolver.group(
+                volume = "external",
+                directory = "/Audiobooks/Pride and Prejudice/chapters",
+                organization = AudiobookFolderOrganization.SELECTED_FOLDER_AS_BOOK,
+                selectedFolders = setOf("/Audiobooks/Pride and Prejudice"),
+            )
+
+        assertEquals("external:selected:/Audiobooks/Pride and Prejudice", group.key)
+        assertEquals("Pride and Prejudice", group.title)
+    }
+
+    @Test
+    fun authorBookOrganizationDerivesAuthorAndBookBelowSelectedRoot() {
+        val group =
+            AudiobookFolderOrganizationResolver.group(
+                volume = "external",
+                directory = "/Audiobooks/Authors/Woolf/Mrs Dalloway",
+                organization = AudiobookFolderOrganization.AUTHOR_BOOK_HIERARCHY,
+                selectedFolders = setOf("/Audiobooks/Authors"),
+            )
+
+        assertEquals("external:author-book:/Audiobooks/Authors/Woolf/Mrs Dalloway", group.key)
+        assertEquals("Mrs Dalloway", group.title)
+        assertEquals("Woolf", group.author)
+    }
+
+    @Test
+    fun organizationWithoutSelectedRootFallsBackToSeparateFolders() {
+        val group =
+            AudiobookFolderOrganizationResolver.group(
+                volume = "external",
+                directory = "/Audiobooks/Unmapped/Book",
+                organization = AudiobookFolderOrganization.AUTHOR_BOOK_HIERARCHY,
+                selectedFolders = emptySet(),
+            )
+
+        assertEquals("external:folder:/Audiobooks/Unmapped/Book", group.key)
+        assertNull(group.title)
+        assertNull(group.author)
+    }
+
     @Test
     fun folderScopeIncludesEveryDirectoryWhenDisabled() {
         assertTrue(
