@@ -50,7 +50,6 @@ import com.auralis.player.R
 import com.auralis.player.audiobooks.AudiobookBookmark
 import com.auralis.player.audiobooks.AudiobookBookmarkRepository
 import com.auralis.player.audiobooks.AudiobookCatalog
-import com.auralis.player.audiobooks.AudiobookClassifier
 import com.auralis.player.audiobooks.AudiobookPlaybackController
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.audiobooks.EmbeddedChapter
@@ -62,6 +61,7 @@ import com.auralis.player.music.resolve
 import com.auralis.player.music.resolveNames
 import com.auralis.player.playback.queue.QueueViewModel
 import com.auralis.player.playback.state.PlaybackCommand
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.playback.state.ShuffleMode
@@ -235,7 +235,9 @@ class PlaybackPanelFragment :
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_audiobook_controls) {
-            showAudiobookControls()
+            if (playbackManager.domain == PlaybackDomain.AUDIOBOOKS) {
+                showAudiobookControls()
+            }
             return true
         }
 
@@ -267,15 +269,23 @@ class PlaybackPanelFragment :
     }
 
     private fun updateSong(song: Song?) {
+        val binding = requireBinding()
+        val context = requireContext()
         if (song == null) {
-            // Nothing to do.
+            audiobookSessionActive = false
+            binding.playbackSong.text = null
+            binding.playbackArtist.text = null
+            binding.playbackAlbum?.text = null
+            binding.playbackSeekBar?.durationDs = 0L
+            binding.playbackToolbar.menu.findItem(R.id.action_audiobook_controls)?.isVisible = false
+            binding.playbackRepeat.visibility = View.VISIBLE
+            binding.playbackShuffle.visibility = View.VISIBLE
+            audiobookActionRow?.visibility = View.GONE
             return
         }
 
-        val binding = requireBinding()
-        val context = requireContext()
         L.d("Updating song display: $song")
-        val isAudiobook = AudiobookClassifier.isAudiobook(song)
+        val isAudiobook = playbackManager.domain == PlaybackDomain.AUDIOBOOKS
         if (isAudiobook) {
             // Audiobooks are chapter-led: keep the chapter as the primary line and the book
             // grouping as the secondary line instead of presenting a music artist hierarchy.
@@ -321,43 +331,40 @@ class PlaybackPanelFragment :
             visibility = View.GONE
             setPadding(0, 8, 0, 0)
             addView(
-                audiobookButton(
-                    getString(
-                        R.string.lbl_audiobook_skip_back_value,
-                        audiobookSettings.skipDurationMs / 1000L,
-                    ),
-                    R.drawable.ic_skip_prev_24,
-                ) {
-                    playbackManager.seekBy(-audiobookSettings.skipDurationMs)
-                },
-                weightedButtonParams(),
-            )
-            addView(
                 audiobookButton(getString(R.string.lbl_audiobook_chapters), null) {
                     showChapterPicker()
                 },
                 weightedButtonParams(),
             )
             addView(
-                audiobookButton(
-                    getString(
-                        R.string.lbl_audiobook_skip_forward_value,
-                        audiobookSettings.skipDurationMs / 1000L,
-                    ),
-                    R.drawable.ic_skip_next_24,
-                ) {
-                    playbackManager.seekBy(audiobookSettings.skipDurationMs)
+                audiobookButton(getString(R.string.lbl_audiobook_bookmark), null) {
+                    bookmarkCurrentPosition()
                 },
                 weightedButtonParams(),
             )
+            addView(
+                audiobookButton(getString(R.string.lbl_audiobook_sleep), null) {
+                    showSleepPicker()
+                },
+                weightedButtonParams(),
+            )
+            audiobookSpeedButton =
+                audiobookButton(
+                        getString(
+                            R.string.lbl_audiobook_speed_value,
+                            playbackManager.playbackSpeed,
+                        ),
+                        null,
+                    ) {
+                        showSpeedPicker()
+                    }
+                    .also { addView(it, weightedButtonParams()) }
         }
 
     private fun audiobookButton(label: CharSequence, icon: Int?, action: () -> Unit) =
         MaterialButton(requireContext()).apply {
             text = label
             isAllCaps = false
-            minHeight = 0
-            minWidth = 0
             setPadding(8, 0, 8, 0)
             icon?.let(::setIconResource)
             setOnClickListener { action() }
@@ -388,6 +395,17 @@ class PlaybackPanelFragment :
             .setTitle(R.string.lbl_audiobook_speed)
             .setItems(labels) { _, which -> setPlaybackSpeed(speeds[which]) }
             .show()
+    }
+
+    private fun bookmarkCurrentPosition() {
+        val currentSong = playbackManager.currentSong ?: return
+        if (playbackManager.domain != PlaybackDomain.AUDIOBOOKS) return
+        audiobookBookmarkRepository.add(
+            AudiobookCatalog.bookKey(currentSong),
+            currentSong.uid,
+            playbackManager.progression.calculateElapsedPositionMs(),
+        )
+        requireContext().showToast(R.string.msg_audiobook_bookmark_added)
     }
 
     private fun showSleepPicker() {
@@ -421,7 +439,11 @@ class PlaybackPanelFragment :
     private fun showChapterPicker() {
         val queue = playbackManager.queue
         val currentSong = playbackManager.currentSong
-        if (queue.isEmpty() || currentSong == null || !AudiobookClassifier.isAudiobook(currentSong))
+        if (
+            playbackManager.domain != PlaybackDomain.AUDIOBOOKS ||
+                queue.isEmpty() ||
+                currentSong == null
+        )
             return
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -605,6 +627,7 @@ class PlaybackPanelFragment :
                 shuffle = ShuffleMode.OFF,
                 startSong = chapter,
                 startPositionMs = bookmark.positionMs,
+                domain = PlaybackDomain.AUDIOBOOKS,
             ) ?: return
         playbackManager.play(command)
         dialog.dismiss()

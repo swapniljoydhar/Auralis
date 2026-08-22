@@ -119,10 +119,12 @@ object AudiobookCatalog {
     ): List<AudiobookBook> {
         return songs
             .asSequence()
-            .filter { song ->
-                song.uid.toString() in manualSongUids || AudiobookClassifier.isAudiobook(song)
-            }
             .groupBy(::bookKey)
+            .filter { (_, chapters) ->
+                chapters.any { song ->
+                    song.uid.toString() in manualSongUids || AudiobookClassifier.isAudiobook(song)
+                } || isLongFormBook(chapters.map(Song::durationMs))
+            }
             .map { (key, chapters) ->
                 val ordered =
                     chapters
@@ -143,6 +145,20 @@ object AudiobookCatalog {
             }
             .sortedBy { it.title.lowercase() }
             .toList()
+    }
+
+    /**
+     * Recognize local MP3 chapter sets that have no audiobook filename or tag marker. This keeps
+     * ordinary music albums in Music while making multi-hour books visible without requiring the
+     * former cross-library manual assignment flow.
+     */
+    internal fun isLongFormBook(durationsMs: Collection<Long>): Boolean {
+        val durations = durationsMs.filter { it > 0L }
+        val totalDurationMs = durations.sum()
+        return (durations.size == 1 && totalDurationMs >= MIN_SINGLE_FILE_DURATION_MS) ||
+            (durations.size >= MIN_CHAPTER_COUNT &&
+                totalDurationMs >= MIN_BOOK_DURATION_MS &&
+                durations.count { it >= MIN_CHAPTER_DURATION_MS } >= MIN_CHAPTER_COUNT)
     }
 
     /**
@@ -180,6 +196,11 @@ object AudiobookCatalog {
 
     private fun String.isGenericAlbumName() =
         lowercase() in setOf("album", "unknown album", "audiobook", "audiobooks")
+
+    private const val MIN_CHAPTER_COUNT = 2
+    private const val MIN_CHAPTER_DURATION_MS = 10 * 60_000L
+    private const val MIN_BOOK_DURATION_MS = 2 * 60 * 60_000L
+    private const val MIN_SINGLE_FILE_DURATION_MS = 2 * 60 * 60_000L
 }
 
 private fun Name?.asRawOrNull(): String? =

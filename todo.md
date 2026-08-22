@@ -18,4 +18,14 @@
 - [x] Run a focused systematic native crash-pattern scan for adjacent high-risk code paths and repair confirmed defects.
 - [x] Define and implement separate minimal Music and Audiobooks playback interfaces inspired by the supplied references without copying their product identity.
 - [x] Complete product-facing Auralis identity cleanup while preserving GPL and upstream provenance notices.
-- [ ] Verify, sign, and publish the completed standalone Auralis stabilization and reskin release.
+- [x] Verify, sign, and publish the completed standalone Auralis stabilization and reskin release.
+- [x] Audit the supplied current-state screen recording and repair the confirmed native Android Music and Audiobooks experience regressions.
+- [x] Compare both supplied current-state recordings, triage their Music, Audiobook detail, now-playing, and Settings failures against the native Auralis implementation, and repair the confirmed causes.
+- [x] Rebuild the Auralis Audiobooks library around clear Not started and Current sections, while retaining a separate independent Music mode.
+- [x] Align audiobook detail and now-playing hierarchy with the confirmed reference: chapter-led context, readable actions, bookmarks, sleep state, and unobstructed artwork.
+- [x] Replace ambiguous or empty audiobook states and labels with concise Auralis-specific guidance without copying Voice product identity.
+- [x] Enforce Music-only versus Audiobooks-only overflow controls so spoken-word controls cannot appear during music playback.
+- [x] Trace and replace the manual cross-library audiobook chapter-selection flow with the intended local audiobook-first experience.
+- [x] Resolve conflicting audiobook detail calls to action and preserve a single clear resume/start path.
+- [x] Define and apply domain-specific playback preferences where Music and Audiobooks require different defaults.
+- [x] Improve confirmed library list density, metadata fallbacks, and touch-target clarity without redesigning unrelated screens.

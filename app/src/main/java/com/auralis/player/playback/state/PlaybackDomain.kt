@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package com.auralis.player.playback.state
 
 import com.auralis.player.audiobooks.AudiobookClassifier
@@ -30,9 +30,10 @@ enum class PlaybackDomain {
     MUSIC,
     AUDIOBOOKS;
 
-    fun accepts(song: Song): Boolean =
-        when (this) {
-            MUSIC -> !AudiobookClassifier.isAudiobook(song)
-            AUDIOBOOKS -> AudiobookClassifier.isAudiobook(song)
-        }
+    /**
+     * Music keeps its existing metadata filter so audiobook-tagged files cannot leak into ordinary
+     * music queues. Audiobook queues are explicitly chosen by the Audiobooks flow and therefore do
+     * not reclassify each local chapter by filename or tags.
+     */
+    fun accepts(song: Song) = this == AUDIOBOOKS || !AudiobookClassifier.isAudiobook(song)
 }

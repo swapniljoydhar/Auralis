@@ -212,11 +212,6 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 homeModel.selectMode(next)
                 true
             }
-            R.id.action_add_audiobook_chapters -> {
-                homeModel.selectMode(MusicType.SONGS)
-                requireContext().showToast(R.string.msg_add_audiobook_chapters)
-                true
-            }
             R.id.action_search -> {
                 L.d("Navigating to search")
                 findNavController().navigateSafe(HomeFragmentDirections.search())

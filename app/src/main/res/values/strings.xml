@@ -99,8 +99,7 @@
     <string name="desc_hub_audiobooks">Open the Audiobooks library</string>
     <string name="lbl_add_to_audiobooks">Add to Audiobooks</string>
     <string name="lng_audiobooks_added">Added to Audiobooks</string>
-    <string name="lbl_add_audiobook_chapters">Add audiobook chapters</string>
-    <string name="msg_add_audiobook_chapters">Select MP3 chapters from Music, then add them here as one audiobook by folder.</string>
+    <string name="msg_no_audiobooks">No local audiobooks found. Auralis discovers M4B files, audiobook-tagged audio, and long-form chapter sets automatically.</string>
     <string name="lbl_new_playlist">New playlist</string>
     <string name="lbl_empty_playlist">Empty playlist</string>
     <string name="lbl_imported_playlist">Imported playlist</string>
@@ -148,6 +147,7 @@
     <string name="lbl_audiobook_bookmark">Bookmark</string>
     <string name="lbl_audiobook_bookmarks">Bookmarks</string>
     <string name="lbl_audiobook_add_bookmark">Add bookmark here</string>
+    <string name="msg_audiobook_bookmark_added">Bookmark added</string>
     <string name="lbl_audiobook_no_bookmarks">No bookmarks yet</string>
     <string name="lbl_audiobook_remove_bookmark">Remove bookmark</string>
     <string name="lbl_audiobook_bookmark_at">%1$s • %2$s</string>

@@ -20,11 +20,6 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_add_audiobook_chapters"
-        android:title="@string/lbl_add_audiobook_chapters"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_settings"
         android:title="@string/set_root_title"
         app:showAsAction="never" />

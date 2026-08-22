@@ -196,20 +196,24 @@ class AudiobookDetailFragment : Fragment() {
             }
         )
 
-        root.addView(
-            MaterialButton(colors).apply {
-                text = getString(R.string.lbl_audiobook_reset_progress)
-                isAllCaps = false
-                setTextColor(MaterialColors.getColor(colors, MR.attr.colorOnPrimary, Color.WHITE))
-                setOnClickListener {
-                    lifecycleScope.launch {
-                        progressRepository.clearBook(book.key)
-                        render(book)
+        if (hasSavedProgress) {
+            root.addView(
+                MaterialButton(colors).apply {
+                    text = getString(R.string.lbl_audiobook_reset_progress)
+                    isAllCaps = false
+                    setTextColor(
+                        MaterialColors.getColor(colors, MR.attr.colorOnPrimary, Color.WHITE)
+                    )
+                    setOnClickListener {
+                        lifecycleScope.launch {
+                            progressRepository.clearBook(book.key)
+                            render(book)
+                        }
                     }
+                    layoutParams = fullWidthParams(bottom = 20)
                 }
-                layoutParams = fullWidthParams(bottom = 20)
-            }
-        )
+            )
+        }
 
         root.addView(
             TextView(colors).apply {

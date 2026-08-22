@@ -82,4 +82,16 @@ class AudiobookClassifierTest {
             )
         )
     }
+
+    @Test
+    fun longFormChapterSetIsRecognizedWithoutManualAssignment() {
+        assertTrue(
+            AudiobookCatalog.isLongFormBook(listOf(45 * 60_000L, 42 * 60_000L, 39 * 60_000L))
+        )
+    }
+
+    @Test
+    fun ordinaryLengthMusicAlbumIsNotLongFormBook() {
+        assertFalse(AudiobookCatalog.isLongFormBook(List(12) { 4 * 60_000L }))
+    }
 }
