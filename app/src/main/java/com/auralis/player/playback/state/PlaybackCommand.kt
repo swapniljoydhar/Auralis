@@ -207,14 +207,15 @@ constructor(
         sort: Sort,
         shuffle: ShuffleMode,
     ): PlaybackCommand? {
-        if (queue.isEmpty() || (song != null && song !in queue)) {
+        val musicQueue = queue.filter(PlaybackDomain.MUSIC::accepts)
+        if (musicQueue.isEmpty() || (song != null && song !in musicQueue)) {
             return null
         }
         return PlaybackCommandImpl(
             PlaybackDomain.MUSIC,
             song,
             parent,
-            sort.songs(queue),
+            sort.songs(musicQueue),
             isShuffled(shuffle),
         )
     }

@@ -19,6 +19,7 @@
 package com.auralis.player.home
 
 import com.auralis.player.audiobooks.AudiobookBook
+import com.auralis.player.audiobooks.AudiobookClassifier
 import com.auralis.player.audiobooks.AudiobookRepository
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.home.tabs.Tab
@@ -181,7 +182,8 @@ private class HomeGeneratorImpl(
     }
 
     private fun isMusicVisible(song: Song): Boolean =
-        song.uid.toString() !in audiobookSettings.manualSongUids
+        song.uid.toString() !in audiobookSettings.manualSongUids &&
+            !AudiobookClassifier.isAudiobook(song)
 
     override fun empty() = musicRepository.library?.songs?.none(::isMusicVisible) ?: true
 

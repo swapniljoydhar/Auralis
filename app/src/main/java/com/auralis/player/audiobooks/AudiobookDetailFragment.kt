@@ -194,9 +194,9 @@ class AudiobookDetailFragment : Fragment() {
 
         root.addView(
             MaterialButton(colors).apply {
-                text = getString(R.string.lbl_reset)
+                text = getString(R.string.lbl_audiobook_reset_progress)
                 isAllCaps = false
-                setTextColor(MaterialColors.getColor(colors, AR.attr.colorPrimary, Color.WHITE))
+                setTextColor(MaterialColors.getColor(colors, MR.attr.colorOnPrimary, Color.WHITE))
                 setOnClickListener {
                     lifecycleScope.launch {
                         progressRepository.clearBook(book.key)

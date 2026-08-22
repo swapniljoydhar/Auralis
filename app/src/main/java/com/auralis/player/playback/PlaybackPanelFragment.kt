@@ -41,6 +41,7 @@ import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.auralis.player.R
 import com.auralis.player.audiobooks.AudiobookBookmark
 import com.auralis.player.audiobooks.AudiobookBookmarkRepository
@@ -48,6 +49,8 @@ import com.auralis.player.audiobooks.AudiobookCatalog
 import com.auralis.player.audiobooks.AudiobookClassifier
 import com.auralis.player.audiobooks.AudiobookPlaybackController
 import com.auralis.player.audiobooks.AudiobookSettings
+import com.auralis.player.audiobooks.EmbeddedChapter
+import com.auralis.player.audiobooks.EmbeddedChapterReader
 import com.auralis.player.databinding.FragmentPlaybackPanelBinding
 import com.auralis.player.detail.DetailViewModel
 import com.auralis.player.list.ListViewModel
@@ -71,11 +74,11 @@ import com.auralis.player.util.recycler
 import com.auralis.player.util.showToast
 import com.auralis.player.util.smoothScrollByPageTo
 import com.auralis.player.util.systemBarInsetsCompat
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlinx.coroutines.launch
 import org.oxycblt.musikr.MusicParent
 import org.oxycblt.musikr.Song
 import timber.log.Timber as L
@@ -103,6 +106,7 @@ class PlaybackPanelFragment :
     @Inject lateinit var audiobookPlaybackController: AudiobookPlaybackController
     @Inject lateinit var audiobookSettings: AudiobookSettings
     @Inject lateinit var audiobookBookmarkRepository: AudiobookBookmarkRepository
+    @Inject lateinit var embeddedChapterReader: EmbeddedChapterReader
     @Inject lateinit var commandFactory: PlaybackCommand.Factory
     private var equalizerLauncher: ActivityResultLauncher<Intent>? = null
     private var userAwarePagerCallback: UserAwarePagerCallback? = null
@@ -293,59 +297,38 @@ class PlaybackPanelFragment :
 
     private fun createAudiobookActionRow() =
         LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.VERTICAL
+            orientation = LinearLayout.HORIZONTAL
             visibility = View.GONE
             setPadding(0, 8, 0, 0)
             addView(
-                LinearLayout(requireContext()).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    addView(
-                        audiobookButton(
-                            getString(
-                                R.string.lbl_audiobook_skip_back_value,
-                                audiobookSettings.skipDurationMs / 1000L,
-                            ),
-                            R.drawable.ic_skip_prev_24,
-                        ) {
-                            playbackManager.seekBy(-audiobookSettings.skipDurationMs)
-                        },
-                        weightedButtonParams(),
-                    )
-                    addView(
-                        audiobookButton(
-                            getString(
-                                R.string.lbl_audiobook_skip_forward_value,
-                                audiobookSettings.skipDurationMs / 1000L,
-                            ),
-                            R.drawable.ic_skip_next_24,
-                        ) {
-                            playbackManager.seekBy(audiobookSettings.skipDurationMs)
-                        },
-                        weightedButtonParams(),
-                    )
-                }
+                audiobookButton(
+                    getString(
+                        R.string.lbl_audiobook_skip_back_value,
+                        audiobookSettings.skipDurationMs / 1000L,
+                    ),
+                    R.drawable.ic_skip_prev_24,
+                ) {
+                    playbackManager.seekBy(-audiobookSettings.skipDurationMs)
+                },
+                weightedButtonParams(),
             )
             addView(
-                LinearLayout(requireContext()).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    audiobookSpeedButton =
-                        audiobookButton(getString(R.string.lbl_audiobook_speed), null) {
-                            showSpeedPicker()
-                        }
-                    addView(audiobookSpeedButton, weightedButtonParams())
-                    addView(
-                        audiobookButton(getString(R.string.lbl_audiobook_chapters), null) {
-                            showChapterPicker()
-                        },
-                        weightedButtonParams(),
-                    )
-                    addView(
-                        audiobookButton(getString(R.string.lbl_audiobook_sleep), null) {
-                            showSleepPicker()
-                        },
-                        weightedButtonParams(),
-                    )
-                }
+                audiobookButton(getString(R.string.lbl_audiobook_chapters), null) {
+                    showChapterPicker()
+                },
+                weightedButtonParams(),
+            )
+            addView(
+                audiobookButton(
+                    getString(
+                        R.string.lbl_audiobook_skip_forward_value,
+                        audiobookSettings.skipDurationMs / 1000L,
+                    ),
+                    R.drawable.ic_skip_next_24,
+                ) {
+                    playbackManager.seekBy(audiobookSettings.skipDurationMs)
+                },
+                weightedButtonParams(),
             )
         }
 
@@ -421,8 +404,22 @@ class PlaybackPanelFragment :
         if (queue.isEmpty() || currentSong == null || !AudiobookClassifier.isAudiobook(currentSong))
             return
 
+        lifecycleScope.launch {
+            showChapterPicker(
+                queue,
+                currentSong,
+                if (queue.size == 1) embeddedChapterReader.read(currentSong) else emptyList(),
+            )
+        }
+    }
+
+    private fun showChapterPicker(
+        queue: List<Song>,
+        currentSong: Song,
+        embeddedChapters: List<EmbeddedChapter>,
+    ) {
         val bookKey = AudiobookCatalog.bookKey(currentSong)
-        val dialog = BottomSheetDialog(requireContext())
+        val dialog = AlertDialog.Builder(requireContext()).create()
         val list =
             LinearLayout(requireContext()).apply {
                 orientation = LinearLayout.VERTICAL
@@ -477,38 +474,69 @@ class PlaybackPanelFragment :
                         setPadding(0, 16, 0, 4)
                     }
                 )
-                queue.forEachIndexed { index, chapter ->
-                    addView(
-                        TextView(requireContext()).apply {
-                            text = buildString {
-                                append(if (index == playbackManager.index) "▶ " else "")
-                                append(index + 1)
-                                append(". ")
-                                append(chapter.name.resolve(requireContext()))
-                                append("  •  ")
-                                append(chapter.durationMs.formatDurationMs(false))
+                if (embeddedChapters.isNotEmpty()) {
+                    embeddedChapters.forEachIndexed { index, chapter ->
+                        addView(
+                            TextView(requireContext()).apply {
+                                text = buildString {
+                                    append(
+                                        if (index == currentEmbeddedChapter(embeddedChapters)) "▶ "
+                                        else ""
+                                    )
+                                    append(index + 1)
+                                    append(". ")
+                                    append(chapter.title)
+                                }
+                                textSize = 16f
+                                setTextColor(Color.WHITE)
+                                setPadding(0, 14, 0, 14)
+                                isClickable = true
+                                isFocusable = true
+                                setOnClickListener {
+                                    playbackManager.seekTo(chapter.startMs)
+                                    dialog.dismiss()
+                                }
                             }
-                            textSize = 16f
-                            setTextColor(Color.WHITE)
-                            setPadding(0, 14, 0, 14)
-                            isClickable = true
-                            isFocusable = true
-                            setOnClickListener {
-                                playbackManager.goto(index)
-                                dialog.dismiss()
+                        )
+                    }
+                } else
+                    queue.forEachIndexed { index, chapter ->
+                        addView(
+                            TextView(requireContext()).apply {
+                                text = buildString {
+                                    append(if (index == playbackManager.index) "▶ " else "")
+                                    append(index + 1)
+                                    append(". ")
+                                    append(chapter.name.resolve(requireContext()))
+                                    append("  •  ")
+                                    append(chapter.durationMs.formatDurationMs(false))
+                                }
+                                textSize = 16f
+                                setTextColor(Color.WHITE)
+                                setPadding(0, 14, 0, 14)
+                                isClickable = true
+                                isFocusable = true
+                                setOnClickListener {
+                                    playbackManager.goto(index)
+                                    dialog.dismiss()
+                                }
                             }
-                        }
-                    )
-                }
+                        )
+                    }
             }
         dialog.setContentView(ScrollView(requireContext()).apply { addView(list) })
         dialog.show()
     }
 
+    private fun currentEmbeddedChapter(chapters: List<EmbeddedChapter>): Int {
+        val positionMs = playbackManager.progression.calculateElapsedPositionMs()
+        return chapters.indexOfLast { it.startMs <= positionMs }.coerceAtLeast(0)
+    }
+
     private fun LinearLayout.addBookmarkRow(
         bookmark: AudiobookBookmark,
         queue: List<Song>,
-        dialog: BottomSheetDialog,
+        dialog: AlertDialog,
     ) {
         val chapter = queue.firstOrNull { it.uid == bookmark.chapterUid } ?: return
         addView(
@@ -550,7 +578,7 @@ class PlaybackPanelFragment :
     private fun jumpToBookmark(
         bookmark: AudiobookBookmark,
         queue: List<Song>,
-        dialog: BottomSheetDialog,
+        dialog: AlertDialog,
     ) {
         val chapter = queue.firstOrNull { it.uid == bookmark.chapterUid } ?: return
         val command =

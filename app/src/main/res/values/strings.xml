@@ -156,6 +156,7 @@
     <string name="lbl_audiobook_continue">Continue</string>
     <string name="lbl_audiobook_start">Start</string>
     <string name="lbl_audiobook_restart">Start from beginning</string>
+    <string name="lbl_audiobook_reset_progress">Reset progress</string>
     <string name="lbl_audiobook_summary">%1$s • %2$d chapters</string>
     <string name="lbl_audiobook_progress">%1$d of %2$d chapters complete</string>
     <string name="lbl_audiobook_chapters">Chapters</string>

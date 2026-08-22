@@ -141,9 +141,19 @@ object AudiobookCatalog {
             .toList()
     }
 
-    /** The directory is preferred over the content URI collection so MP3 chapters stay together. */
+    /**
+     * Album metadata identifies a book when several downloaded books share one directory. The
+     * directory remains the fallback for chapter files without a usable book-level album title.
+     */
     fun bookKey(song: Song): String {
         val volume = song.path.volume.mediaStoreName ?: song.path.volume.toString()
+        val album = song.album.name.asRawOrNull()?.takeUnless { it.isGenericAlbumName() }
+        if (album != null) {
+            val author =
+                song.album.artists.firstOrNull()?.name.asRawOrNull()
+                    ?: song.artists.firstOrNull()?.name.asRawOrNull()
+            return "$volume:album:${author.orEmpty().lowercase()}:${album.lowercase()}"
+        }
         return "$volume:${song.path.directory.components.unixString}"
     }
 
