@@ -32,6 +32,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import com.auralis.player.BuildConfig
 import com.auralis.player.image.covers.SettingCovers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.oxycblt.musikr.covers.CoverResult
 
@@ -46,10 +47,20 @@ class CoverProvider : ContentProvider() {
         if (id.contains("..")) {
             return null
         }
-        return runBlocking {
-            when (val result = SettingCovers.immutable(requireNotNull(context)).obtain(id)) {
-                is CoverResult.Hit -> result.cover.fd()
-                else -> null
+        return openPipeHelper(uri, "image/*", null, id) { output, _, _, _, coverId ->
+            ParcelFileDescriptor.AutoCloseOutputStream(output).use { outputStream ->
+                coverId?.let { requestedId ->
+                    runBlocking(Dispatchers.IO) {
+                        when (
+                            val result =
+                                SettingCovers.immutable(requireNotNull(context)).obtain(requestedId)
+                        ) {
+                            is CoverResult.Hit ->
+                                result.cover.open()?.use { it.copyTo(outputStream) }
+                            else -> Unit
+                        }
+                    }
+                }
             }
         }
     }

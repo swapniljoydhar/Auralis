@@ -191,7 +191,8 @@ private constructor(
 
     private fun getMediaItemList(id: String, maxTabs: Int): List<MediaItem>? {
         when (id) {
-            ROOT_ID -> return listOf(domainRoot(MUSIC_ROOT_ID)!!, domainRoot(AUDIOBOOK_ROOT_ID)!!)
+            ROOT_ID ->
+                return listOfNotNull(domainRoot(MUSIC_ROOT_ID), domainRoot(AUDIOBOOK_ROOT_ID))
             MUSIC_ROOT_ID ->
                 return homeGenerator
                     .tabs()

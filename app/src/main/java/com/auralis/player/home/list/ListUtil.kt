@@ -47,7 +47,7 @@ fun Name.thumb() =
     when (this) {
         is Name.Known ->
             tokens.firstOrNull()?.let {
-                if (it.value.isDigitsOnly()) "#" else it.value.first().uppercase()
+                if (it.value.isDigitsOnly()) "#" else it.value.firstOrNull()?.uppercase() ?: "?"
             }
         is Name.Unknown -> "?"
     }

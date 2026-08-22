@@ -296,6 +296,22 @@ class PlaybackPanelFragment :
         binding.playbackSeekBar?.durationDs = song.durationMs.msToDs()
         binding.playbackToolbar.menu.findItem(R.id.action_audiobook_controls)?.isVisible =
             isAudiobook
+        binding.playbackRepeat.visibility = if (isAudiobook) View.GONE else View.VISIBLE
+        binding.playbackShuffle.visibility = if (isAudiobook) View.GONE else View.VISIBLE
+        binding.playbackSkipPrev.setOnClickListener {
+            if (isAudiobook) {
+                playbackManager.seekBy(-audiobookSettings.skipDurationMs)
+            } else {
+                playbackModel.prev()
+            }
+        }
+        binding.playbackSkipNext.setOnClickListener {
+            if (isAudiobook) {
+                playbackManager.seekBy(audiobookSettings.skipDurationMs)
+            } else {
+                playbackModel.next()
+            }
+        }
         audiobookActionRow?.visibility = if (isAudiobook) View.VISIBLE else View.GONE
     }
 
@@ -408,12 +424,10 @@ class PlaybackPanelFragment :
         if (queue.isEmpty() || currentSong == null || !AudiobookClassifier.isAudiobook(currentSong))
             return
 
-        lifecycleScope.launch {
-            showChapterPicker(
-                queue,
-                currentSong,
-                if (queue.size == 1) embeddedChapterReader.read(currentSong) else emptyList(),
-            )
+        viewLifecycleOwner.lifecycleScope.launch {
+            val embeddedChapters =
+                if (queue.size == 1) embeddedChapterReader.read(currentSong) else emptyList()
+            showChapterPicker(queue, currentSong, embeddedChapters)
         }
     }
 

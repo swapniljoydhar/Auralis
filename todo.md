@@ -14,3 +14,8 @@
 - [x] Strengthen listener snapshot publication and bottom-sheet initialization safety.
 - [x] Verify, sign, and publish the follow-up native Auralis repair release.
 - [x] Migrate the verified Auralis project history and 4.1.8 release into a new standalone private GitHub repository.
+- [x] Audit and repair the supplied empty-list, force-unwrap, blocking-cover-load, lifecycle, and unsafe-index crash patterns.
+- [x] Run a focused systematic native crash-pattern scan for adjacent high-risk code paths and repair confirmed defects.
+- [x] Define and implement separate minimal Music and Audiobooks playback interfaces inspired by the supplied references without copying their product identity.
+- [x] Complete product-facing Auralis identity cleanup while preserving GPL and upstream provenance notices.
+- [ ] Verify, sign, and publish the completed standalone Auralis stabilization and reskin release.

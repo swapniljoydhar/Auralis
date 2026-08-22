@@ -276,13 +276,10 @@ constructor(
      * @param song The [Song] to navigate with.
      */
     fun showArtist(song: Song) =
-        showImpl(
-            if (song.artists.size > 1) {
-                Show.SongArtistDecision(song)
-            } else {
-                Show.ArtistDetails(song.artists.first())
-            }
-        )
+        when {
+            song.artists.size > 1 -> showImpl(Show.SongArtistDecision(song))
+            else -> song.artists.firstOrNull()?.let { showImpl(Show.ArtistDetails(it)) }
+        }
 
     /**
      * Navigate to the details of one of the [Artist]s of an [Album] using the corresponding choice
@@ -291,13 +288,10 @@ constructor(
      * @param album The [Album] to navigate with.
      */
     fun showArtist(album: Album) =
-        showImpl(
-            if (album.artists.size > 1) {
-                Show.AlbumArtistDecision(album)
-            } else {
-                Show.ArtistDetails(album.artists.first())
-            }
-        )
+        when {
+            album.artists.size > 1 -> showImpl(Show.AlbumArtistDecision(album))
+            else -> album.artists.firstOrNull()?.let { showImpl(Show.ArtistDetails(it)) }
+        }
 
     /**
      * Navigate to the details of an [Artist].

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
 
     <com.auralis.player.ui.AuralisToolbar
         android:id="@+id/playback_toolbar"
@@ -28,6 +29,7 @@
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintDimensionRatio="1"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraLarge"
         app:layout_constraintBottom_toTopOf="@+id/playback_info_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_medium"
         android:layout_marginEnd="@dimen/spacing_medium"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/playback_seek_bar"
         app:layout_constraintEnd_toStartOf="@+id/playback_more"
@@ -55,6 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fallbackLineSpacing="false"
+            android:gravity="center"
             tools:text="Song Name" />
 
         <TextView
@@ -63,6 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fallbackLineSpacing="false"
+            android:gravity="center"
             tools:text="Artist Name" />
 
         <TextView
@@ -71,6 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fallbackLineSpacing="false"
+            android:gravity="center"
             tools:text="Album Name" />
 
     </LinearLayout>

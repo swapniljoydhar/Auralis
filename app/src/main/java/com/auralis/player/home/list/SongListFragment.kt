@@ -119,7 +119,7 @@ class SongListFragment :
             // Artist -> Use name of first artist
             is Sort.Mode.ByArtist ->
                 FastScrollRecyclerView.PopupProvider.PopupData(
-                    song.album.artists[0].name.thumb() ?: "?"
+                    song.album.artists.firstOrNull()?.name?.thumb() ?: "?"
                 )
 
             // Album -> Use Album Name

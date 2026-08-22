@@ -119,7 +119,9 @@ class AlbumListFragment :
 
             // By Artist -> Use name of first artist
             is Sort.Mode.ByArtist ->
-                FastScrollRecyclerView.PopupProvider.PopupData(album.artists[0].name.thumb() ?: "?")
+                FastScrollRecyclerView.PopupProvider.PopupData(
+                    album.artists.firstOrNull()?.name?.thumb() ?: "?"
+                )
 
             // Date -> Use year of the range minimum
             is Sort.Mode.ByDate -> {

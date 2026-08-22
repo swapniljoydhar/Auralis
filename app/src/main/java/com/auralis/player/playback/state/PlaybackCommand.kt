@@ -183,7 +183,7 @@ constructor(
         return if (parent != null) {
             newCommand(song, parent, sort, shuffle)
         } else if (song.genres.size == 1) {
-            newCommand(song, parents.first(), sort, shuffle)
+            parents.firstOrNull()?.let { newCommand(song, it, sort, shuffle) }
         } else {
             null
         }
