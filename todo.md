@@ -12,4 +12,4 @@
 - [x] Restore original upstream copyright and author provenance while retaining Auralis product branding.
 - [x] Resolve native C++ formatter failures introduced by the identity rewrite.
 - [x] Strengthen listener snapshot publication and bottom-sheet initialization safety.
-- [ ] Verify, sign, and publish the follow-up native Auralis repair release.
+- [x] Verify, sign, and publish the follow-up native Auralis repair release.
