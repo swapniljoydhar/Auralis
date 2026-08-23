@@ -69,7 +69,7 @@ abstract class DetailListAdapter(
             DividerViewHolder.VIEW_TYPE -> DividerViewHolder.from(parent)
             BasicHeaderViewHolder.VIEW_TYPE -> BasicHeaderViewHolder.from(parent)
             SortHeaderViewHolder.VIEW_TYPE -> SortHeaderViewHolder.from(parent)
-            else -> error("Invalid item type $viewType")
+            else -> throw IllegalArgumentException("Invalid item type $viewType")
         }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

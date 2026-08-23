@@ -34,7 +34,9 @@ import com.auralis.player.BuildConfig
 import com.auralis.player.image.covers.SettingCovers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import org.oxycblt.musikr.covers.CoverResult
+import timber.log.Timber
 
 class CoverProvider : ContentProvider() {
     override fun onCreate(): Boolean = true
@@ -50,14 +52,22 @@ class CoverProvider : ContentProvider() {
         return openPipeHelper(uri, "image/*", null, id) { output, _, _, _, coverId ->
             ParcelFileDescriptor.AutoCloseOutputStream(output).use { outputStream ->
                 coverId?.let { requestedId ->
+                    // Use a bounded timeout to prevent ANR if the cover fetch hangs.
                     runBlocking(Dispatchers.IO) {
-                        when (
-                            val result =
-                                SettingCovers.immutable(requireNotNull(context)).obtain(requestedId)
-                        ) {
-                            is CoverResult.Hit ->
-                                result.cover.open()?.use { it.copyTo(outputStream) }
-                            else -> Unit
+                        try {
+                            withTimeoutOrNull(COVER_LOAD_TIMEOUT_MS) {
+                                when (
+                                    val result =
+                                        SettingCovers.immutable(requireNotNull(context))
+                                            .obtain(requestedId)
+                                ) {
+                                    is CoverResult.Hit ->
+                                        result.cover.open()?.use { it.copyTo(outputStream) }
+                                    else -> Unit
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Timber.e(e, "Failed to load cover for $requestedId")
                         }
                     }
                 }
@@ -91,6 +101,7 @@ class CoverProvider : ContentProvider() {
     companion object {
         private const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.image.CoverProvider"
         private const val IMAGES_PATH = "covers"
+        private const val COVER_LOAD_TIMEOUT_MS = 5000L
         private val uriMatcher =
             UriMatcher(UriMatcher.NO_MATCH).apply { addURI(AUTHORITY, "$IMAGES_PATH/*", 1) }
 

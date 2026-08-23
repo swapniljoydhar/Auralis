@@ -69,7 +69,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import org.oxycblt.musikr.MusicParent
@@ -131,12 +130,21 @@ class ExoPlaybackStateHolder(
             synchronized(pendingAudiobookProgress) {
                 pendingAudiobookProgress.toList().also { pendingAudiobookProgress.clear() }
             }
-        runBlocking(Dispatchers.IO) {
-            for (snapshot in snapshots) {
-                saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs, snapshot.domain)
+        // Perform synchronous save on the IO dispatcher without runBlocking to avoid ANR.
+        // Use a blocking latch with a timeout as a safety net.
+        val latch = java.util.concurrent.CountDownLatch(1)
+        saveScope.launch {
+            try {
+                for (snapshot in snapshots) {
+                    saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs, snapshot.domain)
+                }
+                saveAudiobookProgress(currentMediaItem, currentPosition, activeDomain)
+            } finally {
+                latch.countDown()
             }
-            saveAudiobookProgress(currentMediaItem, currentPosition, activeDomain)
         }
+        // Wait with a timeout to prevent indefinite blocking if the coroutine gets stuck.
+        latch.await(3, java.util.concurrent.TimeUnit.SECONDS)
         saveJob.cancel()
         playbackManager.unregisterStateHolder(this)
         musicRepository.removeUpdateListener(this)

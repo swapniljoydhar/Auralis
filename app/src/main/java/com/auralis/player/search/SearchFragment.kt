@@ -365,7 +365,8 @@ class SearchFragment : ListFragment<Music, FragmentSearchBinding>() {
                     )
                 }
                 is PlaylistDecision.New -> {
-                    error("Unexpected decision $decision")
+                    L.w("Ignoring unexpected decision $decision")
+                    return
                 }
             }
         findNavController().navigateSafe(directions)

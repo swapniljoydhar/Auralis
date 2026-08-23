@@ -224,7 +224,7 @@ class AlbumDetailFragment : DetailFragment<Album, Song>() {
             }
             is Show.GenreDetails,
             is Show.PlaylistDetails -> {
-                error("Unexpected show command $show")
+                L.w("Ignoring unexpected show command $show")
             }
             null -> {}
         }
@@ -239,7 +239,10 @@ class AlbumDetailFragment : DetailFragment<Album, Song>() {
                 is Menu.ForSelection -> AlbumDetailFragmentDirections.openSelectionMenu(menu.parcel)
                 is Menu.ForArtist,
                 is Menu.ForGenre,
-                is Menu.ForPlaylist -> error("Unexpected menu $menu")
+                is Menu.ForPlaylist -> {
+                    L.w("Ignoring unexpected menu $menu")
+                    return
+                }
             }
         findNavController().navigateSafe(directions)
     }
@@ -270,7 +273,10 @@ class AlbumDetailFragment : DetailFragment<Album, Song>() {
                 is PlaylistDecision.Import,
                 is PlaylistDecision.Rename,
                 is PlaylistDecision.Delete,
-                is PlaylistDecision.Export -> error("Unexpected playlist decision $decision")
+                is PlaylistDecision.Export -> {
+                    L.w("Ignoring unexpected playlist decision $decision")
+                    return
+                }
             }
         findNavController().navigateSafe(directions)
     }

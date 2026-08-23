@@ -191,8 +191,20 @@ class PlaybackPanelFragment :
         }
 
         binding.playbackSeekBar?.listener = this
-        audiobookActionRow = createAudiobookActionRow()
-        binding.playbackInfoContainer.addView(audiobookActionRow)
+        // Inflate audiobook controls from XML layout
+        val audiobookControls =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.view_audiobook_playback_controls, binding.playbackInfoContainer, false)
+        audiobookActionRow = audiobookControls as LinearLayout
+        audiobookSpeedButton = audiobookControls.findViewById(R.id.audiobook_speed_button)
+        audiobookSleepButton = audiobookControls.findViewById(R.id.audiobook_sleep_button)
+        audiobookControls.findViewById<View>(R.id.audiobook_chapters_button)
+            .setOnClickListener { showChapterPicker() }
+        audiobookControls.findViewById<View>(R.id.audiobook_bookmark_button)
+            .setOnClickListener { bookmarkCurrentPosition() }
+        audiobookSleepButton?.setOnClickListener { showSleepPicker() }
+        audiobookSpeedButton?.setOnClickListener { showSpeedPicker() }
+        binding.playbackInfoContainer.addView(audiobookControls)
 
         // Set up actions
         // TODO: Add better playback button accessibility
@@ -333,54 +345,6 @@ class PlaybackPanelFragment :
         }
         audiobookActionRow?.visibility = if (isAudiobook) View.VISIBLE else View.GONE
     }
-
-    private fun createAudiobookActionRow() =
-        LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.HORIZONTAL
-            visibility = View.GONE
-            setPadding(0, 8, 0, 0)
-            addView(
-                audiobookButton(getString(R.string.lbl_audiobook_chapters), null) {
-                    showChapterPicker()
-                },
-                weightedButtonParams(),
-            )
-            addView(
-                audiobookButton(getString(R.string.lbl_audiobook_bookmark), null) {
-                    bookmarkCurrentPosition()
-                },
-                weightedButtonParams(),
-            )
-            audiobookSleepButton =
-                audiobookButton(getString(R.string.lbl_audiobook_sleep), null) { showSleepPicker() }
-                    .also { addView(it, weightedButtonParams()) }
-            audiobookSpeedButton =
-                audiobookButton(
-                        getString(
-                            R.string.lbl_audiobook_speed_value,
-                            playbackManager.playbackSpeed,
-                        ),
-                        null,
-                    ) {
-                        showSpeedPicker()
-                    }
-                    .also { addView(it, weightedButtonParams()) }
-        }
-
-    private fun audiobookButton(label: CharSequence, icon: Int?, action: () -> Unit) =
-        MaterialButton(requireContext()).apply {
-            text = label
-            isAllCaps = false
-            setPadding(8, 0, 8, 0)
-            icon?.let(::setIconResource)
-            setOnClickListener { action() }
-        }
-
-    private fun weightedButtonParams() =
-        LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
-            marginStart = 2
-            marginEnd = 2
-        }
 
     private fun updateAudiobookSpeed() {
         audiobookSpeedButton?.text =

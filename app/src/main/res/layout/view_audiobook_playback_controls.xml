@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/audiobook_action_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/audiobook_chapters_button"
+        style="?attr/materialButtonTonalStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:layout_weight="1"
+        android:text="@string/lbl_audiobook_chapters"
+        android:textAllCaps="false"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/audiobook_bookmark_button"
+        style="?attr/materialButtonTonalStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_weight="1"
+        android:text="@string/lbl_audiobook_bookmark"
+        android:textAllCaps="false"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/audiobook_sleep_button"
+        style="?attr/materialButtonTonalStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_weight="1"
+        android:text="@string/lbl_audiobook_sleep"
+        android:textAllCaps="false"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/audiobook_speed_button"
+        style="?attr/materialButtonTonalStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_weight="1"
+        android:textAllCaps="false"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        tools:text="1.0×" />
+
+</LinearLayout>

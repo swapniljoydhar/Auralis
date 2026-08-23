@@ -244,7 +244,10 @@ constructor(
             MusicType.PLAYLISTS -> {
                 refreshPlaylist(currentPlaylist.value?.uid ?: return)
             }
-            else -> error("Unexpected music type $type")
+            else -> {
+                L.w("Ignoring unexpected music type $type")
+                return
+            }
         }
     }
 

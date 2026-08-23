@@ -23,34 +23,30 @@
 package com.auralis.player.audiobooks
 
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
-import android.text.TextUtils
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.R as AR
-import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.auralis.player.R
+import com.auralis.player.databinding.FragmentAudiobookDetailBinding
+import com.auralis.player.databinding.ItemAudiobookChapterBinding
 import com.auralis.player.image.CoverView
 import com.auralis.player.playback.formatDurationMs
 import com.auralis.player.playback.state.PlaybackCommand
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.ShuffleMode
 import com.google.android.material.R as MR
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.progressindicator.LinearProgressIndicator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -65,7 +61,8 @@ class AudiobookDetailFragment : Fragment() {
     @Inject lateinit var playbackManager: PlaybackStateManager
     @Inject lateinit var commandFactory: PlaybackCommand.Factory
 
-    private var content: LinearLayout? = null
+    private var _binding: FragmentAudiobookDetailBinding? = null
+    private val binding get() = _binding!!
     private var currentBook: AudiobookBook? = null
 
     override fun onCreateView(
@@ -73,23 +70,12 @@ class AudiobookDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        val root =
-            LinearLayout(requireContext()).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(20.dp(), 24.dp(), 20.dp(), 32.dp())
-                setBackgroundColor(
-                    MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK)
-                )
-            }
-        content = root
-        return ScrollView(requireContext()).apply {
-            clipToPadding = false
-            setBackgroundColor(MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK))
-            addView(root)
-        }
+        _binding = FragmentAudiobookDetailBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
             val book = audiobookRepository.book(args.bookKey) ?: return@launch
             currentBook = book
@@ -99,12 +85,13 @@ class AudiobookDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         currentBook = null
-        content = null
+        _binding = null
         super.onDestroyView()
     }
 
     private suspend fun render(book: AudiobookBook) {
-        val root = content ?: return
+        val b = _binding ?: return
+        val context = requireContext()
         val progress = progressRepository.getForBook(book.key).associateBy { it.chapterUid }
         val listeningSummary =
             AudiobookListeningState.summarize(
@@ -119,253 +106,110 @@ class AudiobookDetailFragment : Fragment() {
                     } ?: AudiobookProgressInput(chapter.durationMs, 0L, false, 0L)
                 }
             )
-        val completed = listeningSummary.completedChapters
         val resumeChapter = book.chapters.firstOrNull { progress[it.uid]?.completed != true }
         val hasSavedProgress = progress.values.any { it.positionMs > 0L || it.completed }
-        val colors = requireContext()
-        root.removeAllViews()
 
-        val cover =
-            LayoutInflater.from(colors).inflate(R.layout.view_audiobook_cover, root, false)
-                as CoverView
-        cover.bind(
+        // Cover
+        b.audiobookCover.bind(
             book.chapters.map { it.song },
             getString(R.string.desc_audiobook_cover),
             R.drawable.ic_album_24,
             book.key.hashCode(),
         )
-        root.addView(cover)
 
-        root.addView(
-            TextView(colors).apply {
-                text = book.title
-                setTextAppearance(MR.style.TextAppearance_Material3_HeadlineSmall)
-                maxLines = 3
-                ellipsize = TextUtils.TruncateAt.END
-                textAlignment = View.TEXT_ALIGNMENT_CENTER
-                contentDescription = book.title
-                layoutParams = fullWidthParams(top = 16, bottom = 4)
-            }
-        )
+        // Title and author
+        b.audiobookTitle.text = book.title
+        b.audiobookAuthor.text = book.author?.takeIf { it.isNotBlank() }
+        b.audiobookAuthor.visibility =
+            if (book.author.isNullOrBlank()) View.GONE else View.VISIBLE
 
-        book.author
-            ?.takeIf { it.isNotBlank() }
-            ?.let { author ->
-                root.addView(
-                    TextView(colors).apply {
-                        text = author
-                        setTextAppearance(MR.style.TextAppearance_Material3_TitleMedium)
-                        textAlignment = View.TEXT_ALIGNMENT_CENTER
-                        layoutParams = fullWidthParams(bottom = 4)
-                    }
-                )
-            }
-
-        root.addView(
-            TextView(colors).apply {
-                text =
-                    getString(
-                        R.string.lbl_audiobook_summary,
-                        book.totalDurationMs.formatDurationMs(false),
-                        book.chapterCount,
-                    )
-                setTextAppearance(MR.style.TextAppearance_Material3_BodyMedium)
-                textAlignment = View.TEXT_ALIGNMENT_CENTER
-                setTextColor(
-                    MaterialColors.getColor(colors, MR.attr.colorOnSurfaceVariant, Color.GRAY)
-                )
-                layoutParams = fullWidthParams(bottom = 16)
-            }
-        )
-
-        root.addView(
-            LinearProgressIndicator(colors).apply {
-                max = 100
-                this.progress = listeningSummary.percentage
-                isIndeterminate = false
-                contentDescription =
-                    getString(
-                        R.string.desc_audiobook_progress_percent,
-                        listeningSummary.percentage,
-                        listeningSummary.remainingMs.formatDurationMs(false),
-                    )
-                layoutParams = fullWidthParams(bottom = 4)
-            }
-        )
-
-        root.addView(
-            TextView(colors).apply {
-                text =
-                    getString(
-                        R.string.lbl_audiobook_progress_percent,
-                        listeningSummary.percentage,
-                        listeningSummary.listenedMs.formatDurationMs(false),
-                        listeningSummary.remainingMs.formatDurationMs(false),
-                    )
-                setTextAppearance(MR.style.TextAppearance_Material3_BodyMedium)
-                textAlignment = View.TEXT_ALIGNMENT_CENTER
-                setTextColor(
-                    MaterialColors.getColor(colors, MR.attr.colorOnSurfaceVariant, Color.GRAY)
-                )
-                layoutParams = fullWidthParams(bottom = 16)
-            }
-        )
-
-        root.addView(
-            MaterialButton(colors).apply {
-                text =
-                    when {
-                        resumeChapter == null -> getString(R.string.lbl_audiobook_restart)
-                        hasSavedProgress -> getString(R.string.lbl_audiobook_continue)
-                        else -> getString(R.string.lbl_audiobook_start)
-                    }
-                isAllCaps = false
-                setOnClickListener { startBook(book, progress) }
-                layoutParams = fullWidthParams(bottom = 8)
-            }
-        )
-
-        root.addView(
-            MaterialButton(colors, null, MR.attr.materialButtonTonalStyle).apply {
-                text = getString(R.string.lbl_audiobook_bookmarks)
-                isAllCaps = false
-                setOnClickListener {
-                    findNavController()
-                        .navigate(
-                            AudiobookDetailFragmentDirections.showAudiobookBookmarks(book.key)
-                        )
-                }
-                layoutParams = fullWidthParams(bottom = 8)
-            }
-        )
-
-        if (hasSavedProgress) {
-            root.addView(
-                MaterialButton(colors, null, MR.attr.materialButtonOutlinedStyle).apply {
-                    text = getString(R.string.lbl_audiobook_reset_progress)
-                    isAllCaps = false
-                    setTextColor(MaterialColors.getColor(colors, AR.attr.colorError, Color.RED))
-                    strokeColor =
-                        ColorStateList.valueOf(
-                            MaterialColors.getColor(colors, AR.attr.colorError, Color.RED)
-                        )
-                    setOnClickListener {
-                        lifecycleScope.launch {
-                            progressRepository.clearBook(book.key)
-                            render(book)
-                        }
-                    }
-                    layoutParams = fullWidthParams(bottom = 20)
-                }
+        // Summary
+        b.audiobookSummary.text =
+            getString(
+                R.string.lbl_audiobook_summary,
+                book.totalDurationMs.formatDurationMs(false),
+                book.chapterCount,
             )
+
+        // Progress
+        b.audiobookProgressBar.progress = listeningSummary.percentage
+        b.audiobookProgressBar.contentDescription =
+            getString(
+                R.string.desc_audiobook_progress_percent,
+                listeningSummary.percentage,
+                listeningSummary.remainingMs.formatDurationMs(false),
+            )
+        b.audiobookProgressText.text =
+            getString(
+                R.string.lbl_audiobook_progress_percent,
+                listeningSummary.percentage,
+                listeningSummary.listenedMs.formatDurationMs(false),
+                listeningSummary.remainingMs.formatDurationMs(false),
+            )
+
+        // Primary action button
+        b.audiobookActionPrimary.text =
+            when {
+                resumeChapter == null -> getString(R.string.lbl_audiobook_restart)
+                hasSavedProgress -> getString(R.string.lbl_audiobook_continue)
+                else -> getString(R.string.lbl_audiobook_start)
+            }
+        b.audiobookActionPrimary.setOnClickListener { startBook(book, progress) }
+
+        // Bookmarks button
+        b.audiobookActionBookmarks.setOnClickListener {
+            findNavController()
+                .navigate(AudiobookDetailFragmentDirections.showAudiobookBookmarks(book.key))
         }
 
-        root.addView(
-            TextView(colors).apply {
-                text = getString(R.string.lbl_audiobook_chapters)
-                setTextAppearance(MR.style.TextAppearance_Material3_TitleLarge)
-                layoutParams = fullWidthParams(bottom = 8)
+        // Reset button
+        if (hasSavedProgress) {
+            b.audiobookActionReset.visibility = View.VISIBLE
+            b.audiobookActionReset.setTextColor(
+                MaterialColors.getColor(context, AR.attr.colorError, 0)
+            )
+            b.audiobookActionReset.strokeColor =
+                ColorStateList.valueOf(MaterialColors.getColor(context, AR.attr.colorError, 0))
+            b.audiobookActionReset.setOnClickListener {
+                lifecycleScope.launch {
+                    progressRepository.clearBook(book.key)
+                    render(book)
+                }
             }
-        )
+        } else {
+            b.audiobookActionReset.visibility = View.GONE
+        }
 
+        // Chapters
+        b.audiobookChaptersContainer.removeAllViews()
         book.chapters.forEach { chapter ->
             val saved = progress[chapter.uid]
             val isComplete = saved?.completed == true
-            root.addView(
-                MaterialCardView(colors).apply {
-                    isClickable = true
-                    isFocusable = true
-                    setCardBackgroundColor(
-                        MaterialColors.getColor(colors, MR.attr.colorSurfaceContainer, Color.DKGRAY)
+            val chapterBinding =
+                ItemAudiobookChapterBinding.inflate(
+                    LayoutInflater.from(context),
+                    b.audiobookChaptersContainer,
+                    false,
+                )
+            chapterBinding.chapterNumber.text = chapter.number.toString()
+            chapterBinding.chapterTitle.text = chapter.title
+            chapterBinding.chapterDuration.text =
+                if (isComplete) {
+                    getString(
+                        R.string.lbl_audiobook_chapter_complete,
+                        chapter.durationMs.formatDurationMs(false),
                     )
-                    setOnClickListener { startChapter(book, chapter, progress) }
-                    layoutParams = fullWidthParams(bottom = 8)
-                    addView(
-                        LinearLayout(colors).apply {
-                            orientation = LinearLayout.HORIZONTAL
-                            gravity = Gravity.CENTER_VERTICAL
-                            setPadding(16.dp())
-                            addView(
-                                TextView(colors).apply {
-                                    text = chapter.number.toString()
-                                    textSize = 16f
-                                    setTextColor(
-                                        MaterialColors.getColor(
-                                            colors,
-                                            AR.attr.colorPrimary,
-                                            Color.WHITE,
-                                        )
-                                    )
-                                    gravity = Gravity.CENTER
-                                    layoutParams = LinearLayout.LayoutParams(32.dp(), 32.dp())
-                                }
-                            )
-                            addView(
-                                LinearLayout(colors).apply {
-                                    orientation = LinearLayout.VERTICAL
-                                    layoutParams =
-                                        LinearLayout.LayoutParams(
-                                                0,
-                                                ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                1f,
-                                            )
-                                            .apply { marginStart = 12.dp() }
-                                    addView(
-                                        TextView(colors).apply {
-                                            text = chapter.title
-                                            textSize = 16f
-                                        }
-                                    )
-                                    addView(
-                                        TextView(colors).apply {
-                                            text =
-                                                if (isComplete) {
-                                                    getString(
-                                                        R.string.lbl_audiobook_chapter_complete,
-                                                        chapter.durationMs.formatDurationMs(false),
-                                                    )
-                                                } else {
-                                                    getString(
-                                                        R.string.lbl_audiobook_chapter_duration,
-                                                        chapter.durationMs.formatDurationMs(false),
-                                                    )
-                                                }
-                                            textSize = 14f
-                                            setTextColor(
-                                                MaterialColors.getColor(
-                                                    colors,
-                                                    MR.attr.colorOnSurfaceVariant,
-                                                    Color.GRAY,
-                                                )
-                                            )
-                                            layoutParams = fullWidthParams(top = 4)
-                                        }
-                                    )
-                                }
-                            )
-                            addView(
-                                ImageView(colors).apply {
-                                    setImageResource(R.drawable.ic_check_24)
-                                    imageTintList =
-                                        ColorStateList.valueOf(
-                                            MaterialColors.getColor(
-                                                colors,
-                                                AR.attr.colorPrimary,
-                                                Color.WHITE,
-                                            )
-                                        )
-                                    contentDescription =
-                                        if (isComplete) {
-                                            getString(R.string.lbl_audiobook_chapter_complete_short)
-                                        } else null
-                                    visibility = if (isComplete) View.VISIBLE else View.INVISIBLE
-                                    layoutParams = LinearLayout.LayoutParams(24.dp(), 24.dp())
-                                }
-                            )
-                        }
+                } else {
+                    getString(
+                        R.string.lbl_audiobook_chapter_duration,
+                        chapter.durationMs.formatDurationMs(false),
                     )
                 }
-            )
+            chapterBinding.chapterCheck.visibility = if (isComplete) View.VISIBLE else View.INVISIBLE
+            (chapterBinding.root as MaterialCardView).setOnClickListener {
+                startChapter(book, chapter, progress)
+            }
+            b.audiobookChaptersContainer.addView(chapterBinding.root)
         }
     }
 
@@ -391,21 +235,9 @@ class AudiobookDetailFragment : Fragment() {
                     shuffle = ShuffleMode.OFF,
                     startSong = chapter.song,
                     startPositionMs = position,
-                    domain = com.auralis.player.playback.state.PlaybackDomain.AUDIOBOOKS,
+                    domain = PlaybackDomain.AUDIOBOOKS,
                 ) ?: return@launch
             playbackManager.play(command)
         }
     }
-
-    private fun fullWidthParams(top: Int = 0, bottom: Int = 0) =
-        LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            )
-            .apply {
-                topMargin = top.dp()
-                bottomMargin = bottom.dp()
-            }
-
-    private fun Int.dp() = (this * resources.displayMetrics.density).toInt()
 }

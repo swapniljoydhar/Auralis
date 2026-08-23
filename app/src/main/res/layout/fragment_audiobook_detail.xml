@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:clipToPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="24dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="32dp">
+
+        <com.auralis.player.image.CoverView
+            android:id="@+id/audiobook_cover"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/desc_audiobook_cover" />
+
+        <TextView
+            android:id="@+id/audiobook_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="3"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            tools:text="Book Title" />
+
+        <TextView
+            android:id="@+id/audiobook_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:gravity="center"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            tools:text="Author Name" />
+
+        <TextView
+            android:id="@+id/audiobook_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            tools:text="5h 30m · 12 chapters" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/audiobook_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:max="100"
+            app:indicatorColor="?attr/colorPrimary"
+            app:trackColor="?attr/colorSurfaceContainerHighest"
+            tools:progress="45" />
+
+        <TextView
+            android:id="@+id/audiobook_progress_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            tools:text="45% · 2h 28m listened · 3h 02m remaining" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/audiobook_action_primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/lbl_audiobook_continue"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/audiobook_action_bookmarks"
+            style="?attr/materialButtonTonalStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/lbl_audiobook_bookmarks"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/audiobook_action_reset"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/lbl_audiobook_reset_progress"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            app:strokeColor="?attr/colorError"
+            app:iconTint="?attr/colorError"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/audiobook_chapters_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/lbl_audiobook_chapters"
+            android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+        <LinearLayout
+            android:id="@+id/audiobook_chapters_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
