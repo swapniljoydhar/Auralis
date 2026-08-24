@@ -21,6 +21,11 @@ gradle.ext.androidxMediaModulePrefix = 'media-'
 gradle.ext.androidxMediaProjectName = 'media-'
 apply from: file("media/core_settings.gradle")
 
+// Exclude ffmpeg decoder on Windows as it requires WSL/unix build environment
+if (org.gradle.internal.os.OperatingSystem.current().windows) {
+    rootProject.children.removeAll { it.name == 'media-lib-decoder-ffmpeg' }
+}
+
 rootProject.name = "Auralis"
 include ':app'
 include ':musikr'

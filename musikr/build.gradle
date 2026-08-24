@@ -90,6 +90,16 @@ tasks.register("assembleTaglib", Exec, {
         return
     }
     def ndkDir = androidComponents.sdkComponents.ndkDirectory.get().asFile
+    if (!ndkDir.exists()) {
+        logger.warn("NDK not found at $ndkDir, skipping taglib build")
+        commandLine "true"
+        return
+    }
+    if (org.gradle.internal.os.OperatingSystem.current().windows) {
+        logger.warn("Windows host detected, skipping taglib native build. Use WSL or install NDK.")
+        commandLine "true"
+        return
+    }
     commandLine "sh", "-c", "$jniDir/build_taglib.sh $jniDir $ndkDir"
 })
 
