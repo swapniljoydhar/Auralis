@@ -1,6 +1,7 @@
 [submodule "media"]
 	path = media
-	url = https://github.com/OxygenCobalt/media.git
+	url = https://github.com/swapniljoydhar/media.git
+	branch = auralis-windows-sync
 
 [submodule "musikr/src/main/cpp/taglib"]
 	path = musikr/src/main/cpp/taglib

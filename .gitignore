@@ -4,6 +4,7 @@ local.properties
 build/
 release/
 fake-sdk/
+android-sdk/
 
 # Studio
 .idea/
