@@ -320,9 +320,9 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
         item?.title =
             getString(
                 if (mode == MusicType.AUDIOBOOKS) {
-                    R.string.lbl_music_mode
+                    R.string.action_switch_to_music
                 } else {
-                    R.string.lbl_audiobook_mode
+                    R.string.action_switch_to_audiobooks
                 }
             )
     }

@@ -87,6 +87,8 @@
     <string name="lbl_music_mode">Music</string>
     <string name="lbl_audiobook_mode">Audiobooks</string>
     <string name="lbl_switch_library_mode">Switch between Music and Audiobooks</string>
+    <string name="action_switch_to_music">Switch to Music</string>
+    <string name="action_switch_to_audiobooks">Switch to Audiobooks</string>
     <string name="lbl_choose_library_mode">Your listening space</string>
     <string name="msg_choose_library_mode">Choose a library. You can switch whenever you want.</string>
     <string name="msg_hub_subtitle">Music for the moment. Audiobooks for the journey.</string>

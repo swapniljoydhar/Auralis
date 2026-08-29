@@ -47,6 +47,12 @@ class ModeHubFragment : Fragment(R.layout.fragment_mode_hub) {
         view.findViewById<View>(R.id.action_audiobooks_button).setOnClickListener {
             open(MusicType.AUDIOBOOKS)
         }
+
+        // Keep the choice visible on a first launch. Later launches go straight
+        // back to the library the listener last used.
+        if (savedInstanceState == null) {
+            homeModel.preferredMode?.let(::open)
+        }
     }
 
     private fun open(mode: MusicType) {

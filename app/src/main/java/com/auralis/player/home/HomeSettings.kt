@@ -63,7 +63,7 @@ class HomeSettingsImpl @Inject constructor(@ApplicationContext context: Context)
             sharedPreferences.getString(getString(R.string.set_key_library_mode), null)?.let { value
                 ->
                 runCatching { MusicType.valueOf(value) }.getOrNull()
-            } ?: MusicType.SONGS
+            }
         set(value) {
             sharedPreferences.edit {
                 if (value == null) remove(getString(R.string.set_key_library_mode))
