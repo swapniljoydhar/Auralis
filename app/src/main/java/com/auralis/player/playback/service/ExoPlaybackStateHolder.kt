@@ -33,13 +33,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.decoder.ffmpeg.FfmpegAudioRenderer
-import androidx.media3.exoplayer.BaseRenderer
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.RenderersFactory
-import androidx.media3.exoplayer.audio.DefaultAudioSink
-import androidx.media3.exoplayer.audio.MediaCodecAudioRenderer
-import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.MediaSource
 import com.auralis.player.audiobooks.AudiobookCatalog
 import com.auralis.player.audiobooks.AudiobookPlaybackController
@@ -870,17 +865,11 @@ class ExoPlaybackStateHolder(
             // Since Auralis is a music player, only specify an audio renderer to save
             // battery/apk size/cache size]
             val audioRenderer = RenderersFactory { handler, _, audioListener, _, _ ->
-                arrayOf<BaseRenderer>(
-                    FfmpegAudioRenderer(handler, audioListener, replayGainProcessor),
-                    MediaCodecAudioRenderer(
-                        context,
-                        MediaCodecSelector.DEFAULT,
-                        handler,
-                        audioListener,
-                        DefaultAudioSink.Builder(context)
-                            .setAudioProcessors(arrayOf(replayGainProcessor))
-                            .build(),
-                    ),
+                FfmpegRendererCompat.createAudioRenderers(
+                    context,
+                    handler,
+                    audioListener,
+                    replayGainProcessor,
                 )
             }
 

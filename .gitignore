@@ -3,6 +3,7 @@
 local.properties
 build/
 release/
+fake-sdk/
 
 # Studio
 .idea/

@@ -27,9 +27,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.R as AR
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -38,13 +35,11 @@ import androidx.navigation.fragment.navArgs
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentAudiobookDetailBinding
 import com.auralis.player.databinding.ItemAudiobookChapterBinding
-import com.auralis.player.image.CoverView
 import com.auralis.player.playback.formatDurationMs
 import com.auralis.player.playback.state.PlaybackCommand
 import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.ShuffleMode
-import com.google.android.material.R as MR
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,7 +57,9 @@ class AudiobookDetailFragment : Fragment() {
     @Inject lateinit var commandFactory: PlaybackCommand.Factory
 
     private var _binding: FragmentAudiobookDetailBinding? = null
-    private val binding get() = _binding!!
+    private val binding
+        get() = _binding!!
+
     private var currentBook: AudiobookBook? = null
 
     override fun onCreateView(
@@ -120,8 +117,7 @@ class AudiobookDetailFragment : Fragment() {
         // Title and author
         b.audiobookTitle.text = book.title
         b.audiobookAuthor.text = book.author?.takeIf { it.isNotBlank() }
-        b.audiobookAuthor.visibility =
-            if (book.author.isNullOrBlank()) View.GONE else View.VISIBLE
+        b.audiobookAuthor.visibility = if (book.author.isNullOrBlank()) View.GONE else View.VISIBLE
 
         // Summary
         b.audiobookSummary.text =
@@ -205,7 +201,8 @@ class AudiobookDetailFragment : Fragment() {
                         chapter.durationMs.formatDurationMs(false),
                     )
                 }
-            chapterBinding.chapterCheck.visibility = if (isComplete) View.VISIBLE else View.INVISIBLE
+            chapterBinding.chapterCheck.visibility =
+                if (isComplete) View.VISIBLE else View.INVISIBLE
             (chapterBinding.root as MaterialCardView).setOnClickListener {
                 startChapter(book, chapter, progress)
             }

@@ -8,16 +8,8 @@
     <path
         android:fillColor="@color/auralis_brand_background"
         android:pathData="M0,0H108V108H0Z" />
-    <path
-        android:fillColor="#48C7C2"
-        android:pathData="M22,29C33,28 42,31 51,37L51,78C42,72 33,70 22,71Z" />
-    <path
-        android:fillColor="#2FAFAA"
-        android:pathData="M57,37C66,31 75,28 86,29L86,71C75,70 66,72 57,78Z" />
-    <path
-        android:fillColor="#0B1F3A"
-        android:pathData="M48,45L68,54L48,63Z" />
-    <path
-        android:fillColor="#FFC44D"
-        android:pathData="M37,48C37,46.3 38.3,45 40,45C41.7,45 43,46.3 43,48L43,60C43,61.7 41.7,63 40,63C38.3,63 37,61.7 37,60ZM65,48C65,46.3 66.3,45 68,45C69.7,45 71,46.3 71,48L71,60C71,61.7 69.7,63 68,63C66.3,63 65,61.7 65,60Z" />
+    <path android:fillColor="#C9B4FF" android:pathData="M24,56C24,39.4 37.4,26 54,26C70.6,26 84,39.4 84,56C84,57.7 82.7,59 81,59C79.3,59 78,57.7 78,56C78,42.7 67.3,32 54,32C40.7,32 30,42.7 30,56C30,57.7 28.7,59 27,59C25.3,59 24,57.7 24,56Z" />
+    <path android:fillColor="#8E7CFF" android:pathData="M33,58C33,46.4 42.4,37 54,37C65.6,37 75,46.4 75,58C75,59.7 73.7,61 72,61C70.3,61 69,59.7 69,58C69,49.7 62.3,43 54,43C45.7,43 39,49.7 39,58C39,59.7 37.7,61 36,61C34.3,61 33,59.7 33,58Z" />
+    <path android:fillColor="#65E2C3" android:pathData="M42,60C42,53.4 47.4,48 54,48C60.6,48 66,53.4 66,60C66,61.7 64.7,63 63,63C61.3,63 60,61.7 60,60C60,56.7 57.3,54 54,54C50.7,54 48,56.7 48,60C48,61.7 46.7,63 45,63C43.3,63 42,61.7 42,60Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M54,62C57.3,62 60,64.7 60,68C60,71.3 57.3,74 54,74C50.7,74 48,71.3 48,68C48,64.7 50.7,62 54,62Z" />
 </vector>

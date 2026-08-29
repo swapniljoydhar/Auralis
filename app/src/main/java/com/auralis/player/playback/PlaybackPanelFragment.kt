@@ -85,6 +85,9 @@ import com.auralis.player.util.showToast
 import com.auralis.player.util.smoothScrollByPageTo
 import com.auralis.player.util.systemBarInsetsCompat
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.abs
@@ -194,14 +197,20 @@ class PlaybackPanelFragment :
         // Inflate audiobook controls from XML layout
         val audiobookControls =
             LayoutInflater.from(requireContext())
-                .inflate(R.layout.view_audiobook_playback_controls, binding.playbackInfoContainer, false)
+                .inflate(
+                    R.layout.view_audiobook_playback_controls,
+                    binding.playbackInfoContainer,
+                    false,
+                )
         audiobookActionRow = audiobookControls as LinearLayout
         audiobookSpeedButton = audiobookControls.findViewById(R.id.audiobook_speed_button)
         audiobookSleepButton = audiobookControls.findViewById(R.id.audiobook_sleep_button)
-        audiobookControls.findViewById<View>(R.id.audiobook_chapters_button)
-            .setOnClickListener { showChapterPicker() }
-        audiobookControls.findViewById<View>(R.id.audiobook_bookmark_button)
-            .setOnClickListener { bookmarkCurrentPosition() }
+        audiobookControls.findViewById<View>(R.id.audiobook_chapters_button).setOnClickListener {
+            showChapterPicker()
+        }
+        audiobookControls.findViewById<View>(R.id.audiobook_bookmark_button).setOnClickListener {
+            bookmarkCurrentPosition()
+        }
         audiobookSleepButton?.setOnClickListener { showSleepPicker() }
         audiobookSpeedButton?.setOnClickListener { showSpeedPicker() }
         binding.playbackInfoContainer.addView(audiobookControls)
@@ -382,6 +391,29 @@ class PlaybackPanelFragment :
         val currentSong = playbackManager.currentSong ?: return
         if (playbackManager.domain != PlaybackDomain.AUDIOBOOKS) return
         val positionMs = playbackManager.progression.calculateElapsedPositionMs()
+        val noteInput =
+            TextInputEditText(requireContext()).apply {
+                hint = getString(R.string.hint_audiobook_bookmark_note)
+                setSingleLine(false)
+                maxLines = 4
+            }
+        val noteLayout =
+            TextInputLayout(requireContext()).apply {
+                hint = getString(R.string.lbl_audiobook_bookmark_note)
+                addView(noteInput)
+            }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.lbl_audiobook_save_bookmark)
+            .setMessage(R.string.msg_audiobook_bookmark_note)
+            .setView(noteLayout)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(R.string.action_save) { _, _ ->
+                saveBookmark(currentSong, positionMs, noteInput.text?.toString().orEmpty())
+            }
+            .show()
+    }
+
+    private fun saveBookmark(currentSong: Song, positionMs: Long, note: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             val embeddedChapterStartMs =
                 embeddedChapterReader
@@ -393,6 +425,7 @@ class PlaybackPanelFragment :
                 currentSong.uid,
                 positionMs,
                 embeddedChapterStartMs,
+                note,
             )
             requireContext().showToast(R.string.msg_audiobook_bookmark_added)
         }

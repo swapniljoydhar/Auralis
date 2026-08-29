@@ -174,7 +174,15 @@ class AudiobookBookmarksFragment : Fragment() {
                     }
                     .orEmpty()
             holder.title.text = chapterTitle
-            holder.subtitle.text = "${row.bookmark.positionMs.formatDurationMs(true)}$embedded"
+            holder.subtitle.text =
+                buildString {
+                    append(row.bookmark.positionMs.formatDurationMs(true))
+                    append(embedded)
+                    if (row.bookmark.note.isNotBlank()) {
+                        append('\n')
+                        append(row.bookmark.note)
+                    }
+                }
             holder.resume.isEnabled = row.chapter != null
             holder.resume.text = context.getString(R.string.lbl_audiobook_resume)
             holder.resume.setOnClickListener { onResume(row) }

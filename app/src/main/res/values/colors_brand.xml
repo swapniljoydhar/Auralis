@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Static brand color used only by launcher and splash assets. App surfaces remain theme-driven. -->
-    <color name="auralis_brand_background">#0B1F3A</color>
+    <color name="auralis_brand_background">#17142B</color>
 </resources>

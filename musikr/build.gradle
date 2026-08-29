@@ -32,10 +32,12 @@ android {
         }
     }
 
-    externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1"
+    if (!org.gradle.internal.os.OperatingSystem.current().windows) {
+        externalNativeBuild {
+            cmake {
+                path "src/main/cpp/CMakeLists.txt"
+                version "3.22.1"
+            }
         }
     }
 
@@ -85,19 +87,20 @@ dependencies {
 tasks.register("assembleTaglib", Exec, {
     def jniDir = "$projectDir/src/main/cpp"
     def libs = new File("$jniDir/taglib/pkg")
+    def noop = org.gradle.internal.os.OperatingSystem.current().windows ? ["cmd", "/c", "exit", "0"] : ["true"]
     if (libs.exists()) {
-        commandLine "true"
+        commandLine noop
+        return
+    }
+    if (org.gradle.internal.os.OperatingSystem.current().windows) {
+        logger.warn("Windows host detected, skipping taglib native build. Use WSL or install NDK.")
+        commandLine noop
         return
     }
     def ndkDir = androidComponents.sdkComponents.ndkDirectory.get().asFile
     if (!ndkDir.exists()) {
         logger.warn("NDK not found at $ndkDir, skipping taglib build")
-        commandLine "true"
-        return
-    }
-    if (org.gradle.internal.os.OperatingSystem.current().windows) {
-        logger.warn("Windows host detected, skipping taglib native build. Use WSL or install NDK.")
-        commandLine "true"
+        commandLine noop
         return
     }
     commandLine "sh", "-c", "$jniDir/build_taglib.sh $jniDir $ndkDir"

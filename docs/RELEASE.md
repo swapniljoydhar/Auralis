@@ -4,7 +4,7 @@ The current verified release artifact is `artifacts/auralis-4.1.21-material3-rel
 
 Version **4.1.21** is the first Auralis Material 3 experience release. It retains the existing native Material 3 dependency and theme contract, then makes the shared hierarchy more intentional across Music and Audiobooks: the home app bar now states the active library context; indexing, empty states, Music detail, search, mini-player, and expanded-player surfaces use clearer tonal roles; and the long-form Audiobook detail and bookmarks screens use Material 3 type and action hierarchy. The release preserves local-only media, explicit `PlaybackDomain`, independent Music/Audiobooks snapshots, and domain-pure queues.
 
-The Auralis identity is now vector-first and Material 3-ready. An original open-listening-page mark replaces the prior detailed raster foreground in the adaptive launcher icon, legacy launcher fallback, Android themed monochrome layer, Android 12+ splash, and compact widget glyph. The mark represents Music listening and Audiobook storytelling without reproducing Voice, Auxio, or Google product branding.
+The Auralis identity is now vector-first and Material 3-ready. An original open-listening-page mark replaces the prior detailed raster foreground in the adaptive launcher icon, legacy launcher fallback, Android themed monochrome layer, Android 12+ splash, and compact widget glyph. The mark represents Music listening and Audiobook storytelling without reproducing another product's branding.
 
 The APK passed `apksigner verify` using APK Signature Schemes v2 and v3. Its certificate SHA-256 fingerprint is:
 

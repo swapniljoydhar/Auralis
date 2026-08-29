@@ -38,6 +38,7 @@ data class AudiobookBookmark(
     val positionMs: Long,
     val createdMs: Long,
     val embeddedChapterStartMs: Long?,
+    val note: String,
 )
 
 @Singleton
@@ -57,6 +58,7 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
         chapterUid: Music.UID,
         positionMs: Long,
         embeddedChapterStartMs: Long? = null,
+        note: String = "",
     ) {
         val bookmark =
             AudiobookBookmark(
@@ -65,6 +67,7 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
                 positionMs = positionMs.coerceAtLeast(0L),
                 createdMs = System.currentTimeMillis(),
                 embeddedChapterStartMs = embeddedChapterStartMs?.coerceAtLeast(0L),
+                note = note.trim().take(MAX_NOTE_LENGTH),
             )
         val encoded = preferences.getStringSet(KEY_BOOKMARKS, emptySet()).orEmpty().toMutableSet()
         if (
@@ -95,12 +98,13 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
                 bookmark.positionMs.toString(),
                 bookmark.createdMs.toString(),
                 bookmark.embeddedChapterStartMs?.toString().orEmpty(),
+                Base64.encodeToString(bookmark.note.toByteArray(Charsets.UTF_8), Base64.NO_WRAP),
             )
             .joinToString(DELIMITER)
 
     private fun decode(value: String): AudiobookBookmark? {
         val parts = value.split(DELIMITER)
-        if (parts.size !in 4..5) return null
+        if (parts.size !in 4..6) return null
         val uid = Music.UID.fromString(parts[1]) ?: return null
         val bookKey =
             runCatching { String(Base64.decode(parts[0], Base64.NO_WRAP), Charsets.UTF_8) }
@@ -111,11 +115,23 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
             positionMs = parts[2].toLongOrNull()?.coerceAtLeast(0L) ?: return null,
             createdMs = parts[3].toLongOrNull() ?: return null,
             embeddedChapterStartMs = parts.getOrNull(4)?.toLongOrNull()?.coerceAtLeast(0L),
+            note =
+                parts
+                    .getOrNull(5)
+                    ?.takeIf(String::isNotEmpty)
+                    ?.let { encoded ->
+                        runCatching {
+                                String(Base64.decode(encoded, Base64.NO_WRAP), Charsets.UTF_8)
+                            }
+                            .getOrNull()
+                    }
+                    .orEmpty(),
         )
     }
 
     private companion object {
         const val KEY_BOOKMARKS = "auralis_audiobook_bookmarks"
         const val DELIMITER = "|"
+        const val MAX_NOTE_LENGTH = 280
     }
 }

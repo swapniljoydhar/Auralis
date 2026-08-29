@@ -23,7 +23,7 @@
 - [x] Compare both supplied current-state recordings, triage their Music, Audiobook detail, now-playing, and Settings failures against the native Auralis implementation, and repair the confirmed causes.
 - [x] Rebuild the Auralis Audiobooks library around clear Not started and Current sections, while retaining a separate independent Music mode.
 - [x] Align audiobook detail and now-playing hierarchy with the confirmed reference: chapter-led context, readable actions, bookmarks, sleep state, and unobstructed artwork.
-- [x] Replace ambiguous or empty audiobook states and labels with concise Auralis-specific guidance without copying Voice product identity.
+- [x] Replace ambiguous or empty audiobook states and labels with concise Auralis-specific guidance without copying another product identity.
 - [x] Enforce Music-only versus Audiobooks-only overflow controls so spoken-word controls cannot appear during music playback.
 - [x] Trace and replace the manual cross-library audiobook chapter-selection flow with the intended local audiobook-first experience.
 - [x] Resolve conflicting audiobook detail calls to action and preserve a single clear resume/start path.
@@ -40,7 +40,7 @@
 - [x] P1: Create a first-class bookmark view with contextual chapter labels, optional notes, in-place deletion, stale-bookmark handling, and direct resume.
 - [x] P1: Complete the Audiobooks lifecycle with Current, Not started, and Finished states, percentage/time progress, and a one-tap resume path; retain Music as an independent mode.
 - [x] P2: Separate audiobook settings into focused local-library, playback, and appearance groups, including configurable skip, auto-rewind, and selected-folder behavior.
-- [x] P2: Replace generic loading and empty states with Auralis-specific progress feedback and add a compact/grid audiobook-library preference without importing Voice branding.
+- [x] P2: Replace generic loading and empty states with Auralis-specific progress feedback and add a compact/grid audiobook-library preference without importing external branding.
 - [x] Implement true end-of-embedded-ID3-chapter sleep behavior for single-MP3 audiobooks.
 - [x] Verify and regression-test sleep timer isolation across explicit Audiobooks and Music queue switches.
 - [x] Expand focused automated chapter-navigation coverage for embedded chapter boundaries, malformed offsets, short chapters, and stale picker state.
@@ -63,7 +63,7 @@
 - [x] Refine the native settings root so shared appearance/local-library controls and mode-specific settings are easy to understand.
 - [x] Verify the cohesive native Music/Audiobooks design pass preserves PlaybackDomain isolation, accessibility, and local-only behavior.
 - [x] Package the proven native Auralis audit, domain-isolation, testing, signing, and standalone-release workflow as a reusable skill.
-- [x] Review public Voice and Auxio architecture, organization, metadata, and feature-scope principles for Auralis without copying code or product identity.
+- [x] Review public reference architectures, organization, metadata, and feature-scope principles for Auralis without copying code or product identity.
 - [x] Add an Audiobooks-only organization preference for separate book folders, selected-folder-as-one-book, and author/book hierarchy.
 - [x] Add focused grouping and Music-snapshot isolation regressions for all Audiobooks organization strategies.
 - [x] Establish a coherent native Material 3 visual foundation and original adaptive Auralis icon system.
