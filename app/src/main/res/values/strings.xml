@@ -103,6 +103,7 @@
     <string name="lng_audiobooks_added">Added to Audiobooks</string>
     <string name="msg_audiobook_loading">Preparing your local audiobook library…</string>
     <string name="msg_no_audiobooks">Your audiobook shelf is ready for local books. Auralis groups long-form audio and chapter sets here.</string>
+    <string name="action_setup_audiobooks">Set up Audiobooks</string>
     <string name="lbl_new_playlist">New playlist</string>
     <string name="lbl_empty_playlist">Empty playlist</string>
     <string name="lbl_imported_playlist">Imported playlist</string>

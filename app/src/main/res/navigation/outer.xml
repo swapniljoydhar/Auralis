@@ -26,6 +26,9 @@
             android:id="@+id/preferences"
             app:destination="@id/root_preferences_fragment" />
         <action
+            android:id="@+id/audiobooks"
+            app:destination="@id/audiobook_preferences_fragment" />
+        <action
             android:id="@+id/about"
             app:destination="@id/about_fragment" />
     </fragment>

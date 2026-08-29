@@ -567,6 +567,7 @@ class MainFragment :
         val directions =
             when (outer) {
                 is Outer.Settings -> MainFragmentDirections.preferences()
+                is Outer.Audiobooks -> MainFragmentDirections.audiobooks()
                 is Outer.About -> MainFragmentDirections.about()
                 null -> return
             }

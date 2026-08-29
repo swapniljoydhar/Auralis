@@ -352,6 +352,10 @@ constructor(
         _showOuter.put(Outer.Settings)
     }
 
+    fun showAudiobookSettings() {
+        _showOuter.put(Outer.Audiobooks)
+    }
+
     fun showAbout() {
         _showOuter.put(Outer.About)
     }
@@ -359,6 +363,8 @@ constructor(
 
 sealed interface Outer {
     data object Settings : Outer
+
+    data object Audiobooks : Outer
 
     data object About : Outer
 }

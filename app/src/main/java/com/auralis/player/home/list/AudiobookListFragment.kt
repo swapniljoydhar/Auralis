@@ -106,7 +106,10 @@ class AudiobookListFragment : Fragment() {
             contentDescription = getString(R.string.lbl_audiobooks)
         }
         renderEmptyState()
-        current.homeNoMusicAction.isVisible = false
+        current.homeNoMusicAction.apply {
+            text = getString(R.string.action_setup_audiobooks)
+            setOnClickListener { homeModel.showAudiobookSettings() }
+        }
 
         collectImmediately(homeModel.audiobookList, ::updateBooks)
         collectImmediately(homeModel.empty, musicModel.indexingState, ::updateEmpty)
@@ -162,7 +165,7 @@ class AudiobookListFragment : Fragment() {
         val isLoading = booksEmpty && indexingState is IndexingState.Indexing
         current.homeRecycler.isInvisible = booksEmpty
         current.homeNoMusic.isVisible = booksEmpty
-        current.homeNoMusicAction.isVisible = false
+        current.homeNoMusicAction.isVisible = booksEmpty && !isLoading
         current.homeNoMusicMsg.text =
             getString(if (isLoading) R.string.msg_audiobook_loading else R.string.msg_no_audiobooks)
     }
