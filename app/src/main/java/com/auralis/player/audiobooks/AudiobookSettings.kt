@@ -2,9 +2,10 @@
  * Copyright (c) 2026 Auralis Contributors
  * AudiobookSettings.kt is part of Auralis.
  *
- * Auralis is a derivative work of the Auxio Project and incorporates
- * audiobook-oriented work inspired by Voice. Original copyright and GPL
- * attribution are retained in PROVENANCE.md and the repository history.
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +39,16 @@ interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
 
     /** The configured speed applied when audiobook playback starts. */
     val defaultPlaybackSpeed: Float
+
+    /**
+     * The last playback speed actively used during audiobook playback. Restoring an audiobook
+     * session resumes at this speed instead of resetting to [defaultPlaybackSpeed], mirroring how
+     * dedicated audiobook players remember the listener's pace.
+     */
+    val lastPlaybackSpeed: Float
+
+    /** Record [speed] as the last speed actively used during audiobook playback. */
+    fun recordPlaybackSpeed(speed: Float)
 
     /**
      * The rewind interval applied when audiobook playback resumes after a pause, in milliseconds.
@@ -82,6 +93,7 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
     private val key = context.getString(R.string.set_key_audiobook_manual_uids)
     private val skipDurationKey = context.getString(R.string.set_key_audiobook_skip_duration)
     private val defaultSpeedKey = context.getString(R.string.set_key_audiobook_default_speed)
+    private val lastSpeedKey = context.getString(R.string.set_key_audiobook_last_speed)
     private val autoRewindKey = context.getString(R.string.set_key_audiobook_auto_rewind)
     private val skipSilenceKey = context.getString(R.string.set_key_audiobook_skip_silence)
     private val selectedFoldersEnabledKey =
@@ -103,6 +115,21 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         get() =
             sharedPreferences.getInt(defaultSpeedKey, DEFAULT_SPEED_PERCENT).coerceIn(75, 200) /
                 100f
+
+    override val lastPlaybackSpeed: Float
+        get() {
+            val percent = sharedPreferences.getInt(lastSpeedKey, -1)
+            return if (percent in SPEED_PERCENT_MIN..SPEED_PERCENT_MAX) {
+                percent / 100f
+            } else {
+                defaultPlaybackSpeed
+            }
+        }
+
+    override fun recordPlaybackSpeed(speed: Float) {
+        val percent = (speed * 100f).toInt().coerceIn(SPEED_PERCENT_MIN, SPEED_PERCENT_MAX)
+        sharedPreferences.edit { putInt(lastSpeedKey, percent) }
+    }
 
     override val autoRewindMs: Long
         get() =
@@ -165,6 +192,8 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         const val DEFAULT_SKIP_SECONDS = 30
         const val DEFAULT_SPEED_PERCENT = 100
         const val DEFAULT_REWIND_SECONDS = 2
+        const val SPEED_PERCENT_MIN = 50
+        const val SPEED_PERCENT_MAX = 300
         const val COMPACT_PRESENTATION = 0
         const val SEPARATE_BOOK_FOLDERS = 0
     }

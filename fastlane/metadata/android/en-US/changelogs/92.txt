@@ -1,0 +1,1 @@
+Auralis 4.1.22 hardens the playback core and polishes the audiobook experience: playback controls no longer accept broadcasts from other apps, notification actions are now strictly scoped to Auralis, audiobook playback speed is remembered across restarts and mode switches, and startup/cover-loading reliability improvements.

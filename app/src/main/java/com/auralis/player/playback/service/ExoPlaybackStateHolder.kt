@@ -2,9 +2,10 @@
  * Copyright (c) 2024 Auralis Contributors
  * ExoPlaybackStateHolder.kt is part of Auralis.
  *
- * Auralis is a derivative work of the Auxio Project and incorporates
- * audiobook-oriented work inspired by Voice. Original copyright and GPL
- * attribution are retained in PROVENANCE.md and the repository history.
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -276,7 +277,12 @@ class ExoPlaybackStateHolder(
     }
 
     override fun playbackSpeed(speed: Float) {
-        player.setPlaybackSpeed(speed.coerceIn(0.5f, 3.0f))
+        val coerced = speed.coerceIn(0.5f, 3.0f)
+        player.setPlaybackSpeed(coerced)
+        if (activeDomain == PlaybackDomain.AUDIOBOOKS) {
+            // Remember the listener's pace so it survives restarts and domain switches.
+            audiobookSettings.recordPlaybackSpeed(coerced)
+        }
         deferSave()
     }
 
@@ -302,7 +308,7 @@ class ExoPlaybackStateHolder(
         player.setMediaItems(command.queue.map { it.buildMediaItem() })
         playbackManager.playbackSpeed(
             if (command.domain == PlaybackDomain.AUDIOBOOKS) {
-                audiobookSettings.defaultPlaybackSpeed
+                audiobookSettings.lastPlaybackSpeed
             } else {
                 1.0f
             }
@@ -506,7 +512,7 @@ class ExoPlaybackStateHolder(
         val restoredSong = rawQueue.heap.getOrNull(rawQueue.heapIndex)
         playbackManager.playbackSpeed(
             if (restoredSong != null && activeDomain == PlaybackDomain.AUDIOBOOKS) {
-                audiobookSettings.defaultPlaybackSpeed
+                audiobookSettings.lastPlaybackSpeed
             } else {
                 1.0f
             }

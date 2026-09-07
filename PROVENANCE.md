@@ -14,3 +14,19 @@ Auralis enforces a strict `PlaybackDomain` separation (`MUSIC` vs `AUDIOBOOKS`),
 ## Legal & Licensing
 
 Auralis is distributed under the terms of the **GNU General Public License v3.0 (GPL-3.0-or-later)**. All original source files, icons, design specifications, and architecture models are copyright Auralis Contributors.
+
+## Upstream Attribution (GPL-3.0 Compliance)
+
+Auralis incorporates and builds upon free-software code originally published
+under the GNU General Public License v3.0:
+
+| Upstream project | Author | License |
+|---|---|---|
+| Auxio | OxygenCobalt and contributors | GPL-3.0-or-later |
+| Voice | Paul Woitaschek and contributors | GPL-3.0-or-later |
+
+In accordance with the GNU General Public License v3.0 (sections 4 and 5a),
+Auralis retains the upstream copyright and license notices, states that the
+work is changed, and distributes the whole work under GPL-3.0-or-later. The
+corresponding source code remains available in this repository. The upstream
+projects are not affiliated with, and do not endorse, Auralis.
