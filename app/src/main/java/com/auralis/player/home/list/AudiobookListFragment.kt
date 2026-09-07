@@ -53,6 +53,7 @@ import com.auralis.player.audiobooks.AudiobookProgressRepository
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.databinding.FragmentHomeListBinding
 import com.auralis.player.home.HomeFragmentDirections
+import com.auralis.player.util.navigateSafe
 import com.auralis.player.home.HomeViewModel
 import com.auralis.player.image.CoverView
 import com.auralis.player.music.IndexingState
@@ -171,7 +172,7 @@ class AudiobookListFragment : Fragment() {
     }
 
     private fun openBook(book: AudiobookBook) {
-        findNavController().navigate(HomeFragmentDirections.showAudiobook(book.key))
+        findNavController().navigateSafe(HomeFragmentDirections.showAudiobook(book.key))
     }
 
     private fun resumeBook(book: AudiobookBook, progress: Map<Music.UID, AudiobookProgress>) {

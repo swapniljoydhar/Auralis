@@ -28,11 +28,20 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import androidx.core.content.ContextCompat
+import com.auralis.player.audiobooks.AudiobookBookmarkRepository
+import com.auralis.player.audiobooks.AudiobookCatalog
+import com.auralis.player.audiobooks.AudiobookSettings
+import com.auralis.player.audiobooks.EmbeddedChapterReader
 import com.auralis.player.playback.PlaybackSettings
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.widgets.WidgetComponent
 import com.auralis.player.widgets.WidgetProvider
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import timber.log.Timber as L
 
 /**
@@ -44,16 +53,23 @@ private constructor(
     private val context: Context,
     private val playbackManager: PlaybackStateManager,
     private val playbackSettings: PlaybackSettings,
+    private val audiobookSettings: AudiobookSettings,
+    private val audiobookBookmarkRepository: AudiobookBookmarkRepository,
+    private val embeddedChapterReader: EmbeddedChapterReader,
     private val widgetComponent: WidgetComponent,
     private val onExitRequested: () -> Unit,
 ) : BroadcastReceiver() {
     private var initialHeadsetPlugEventHandled = false
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     class Factory
     @Inject
     constructor(
         private val playbackManager: PlaybackStateManager,
         private val playbackSettings: PlaybackSettings,
+        private val audiobookSettings: AudiobookSettings,
+        private val audiobookBookmarkRepository: AudiobookBookmarkRepository,
+        private val embeddedChapterReader: EmbeddedChapterReader,
     ) {
         fun create(
             context: Context,
@@ -64,6 +80,9 @@ private constructor(
                 context,
                 playbackManager,
                 playbackSettings,
+                audiobookSettings,
+                audiobookBookmarkRepository,
+                embeddedChapterReader,
                 widgetComponent,
                 onExitRequested,
             )
@@ -129,6 +148,34 @@ private constructor(
                 L.d("Received skip next event")
                 playbackManager.next()
             }
+            PlaybackActions.ACTION_SEEK_BACK -> {
+                L.d("Received seek back event")
+                playbackManager.seekBy(-audiobookSettings.skipDurationMs)
+            }
+            PlaybackActions.ACTION_SEEK_FORWARD -> {
+                L.d("Received seek forward event")
+                playbackManager.seekBy(audiobookSettings.skipDurationMs)
+            }
+            PlaybackActions.ACTION_BOOKMARK -> {
+                L.d("Received bookmark action from notification/lockscreen")
+                val currentSong = playbackManager.currentSong
+                if (currentSong != null && playbackManager.domain == PlaybackDomain.AUDIOBOOKS) {
+                    val positionMs = playbackManager.progression.calculateElapsedPositionMs()
+                    scope.launch {
+                        val embeddedChapterStartMs =
+                            embeddedChapterReader.read(currentSong)
+                                .lastOrNull { it.startMs <= positionMs }
+                                ?.startMs
+                        audiobookBookmarkRepository.add(
+                            AudiobookCatalog.bookKey(currentSong),
+                            currentSong.uid,
+                            positionMs,
+                            embeddedChapterStartMs,
+                            "",
+                        )
+                    }
+                }
+            }
             PlaybackActions.ACTION_EXIT -> {
                 L.d("Received exit event")
                 onExitRequested()
@@ -171,6 +218,9 @@ private constructor(
                 addAction(PlaybackActions.ACTION_SKIP_PREV)
                 addAction(PlaybackActions.ACTION_PLAY_PAUSE)
                 addAction(PlaybackActions.ACTION_SKIP_NEXT)
+                addAction(PlaybackActions.ACTION_SEEK_BACK)
+                addAction(PlaybackActions.ACTION_SEEK_FORWARD)
+                addAction(PlaybackActions.ACTION_BOOKMARK)
                 addAction(PlaybackActions.ACTION_EXIT)
                 addAction(WidgetProvider.ACTION_WIDGET_UPDATE)
             }

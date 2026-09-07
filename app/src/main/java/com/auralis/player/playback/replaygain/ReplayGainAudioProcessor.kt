@@ -198,23 +198,38 @@ constructor(
         } else {
             for (i in pos until limit step 2) {
                 // 16-bit PCM audio, deserialize a little-endian short.
-                var sample = inputBuffer.getLeShort(i)
-                // Ensure we clamp the values to the minimum and maximum values possible
-                // for the encoding. This prevents issues where samples amplified beyond
-                // 1 << 16 will end up becoming truncated during the conversion to a short,
-                // resulting in popping.
-                sample =
-                    (sample * volume)
-                        .toInt()
-                        .coerceAtLeast(Short.MIN_VALUE.toInt())
-                        .coerceAtMost(Short.MAX_VALUE.toInt())
-                        .toShort()
+                val rawSample = inputBuffer.getLeShort(i)
+                val amplified = rawSample * volume
+                val sample =
+                    when {
+                        amplified > SOFT_LIMIT_THRESHOLD -> {
+                            val over = amplified - SOFT_LIMIT_THRESHOLD
+                            val range = Short.MAX_VALUE - SOFT_LIMIT_THRESHOLD
+                            (SOFT_LIMIT_THRESHOLD + range * kotlin.math.tanh((over / range).toDouble()).toFloat())
+                                .toInt()
+                                .coerceAtMost(Short.MAX_VALUE.toInt())
+                                .toShort()
+                        }
+                        amplified < -SOFT_LIMIT_THRESHOLD -> {
+                            val over = -amplified - SOFT_LIMIT_THRESHOLD
+                            val range = Short.MAX_VALUE - SOFT_LIMIT_THRESHOLD
+                            (-SOFT_LIMIT_THRESHOLD - range * kotlin.math.tanh((over / range).toDouble()).toFloat())
+                                .toInt()
+                                .coerceAtLeast(Short.MIN_VALUE.toInt())
+                                .toShort()
+                        }
+                        else -> amplified.toInt().toShort()
+                    }
                 buffer.putLeShort(sample)
             }
         }
 
         inputBuffer.position(limit)
         buffer.flip()
+    }
+
+    private companion object {
+        private const val SOFT_LIMIT_THRESHOLD = 28000f
     }
 
     /**

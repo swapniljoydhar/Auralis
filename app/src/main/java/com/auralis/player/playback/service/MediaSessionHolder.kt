@@ -47,6 +47,7 @@ import com.auralis.player.image.ImageSettings
 import com.auralis.player.music.resolve
 import com.auralis.player.music.resolveNames
 import com.auralis.player.music.service.toMediaDescription
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.Progression
 import com.auralis.player.playback.state.QueueChange
@@ -169,7 +170,7 @@ private constructor(
     ) {
         updateMediaMetadata(playbackManager.currentSong, parent)
         updateQueue(queue)
-        invalidateSessionState()
+        invalidateNotificationActions()
     }
 
     override fun onProgressionChanged(progression: Progression) {
@@ -331,31 +332,61 @@ private constructor(
                 // Active queue ID corresponds to the indices we populated prior, use them here.
                 .setActiveQueueItemId(playbackManager.index.toLong())
 
-        // Android 13+ relies on custom actions in the notification.
+        if (playbackManager.domain == PlaybackDomain.AUDIOBOOKS) {
+            // Android 13+ lockscreen / notification custom actions for audiobooks
+            val seekBackAction =
+                PlaybackStateCompat.CustomAction.Builder(
+                        PlaybackActions.ACTION_SEEK_BACK,
+                        context.getString(R.string.desc_audiobook_rewind),
+                        R.drawable.ic_replay_24,
+                    )
+                    .build()
+            state.addCustomAction(seekBackAction)
 
-        // Add repeat action
-        val repeatAction =
-            PlaybackStateCompat.CustomAction.Builder(
-                    PlaybackActions.ACTION_INC_REPEAT_MODE,
-                    context.getString(R.string.desc_change_repeat),
-                    playbackManager.repeatMode.icon,
-                )
-                .build()
-        state.addCustomAction(repeatAction)
+            val seekForwardAction =
+                PlaybackStateCompat.CustomAction.Builder(
+                        PlaybackActions.ACTION_SEEK_FORWARD,
+                        context.getString(R.string.desc_audiobook_forward),
+                        R.drawable.ic_forward_24,
+                    )
+                    .build()
+            state.addCustomAction(seekForwardAction)
 
-        // Add shuffle action
-        val shuffleAction =
-            PlaybackStateCompat.CustomAction.Builder(
-                    PlaybackActions.ACTION_INVERT_SHUFFLE,
-                    context.getString(R.string.desc_shuffle),
-                    if (playbackManager.isShuffled) {
-                        R.drawable.ic_shuffle_on_24
-                    } else {
-                        R.drawable.ic_shuffle_off_24
-                    },
-                )
-                .build()
-        state.addCustomAction(shuffleAction)
+            val bookmarkAction =
+                PlaybackStateCompat.CustomAction.Builder(
+                        PlaybackActions.ACTION_BOOKMARK,
+                        context.getString(R.string.lbl_audiobook_save_bookmark),
+                        R.drawable.ic_bookmark_24,
+                    )
+                    .build()
+            state.addCustomAction(bookmarkAction)
+        } else {
+            // Android 13+ relies on custom actions in the notification for Music.
+
+            // Add repeat action
+            val repeatAction =
+                PlaybackStateCompat.CustomAction.Builder(
+                        PlaybackActions.ACTION_INC_REPEAT_MODE,
+                        context.getString(R.string.desc_change_repeat),
+                        playbackManager.repeatMode.icon,
+                    )
+                    .build()
+            state.addCustomAction(repeatAction)
+
+            // Add shuffle action
+            val shuffleAction =
+                PlaybackStateCompat.CustomAction.Builder(
+                        PlaybackActions.ACTION_INVERT_SHUFFLE,
+                        context.getString(R.string.desc_shuffle),
+                        if (playbackManager.isShuffled) {
+                            R.drawable.ic_shuffle_on_24
+                        } else {
+                            R.drawable.ic_shuffle_off_24
+                        },
+                    )
+                    .build()
+            state.addCustomAction(shuffleAction)
+        }
 
         mediaSession.setPlaybackState(state.build())
     }
@@ -365,8 +396,12 @@ private constructor(
         L.d("Invalidating notification actions")
         invalidateSessionState()
 
-        _notification.updateRepeatMode(playbackManager.repeatMode)
-        _notification.updateShuffled(playbackManager.isShuffled)
+        _notification.updateDomain(
+            playbackManager.domain,
+            playbackManager.progression.isPlaying,
+            playbackManager.repeatMode,
+            playbackManager.isShuffled,
+        )
 
         if (!bitmapProvider.isBusy) {
             L.d("Not loading a bitmap, post the notification")
@@ -445,7 +480,46 @@ private class PlaybackNotification(
      */
     fun updatePlaying(isPlaying: Boolean) {
         L.d("Updating playing state: $isPlaying")
-        mActions[2] = buildPlayPauseAction(context, isPlaying)
+        if (mActions.size > 2) {
+            mActions[2] = buildPlayPauseAction(context, isPlaying)
+        }
+    }
+
+    /**
+     * Update the domain actions shown in this notification.
+     */
+    fun updateDomain(
+        domain: PlaybackDomain,
+        isPlaying: Boolean,
+        repeatMode: RepeatMode,
+        isShuffled: Boolean,
+    ) {
+        mActions.clear()
+        if (domain == PlaybackDomain.AUDIOBOOKS) {
+            addAction(
+                buildAction(context, PlaybackActions.ACTION_SEEK_BACK, R.drawable.ic_replay_24)
+            )
+            addAction(
+                buildAction(context, PlaybackActions.ACTION_SKIP_PREV, R.drawable.ic_skip_prev_24)
+            )
+            addAction(buildPlayPauseAction(context, isPlaying))
+            addAction(
+                buildAction(context, PlaybackActions.ACTION_SKIP_NEXT, R.drawable.ic_skip_next_24)
+            )
+            addAction(
+                buildAction(context, PlaybackActions.ACTION_SEEK_FORWARD, R.drawable.ic_forward_24)
+            )
+        } else {
+            addAction(buildRepeatAction(context, repeatMode))
+            addAction(
+                buildAction(context, PlaybackActions.ACTION_SKIP_PREV, R.drawable.ic_skip_prev_24)
+            )
+            addAction(buildPlayPauseAction(context, isPlaying))
+            addAction(
+                buildAction(context, PlaybackActions.ACTION_SKIP_NEXT, R.drawable.ic_skip_next_24)
+            )
+            addAction(buildShuffleAction(context, isShuffled))
+        }
     }
 
     /**
@@ -455,7 +529,9 @@ private class PlaybackNotification(
      */
     fun updateRepeatMode(repeatMode: RepeatMode) {
         L.d("Applying repeat mode action: $repeatMode")
-        mActions[0] = buildRepeatAction(context, repeatMode)
+        if (mActions.size > 0) {
+            mActions[0] = buildRepeatAction(context, repeatMode)
+        }
     }
 
     /**
@@ -465,7 +541,9 @@ private class PlaybackNotification(
      */
     fun updateShuffled(isShuffled: Boolean) {
         L.d("Applying shuffle action: $isShuffled")
-        mActions[4] = buildShuffleAction(context, isShuffled)
+        if (mActions.size > 4) {
+            mActions[4] = buildShuffleAction(context, isShuffled)
+        }
     }
 
     // --- NOTIFICATION ACTION BUILDERS ---

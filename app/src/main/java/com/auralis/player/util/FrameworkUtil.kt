@@ -387,7 +387,11 @@ fun Context.startIntent(intent: Intent) {
             Intent(Intent.ACTION_CHOOSER)
                 .putExtra(Intent.EXTRA_INTENT, intent)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(chooserIntent)
+        try {
+            startActivity(chooserIntent)
+        } catch (e: Exception) {
+            showToast(R.string.err_no_app)
+        }
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

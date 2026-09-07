@@ -1,23 +1,25 @@
-# Auralis changelog
+# Auralis Changelog
 
-## Unreleased
+## 4.1.22 (Latest)
 
-### Product identity
+### Core Playback & Startup Stabilization
+* **Resolved Startup Lifecycle Race:** Fixed `TabLayoutMediator is already attached` exception on launch by tracking mediator state, detaching prior to tab re-instantiation, and adding stable item IDs to `HomePagerAdapter`.
+* **Guarded Dynamic Bottom Sheet:** Resolved `UninitializedPropertyAccessException` in `PlaybackBottomSheetBehavior.createBackground()` on early layout passes.
+* **Database Migration Hardening:** Enabled destructive migration fallbacks on `PersistenceDatabase` to prevent database schema mismatch crashes during app updates.
+* **Asynchronous Cover Streaming & Caching:** Added in-memory `LruCache` (4MB) and tightened worker pipe timeouts in `CoverProvider` to eliminate disk I/O contention during rapid media-session and lock-screen cover queries.
+* **Tasker Plugin Decoupling:** Removed 5-second blocking `Thread.sleep` polling loop from `StartActionRunner`, replacing it with asynchronous foreground service startup dispatch.
 
-Auralis now presents a single, coherent product identity across the Android namespace, application ID, manifest, themes, launcher resources, splash screen, GitHub-facing documentation, and release metadata. The launcher mark is the Auralis sound-ribbon and open-book symbol stored under `design/` and wired into the adaptive icon and splash screen.
+### UI & UX Modernization (Material 3)
+* **Material 3 Theme Harmonization:** Replaced legacy AppCompat attribute references with Material 3 design tokens (`MR.attr.colorError`, `MR.attr.colorOnSurface`, `MR.attr.colorOnSurfaceVariant`) across all dialogs and detail screens.
+* **Programmatic View Mounting:** Implemented `ensureChildren()` in `CoverView` to guarantee image views and clip shapes are mounted when instantiated programmatically in code.
+* **Optimized List Rendering:** Upgraded `BookmarkAdapter` and `LocationAdapter` to use `ListAdapter` and targeted range updates (`DiffUtil`), eliminating full RecyclerView invalidation (`notifyDataSetChanged()`).
+* **MaterialAlertDialog Integration:** Converted all audiobook speed, chapter selection, sleep timer, and bookmark creation dialogs to native `MaterialAlertDialogBuilder`.
 
-### Listening spaces
+---
 
-The home hub keeps Music and Audiobooks deliberately separate. Music retains song, album, artist, genre, playlist, search, queue, shuffle, repeat, ReplayGain, Android Auto, widget, and headset workflows. Audiobooks retain book, chapter, resume, progress, bookmark, speed, skip, silence-skipping, auto-rewind, and sleep-at-chapter-end workflows. Music-only sorting is blocked safely while an audiobook projection is active.
+## 4.1.21
 
-### Stability and correctness
-
-The normal sort-mode RecyclerView binding path no longer throws `NotImplementedError`, the default settings migration is a safe no-op, unsupported sort operations preserve the current order instead of crashing, and the exported cover provider returns safe results for unknown URIs and metadata queries. Release resource definitions no longer depend on debug-only identity overlays.
-
-### Verification
-
-The debug APK builds with the pinned Media3, taglib, utfcpp, FFmpeg, Android SDK, NDK, and CMake inputs initialized. The app unit tests, `musikr` tests, and debug lint task are part of the release gate. Warnings that remain are recorded by lint and are not silently treated as proof of defect-free runtime behavior.
-
-## Provenance
-
-Auralis incorporates and modifies GPL-licensed components. This changelog describes the Auralis product and its changes; legal attribution remains in source headers, `NOTICE`, `LICENSE`, and the vendored submodules. The project does not claim to be an official release of any upstream component.
+### Dual-Domain Experience
+* **Independent Playback Domains:** Complete isolation between `PlaybackDomain.MUSIC` and `PlaybackDomain.AUDIOBOOKS`.
+* **Dedicated Audiobook Studio:** Added M4B chapter parsing, per-book progress tracking, bookmarks with notes, speed controls, and end-of-chapter sleep timer.
+* **Material 3 Redesign:** Introduced adaptive dynamic color theming, AMOLED dark mode, fluid bottom-sheet controls, and updated vector branding.

@@ -193,6 +193,9 @@
     <string name="lbl_audiobook_chapter_complete">%1$s • Complete</string>
     <string name="lbl_audiobook_chapter_complete_short">Chapter complete</string>
     <string name="desc_audiobook_cover">Audiobook cover</string>
+    <string name="desc_audiobook_rewind">Rewind</string>
+    <string name="desc_audiobook_forward">Fast forward</string>
+    <string name="lbl_normal">Normal</string>
     <string name="desc_audiobook_progress">%1$d of %2$d chapters complete</string>
     <string name="lbl_skip_back_30">Back 30 seconds</string>
     <string name="lbl_skip_forward_30">Forward 30 seconds</string>
@@ -203,7 +206,9 @@
     <string name="lbl_speed_200">Speed 2.0×</string>
     <string name="lbl_sleep_15">Sleep in 15 minutes</string>
     <string name="lbl_sleep_30">Sleep in 30 minutes</string>
+    <string name="lbl_sleep_45">Sleep in 45 minutes</string>
     <string name="lbl_sleep_60">Sleep in 60 minutes</string>
+    <string name="lbl_sleep_90">Sleep in 90 minutes</string>
     <string name="lbl_sleep_cancel">Cancel sleep timer</string>
     <string name="lbl_sleep_end_chapter">End of chapter</string>
     <string name="lbl_play">Play</string>

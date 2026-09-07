@@ -82,8 +82,11 @@ class PlaybackBottomSheetBehavior<V : View>(context: Context, attributeSet: Attr
     // Note: This is an extension to Auralis's vendored BottomSheetBehavior
     override fun isHideableWhenDragging() = false
 
-    override fun createBackground(context: Context, uiSettings: UISettings) =
-        LayerDrawable(
+    override fun createBackground(context: Context, uiSettings: UISettings): LayerDrawable {
+        if (!::sheetBackgroundDrawable.isInitialized) {
+            makeBackgroundDrawable(context)
+        }
+        return LayerDrawable(
             arrayOf(
                 // Add another colored background so that there is always an obscuring
                 // element even as the actual "background" element is faded out.
@@ -93,6 +96,7 @@ class PlaybackBottomSheetBehavior<V : View>(context: Context, attributeSet: Attr
                 sheetBackgroundDrawable,
             )
         )
+    }
 
     override fun applyWindowInsets(child: View, insets: WindowInsets): WindowInsets {
         super.applyWindowInsets(child, insets)

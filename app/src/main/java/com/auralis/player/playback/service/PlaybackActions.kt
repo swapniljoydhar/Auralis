@@ -30,5 +30,8 @@ object PlaybackActions {
     const val ACTION_SKIP_PREV = BuildConfig.APPLICATION_ID + ".action.PREV"
     const val ACTION_PLAY_PAUSE = BuildConfig.APPLICATION_ID + ".action.PLAY_PAUSE"
     const val ACTION_SKIP_NEXT = BuildConfig.APPLICATION_ID + ".action.NEXT"
+    const val ACTION_SEEK_BACK = BuildConfig.APPLICATION_ID + ".action.SEEK_BACK"
+    const val ACTION_SEEK_FORWARD = BuildConfig.APPLICATION_ID + ".action.SEEK_FORWARD"
+    const val ACTION_BOOKMARK = BuildConfig.APPLICATION_ID + ".action.BOOKMARK"
     const val ACTION_EXIT = BuildConfig.APPLICATION_ID + ".action.EXIT"
 }
