@@ -8,6 +8,8 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
     - name: Clone repository
@@ -21,8 +23,29 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Check formatting with spotless
-      run: ./gradlew spotlessCheck
+      run: ./gradlew spotlessCheck 2>&1 | tee /tmp/spotless.log; test ${PIPESTATUS[0]} -eq 0
+    - name: Report spotless failures to PR
+      if: failure() && github.event.pull_request.number != ''
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        { echo '### Spotless failure'; echo '```'; tail -c 20000 /tmp/spotless.log; echo '```'; } > /tmp/comment.md
+        gh pr comment ${{ github.event.pull_request.number }} --body-file /tmp/comment.md
     - name: Test musikr with Gradle
-      run: ./gradlew musikr:testDebug
+      run: ./gradlew musikr:testDebug 2>&1 | tee /tmp/musikr-test.log; test ${PIPESTATUS[0]} -eq 0
+    - name: Report musikr test failures to PR
+      if: failure() && github.event.pull_request.number != ''
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        { echo '### musikr test failure'; echo '```'; tail -c 20000 /tmp/musikr-test.log; echo '```'; } > /tmp/comment.md
+        gh pr comment ${{ github.event.pull_request.number }} --body-file /tmp/comment.md
     - name: Test app with Gradle
-      run: ./gradlew app:testDebug
+      run: ./gradlew app:testDebug 2>&1 | tee /tmp/app-test.log; test ${PIPESTATUS[0]} -eq 0
+    - name: Report app test failures to PR
+      if: failure() && github.event.pull_request.number != ''
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        { echo '### app test failure'; echo '```'; tail -c 20000 /tmp/app-test.log; echo '```'; } > /tmp/comment.md
+        gh pr comment ${{ github.event.pull_request.number }} --body-file /tmp/comment.md
