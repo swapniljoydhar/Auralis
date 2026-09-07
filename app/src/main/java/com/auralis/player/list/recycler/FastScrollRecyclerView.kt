@@ -69,8 +69,8 @@ import com.auralis.player.util.isUnder
 import com.auralis.player.util.scale
 import com.auralis.player.util.systemBarInsetsCompat
 import com.google.android.material.R as MR
-import com.google.android.material.motion.MotionUtils
 import com.google.android.material.textview.MaterialTextView
+import androidx.dynamicanimation.animation.SpringForce
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
@@ -200,20 +200,17 @@ constructor(context: Context, attrs: AttributeSet? = null, @AttrRes defStyleAttr
             scale = 0.5f
             alpha = 0.0f
         }
-    private val popupTextStaggerDelayMillis =
-        MotionUtils.resolveThemeDuration(context, MR.attr.motionDurationShort2, 100).toLong()
+    private val popupTextStaggerDelayMillis = 100L
     private val popupSpatialSpring =
-        MotionUtils.resolveThemeSpringForce(
-            context,
-            MR.attr.motionSpringFastSpatial,
-            MR.style.Motion_Material3_Spring_Standard_Fast_Spatial,
-        )
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+            stiffness = SpringForce.STIFFNESS_HIGH
+        }
     private val popupEffectsSpring =
-        MotionUtils.resolveThemeSpringForce(
-            context,
-            MR.attr.motionSpringDefaultEffects,
-            MR.style.Motion_Material3_Spring_Standard_Default_Effects,
-        )
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+            stiffness = SpringForce.STIFFNESS_MEDIUM
+        }
     private var popupShapeScaleAnimation: SpringAnimation? = null
     private var popupShapeAlphaAnimation: SpringAnimation? = null
     private var popupTextScaleAnimation: SpringAnimation? = null

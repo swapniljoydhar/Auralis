@@ -45,7 +45,7 @@ import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import com.auralis.player.R
 import com.google.android.material.R as MR
-import com.google.android.material.motion.MotionUtils
+import androidx.dynamicanimation.animation.SpringForce
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -553,11 +553,10 @@ constructor(
         val springAnimation =
             SpringAnimation(FloatValueHolder(currentAmplitudeFraction)).apply {
                 spring =
-                    MotionUtils.resolveThemeSpringForce(
-                        context,
-                        MR.attr.motionSpringFastEffects,
-                        MR.style.Motion_Material3_Spring_Standard_Fast_Effects,
-                    )
+                    SpringForce().apply {
+                        dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+                        stiffness = SpringForce.STIFFNESS_HIGH
+                    }
                 setStartValue(currentAmplitudeFraction)
                 setMinimumVisibleChange(MIN_SPRING_VISIBLE_CHANGE)
                 addUpdateListener { _, value, _ ->

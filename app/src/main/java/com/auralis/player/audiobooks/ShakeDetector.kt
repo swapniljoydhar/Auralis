@@ -45,11 +45,13 @@ class ShakeDetector(
         if (isListening) {
             sensorManager?.unregisterListener(this)
             isListening = false
+            lastShakeTimestamp = 0L
         }
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event == null || event.sensor.type != Sensor.TYPE_ACCELEROMETER) return
+        if (!isListening) return
 
         val x = event.values[0]
         val y = event.values[1]

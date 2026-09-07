@@ -2,33 +2,36 @@ name: Android Build
 
 on:
   push:
-    branches: []
+    branches: [ main, dev ]
   pull_request:
-    branches: []
+    branches: [ main, dev ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install ninja-build
-      run: sudo apt-get install -y ninja-build
     - name: Clone repository
-      uses: actions/checkout@v5
-    - name: Clone submodules
-      run: git submodule update --init --recursive --remote
-    - name: Set up JDK 21
-      uses: actions/setup-java@v5
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
       with:
-        java-version: "21"
-        distribution: "jetbrains"
+        java-version: "17"
+        distribution: "temurin"
         cache: gradle
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
     - name: Build debug APK with Gradle
-      run: ./gradlew app:packageDebug
+      run: ./gradlew app:assembleDebug --no-daemon --stacktrace
+
+    - name: Run unit tests
+      run: ./gradlew app:testDebugUnitTest musikr:testDebugUnitTest --no-daemon
+
     - name: Upload debug APK artifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v4
       with:
-        name: Auralis_Canary
+        name: Auralis-debug
         path: ./app/build/outputs/apk/debug/app-debug.apk

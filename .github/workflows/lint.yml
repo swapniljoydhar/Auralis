@@ -2,30 +2,42 @@ name: Android Lint
 
 on:
   push:
-    branches: []
+    branches: [ main, dev ]
   pull_request:
-    branches: []
+    branches: [ main, dev ]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install ninja-build
-      run: sudo apt-get install -y ninja-build
     - name: Clone repository
-      uses: actions/checkout@v5
-    - name: Clone submodules
-      run: git submodule update --init --recursive --remote
+      uses: actions/checkout@v4
+
     - name: Set up JDK 17
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
     - name: Check formatting with spotless
-      run: ./gradlew spotlessCheck
-    - name: Test musikr with Gradle
-      run: ./gradlew musikr:testDebug
+      run: ./gradlew spotlessCheck --no-daemon
+
+    - name: Run Android lint
+      run: ./gradlew app:lintDebug musikr:lintDebug --no-daemon
+
+    - name: Run unit tests
+      run: ./gradlew app:testDebugUnitTest musikr:testDebugUnitTest --no-daemon
+
+    - name: Upload lint reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: lint-reports
+        path: |
+          app/build/reports/lint-results-debug.html
+          musikr/build/reports/lint-results-debug.html

@@ -51,7 +51,6 @@ import com.auralis.player.util.getAttrResourceId
 import com.auralis.player.util.getDimen
 import com.auralis.player.util.getDimenPixels
 import com.google.android.material.R as MR
-import com.google.android.material.motion.MotionUtils
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.leinardi.android.speeddial.FabWithLabelView
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -77,17 +76,15 @@ class ThemedSpeedDialView : SpeedDialView {
     private var innerChangeListener: ((Boolean) -> Unit)? = null
     private val mainFabDrawable = RotatingDrawable(checkNotNull(mainFab.drawable).mutate())
     private val mainFabSpatialSpring =
-        MotionUtils.resolveThemeSpringForce(
-            context,
-            MR.attr.motionSpringFastSpatial,
-            MR.style.Motion_Material3_Spring_Standard_Fast_Spatial,
-        )
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+            stiffness = SpringForce.STIFFNESS_HIGH
+        }
     private val mainFabEffectsSpring =
-        MotionUtils.resolveThemeSpringForce(
-            context,
-            MR.attr.motionSpringFastEffects,
-            MR.style.Motion_Material3_Spring_Standard_Fast_Effects,
-        )
+        SpringForce().apply {
+            dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+            stiffness = SpringForce.STIFFNESS_MEDIUM
+        }
     private val argbEvaluator = ArgbEvaluator()
 
     constructor(context: Context) : super(context)
@@ -310,7 +307,7 @@ class ThemedSpeedDialView : SpeedDialView {
                     TextViewCompat.setTextAppearance(
                         this,
                         context.getAttrResourceId(
-                            com.google.android.material.R.attr.textAppearanceLabelLargeEmphasized
+                            R.attr.textAppearanceLabelLargeEmphasized
                         ),
                     )
                 }

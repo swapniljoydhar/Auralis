@@ -1,36 +1,86 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Auralis ProGuard Rules
+# ========================
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
-
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
-
-# Obsfucation is what proprietary software does to keep the user unaware of it's abuses.
-# Also it's easier to fix issues if the stack trace symbols remain unmangled.
+# Don't obfuscate - stack traces should be readable
 -dontobfuscate
 
-# Used reflectively by ScaledPlaybackButton to undo MaterialButtonGroup's temporary width
-# mutations before applying playback-specific scaling.
+# Keep source file names and line numbers for crash reports
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+# ---- Kotlin ----
+-keep class kotlin.Metadata { *; }
+-dontwarn kotlin.**
+-keepclassmembers class **$WhenMappings {
+    <fields>;
+}
+-keepclassmembers class kotlin.Metadata {
+    public <methods>;
+}
+-keep class kotlin.reflect.** { *; }
+
+# ---- Coroutines ----
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# ---- Room ----
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-dontwarn androidx.room.paging.**
+
+# ---- Hilt ----
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
+
+# ---- ExoPlayer / Media3 ----
+-keep class androidx.media3.** { *; }
+-dontwarn androidx.media3.**
+
+# ---- Coil 3 ----
+-keep class coil3.** { *; }
+-dontwarn coil3.**
+
+# ---- Material ----
+-keep class com.google.android.material.** { *; }
+
+# ---- Auralis Model Classes (used by Room) ----
+-keep class com.auralis.player.playback.persist.** { *; }
+-keep class org.oxycblt.musikr.model.** { *; }
+
+# ---- Parcelable ----
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+
+# ---- R8 Specific ----
+# Keep custom views used in XML layouts
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public void set*(...);
+}
+
+# Keep classes referenced by Hilt injection
+-keep @dagger.hilt.android.lifecycle.HiltViewModel class * { *; }
+-keep @dagger.hilt.InstallIn class * { *; }
+
+# Keep enum values
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Used reflectively by ScaledPlaybackButton
 -keepclassmembers class com.google.android.material.button.MaterialButton {
     void recoverOriginalLayoutParams();
 }
 
-# Make AGP shut up about classes that aren't even used.
+# Suppress warnings for optional dependencies
 -dontwarn org.bouncycastle.jsse.BCSSLParameters
 -dontwarn org.bouncycastle.jsse.BCSSLSocket
 -dontwarn org.bouncycastle.jsse.provider.BouncyCastleJsseProvider

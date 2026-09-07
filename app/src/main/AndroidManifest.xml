@@ -2,27 +2,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Android 13 uses READ_MEDIA_AUDIO instead of READ_EXTERNAL_STORAGE -->
+    <!-- Android 13+ uses READ_MEDIA_AUDIO instead of READ_EXTERNAL_STORAGE -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"  />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"  />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- Bluetooth auto-connect functionality (Disabled until permission workflow can be made) -->
-<!--    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />-->
-<!--    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" android:minSdkVersion="31" />-->
-<!--    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>-->
-
-    <!-- Work around ExoPlayer requiring network permissions we do not use -->
+    <!-- Remove network permissions we don't need (ExoPlayer adds them by default) -->
     <uses-permission
         android:name="android.permission.ACCESS_NETWORK_STATE"
         tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        tools:node="remove" />
 
-    <queries />
+    <queries>
+        <!-- Needed for Tasker integration -->
+        <package android:name="net.dinglisch.android.taskerm" />
+    </queries>
 
     <application
         android:name=".Auralis"
@@ -43,35 +44,26 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:launchMode="singleTask"
-            android:allowCrossUidActivitySwitchFromBelow="false"
             android:roundIcon="@mipmap/ic_launcher"
             android:windowSoftInputMode="adjustNothing">
 
             <intent-filter>
-                <!-- Expose that we are a music player. -->
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.MUSIC_PLAYER" />
-
-                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MUSIC_PLAYER" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.APP_MUSIC" />
             </intent-filter>
 
             <intent-filter>
-                <!--
-                Signal that we can take audio of *any* format, file or content. This is important,
-                as some apps use this to determine if Auralis is eligible to be a default music
-                player.
-                -->
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="content" />
                 <data android:scheme="file" />
-
-                <!-- Normal audio mime types + weird mime types -->
                 <data android:mimeType="audio/*" />
                 <data android:mimeType="application/ogg" />
                 <data android:mimeType="application/x-ogg" />
@@ -79,35 +71,33 @@
             </intent-filter>
         </activity>
 
-
         <!--
-        Service handling music playback, system components, and state saving.
+        MediaBrowserService for music playback and Android Auto integration.
+        Exported for system media browser access.
         -->
         <service
             android:name=".AuralisService"
             android:foregroundServiceType="mediaPlayback"
-            android:icon="@mipmap/ic_launcher"
             android:exported="true"
-            android:roundIcon="@mipmap/ic_launcher"
             tools:ignore="ExportedService">
             <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService"/>
+                <action android:name="android.media.browse.MediaBrowserService" />
                 <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
             </intent-filter>
         </service>
 
         <!--
-        Expose Auralis's cover data to the android system
+        Cover art content provider for system integration (widgets, media controls).
         -->
         <provider
             android:name=".image.CoverProvider"
             android:authorities="@string/pkg_authority_cover"
             android:exported="true"
+            android:readPermission="android.permission.MEDIA_CONTENT_CONTROL"
             tools:ignore="ExportedContentProvider" />
 
         <!--
-        Work around apps that blindly query for ACTION_MEDIA_BUTTON working.
-        See the class for more info.
+        Media button receiver for Bluetooth/headset controls.
         -->
         <receiver
             android:name=".playback.service.MediaButtonReceiver"
@@ -117,31 +107,20 @@
             </intent-filter>
         </receiver>
 
-        <!-- Receiver for bluetooth headset events -->
-<!--        <receiver-->
-<!--            android:name=".playback.system.BluetoothConnectReceiver"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.bluetooth.a2dp.profile.action.CONNECTION_STATE_CHANGED" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
-
-        <!-- "Now Playing" widget. -->
+        <!-- "Now Playing" widget -->
         <receiver
             android:name=".widgets.WidgetProvider"
             android:exported="false"
             android:label="@string/lbl_playback">
-
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
 
-        <!-- Tasker 'start service' integration -->
+        <!-- Tasker integration -->
         <activity
             android:name=".tasker.ActivityConfigStartAction"
             android:exported="true"

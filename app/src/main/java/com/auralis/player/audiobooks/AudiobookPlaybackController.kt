@@ -123,7 +123,7 @@ constructor(
 
     private fun vibrateFeedback() {
         try {
-            val vibrator = ContextCompat.getSystemService(context, Vibrator::class.java)
+            val vibrator = ContextCompat.getSystemService(context, android.os.Vibrator::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator?.vibrate(
                     VibrationEffect.createOneShot(120L, VibrationEffect.DEFAULT_AMPLITUDE)
@@ -132,8 +132,10 @@ constructor(
                 @Suppress("DEPRECATION")
                 vibrator?.vibrate(120L)
             }
+        } catch (_: SecurityException) {
+            // Vibration permission not granted
         } catch (_: Exception) {
-            // Ignore if vibration is not supported or permission denied
+            // Ignore if vibration hardware is not available
         }
     }
 

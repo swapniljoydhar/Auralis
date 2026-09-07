@@ -35,11 +35,16 @@ data class EmbeddedChapter(val startMs: Long, val title: String)
 
 /** Reads embedded chapters from local ID3v2 `CHAP` and MP4 `chpl` metadata. */
 class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val context: Context) {
-    private val cache = ConcurrentHashMap<String, List<EmbeddedChapter>>()
+    // LRU-bounded cache to prevent unbounded memory growth for large libraries.
+    private val cache = object : LinkedHashMap<String, List<EmbeddedChapter>>(64, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<EmbeddedChapter>>?): Boolean {
+            return size > MAX_CACHE_ENTRIES
+        }
+    }
 
     suspend fun read(song: Song): List<EmbeddedChapter> {
         val key = song.uid.toString()
-        cache[key]?.let {
+        synchronized(cache) { cache[key] }?.let {
             return it
         }
         return withContext(Dispatchers.IO) {
@@ -51,7 +56,7 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
                             .orEmpty()
                     }
                     .getOrDefault(emptyList())
-            cache.putIfAbsent(key, chapters) ?: chapters
+            synchronized(cache) { cache.putIfAbsent(key, chapters) } ?: chapters
         }
     }
 
@@ -160,5 +165,6 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
         const val ID3_HEADER_BYTES = 10
         const val FRAME_HEADER_BYTES = 10
         const val CHAPTER_HEADER_BYTES = 17
+        const val MAX_CACHE_ENTRIES = 256
     }
 }

@@ -4,12 +4,13 @@
 
 [![API](https://img.shields.io/badge/API-24%2B-1450A8?style=flat)](https://developer.android.com)
 [![License](https://img.shields.io/badge/license-GPL%20v3-2B6DBE.svg?style=flat)](LICENSE)
+[![Build](https://github.com/swapniljoydhar/Auralis/actions/workflows/android.yml/badge.svg)](https://github.com/swapniljoydhar/Auralis/actions/workflows/android.yml)
 
 ---
 
 ## 🌟 Vision & Architecture
 
-**Auralis** is an audio player engineered to provide an uncompromising experience for both **music enthusiasts** and **audiobook listeners**. Rather than forcing audiobooks into music queues or treating music as long-form speech, Auralis uses an explicit **Dual-Domain Architecture (`PlaybackDomain.MUSIC` and `PlaybackDomain.AUDIOBOOKS`)**. 
+**Auralis** is an audio player engineered to provide an uncompromising experience for both **music enthusiasts** and **audiobook listeners**. Rather than forcing audiobooks into music queues or treating music as long-form speech, Auralis uses an explicit **Dual-Domain Architecture (`PlaybackDomain.MUSIC` and `PlaybackDomain.AUDIOBOOKS`)**.
 
 Each domain maintains its own distinct:
 * **Playback State & Queue**: Listening to an audiobook never clears or interrupts your current music queue, and playing an album never loses your audiobook position.
@@ -25,7 +26,7 @@ Each domain maintains its own distinct:
 * **Comprehensive Library Organization**: Fast browsing by Songs, Albums, Artists, Genres, and Playlists with fast alphabetic index scrolling and customizable navigation tabs.
 * **Dynamic Queue Management**: Drag-and-drop queue reordering, non-repeating shuffle algorithms, and flexible repeat modes.
 * **Material 3 Expressive UI**: Dynamic color theming (Monet on Android 12+), AMOLED pure black theme, edge-to-edge window insets, and fluid collapsible bottom-sheet player panel.
-* **System Integration**: Android Auto support, lock screen playback controls, customizable home screen widgets, and Bluetooth media button handling.
+* **System Integration**: Lock screen playback controls, customizable home screen widgets, and Bluetooth media button handling.
 
 ---
 
@@ -75,19 +76,56 @@ Auralis/
 
 ## 🚀 Building & Testing
 
+### Prerequisites
+- JDK 17
+- Android SDK 35
+- Gradle 8.x
+
+### Commands
 ```bash
 # Build debug APK
-gradle :app:assembleDebug
+./gradlew app:assembleDebug
 
 # Run unit tests
-gradle :app:testDebugUnitTest :musikr:test
+./gradlew app:testDebugUnitTest musikr:testDebugUnitTest
 
 # Check linting
-gradle :app:lintDebug
+./gradlew app:lintDebug musikr:lintDebug
+
+# Check code formatting
+./gradlew spotlessCheck
+
+# Auto-format code
+./gradlew spotlessApply
 ```
+
+---
+
+## 🏗 Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| Language | Kotlin 2.0 |
+| DI | Hilt (Dagger) |
+| Database | Room |
+| Playback | ExoPlayer (Media3) |
+| Images | Coil 3 |
+| UI | Material 3 Expressive |
+| Navigation | AndroidX Navigation |
+| Testing | JUnit, MockK, Robolectric |
 
 ---
 
 ## 📜 License
 
 Auralis is distributed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)**. See [`LICENSE`](LICENSE) and [`PROVENANCE.md`](PROVENANCE.md) for full licensing information.
+
+---
+
+## 🙏 Credits
+
+Auralis builds upon the work of:
+- [Auxio](https://github.com/OxygenCobalt/Auxio) — Music player foundation
+- [Voice](https://github.com/PaulWoitaschek/Voice) — Audiobook player inspiration
+
+See [`PROVENANCE.md`](PROVENANCE.md) for detailed attribution.

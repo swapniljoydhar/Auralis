@@ -26,28 +26,34 @@ package com.auralis.player.ui
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
-import androidx.annotation.AttrRes
-import androidx.annotation.StyleRes
 import androidx.core.view.isInvisible
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.auralis.player.util.scale
-import com.google.android.material.R as MR
-import com.google.android.material.motion.MotionUtils
 import com.google.android.material.shape.MaterialShapeDrawable
 
 private const val MIN_VISIBLE_CHANGE_DRAWABLE_ALPHA = 1f
 
-class Spatial private constructor(@AttrRes val attr: Int, val defaultStyle: Int) {
-    private fun resolve(context: Context) =
-        MotionUtils.resolveThemeSpringForce(context, attr, defaultStyle)
+/**
+ * Spring animation presets for spatial transitions (scale, translate, elevation).
+ * Uses Material 3 spring constants for consistent motion.
+ */
+class Spatial private constructor(
+    private val dampingRatio: Float,
+    private val stiffness: Float,
+) {
+    private fun createSpring(to: Float): SpringForce =
+        SpringForce(to).apply {
+            this.dampingRatio = this@Spatial.dampingRatio
+            this.stiffness = this@Spatial.stiffness
+        }
 
     fun scale(view: View, to: Float, jumpOnCancellation: Boolean = false): SpringAnimation {
         val from = view.scale
-        val springForce = resolve(view.context)
         return SpringAnimation(FloatValueHolder(from)).apply {
-            spring = springForce
+            spring = createSpring(to)
             setStartValue(from)
             setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE)
             addUpdateListener { _, value, _ -> view.scale = value }
@@ -60,9 +66,8 @@ class Spatial private constructor(@AttrRes val attr: Int, val defaultStyle: Int)
 
     fun translateX(view: View, to: Float, jumpOnCancellation: Boolean = false): SpringAnimation {
         val from = view.translationX
-        val springForce = resolve(view.context)
         return SpringAnimation(FloatValueHolder(from)).apply {
-            spring = springForce
+            spring = createSpring(to)
             setStartValue(from)
             setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_PIXELS)
             addUpdateListener { _, value, _ -> view.translationX = value }
@@ -75,9 +80,8 @@ class Spatial private constructor(@AttrRes val attr: Int, val defaultStyle: Int)
 
     fun translateZ(view: View, to: Float, jumpOnCancellation: Boolean = false): SpringAnimation {
         val from = view.translationZ
-        val springForce = resolve(view.context)
         return SpringAnimation(FloatValueHolder(from)).apply {
-            spring = springForce
+            spring = createSpring(to)
             setStartValue(from)
             setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_PIXELS)
             addUpdateListener { _, value, _ -> view.translationZ = value }
@@ -95,9 +99,8 @@ class Spatial private constructor(@AttrRes val attr: Int, val defaultStyle: Int)
         jumpOnCancellation: Boolean = false,
     ): SpringAnimation {
         val from = drawable.elevation
-        val springForce = resolve(context)
         return SpringAnimation(FloatValueHolder(from)).apply {
-            spring = springForce
+            spring = createSpring(to)
             setStartValue(from)
             setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_PIXELS)
             addUpdateListener { _, value, _ -> drawable.elevation = value }
@@ -115,9 +118,8 @@ class Spatial private constructor(@AttrRes val attr: Int, val defaultStyle: Int)
         jumpOnCancellation: Boolean = false,
     ): SpringAnimation {
         val from = drawable.topRightCornerResolvedSize
-        val springForce = resolve(context)
         return SpringAnimation(FloatValueHolder(from)).apply {
-            spring = springForce
+            spring = createSpring(to)
             setStartValue(from)
             setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_PIXELS)
             addUpdateListener { _, value, _ -> drawable.setCornerSize(value) }
@@ -129,32 +131,45 @@ class Spatial private constructor(@AttrRes val attr: Int, val defaultStyle: Int)
     }
 
     companion object {
+        /** Fast spatial spring - for small, quick UI transitions. */
         val FAST =
             Spatial(
-                MR.attr.motionSpringFastSpatial,
-                MR.style.Motion_Material3_Spring_Standard_Fast_Spatial,
+                dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY,
+                stiffness = SpringForce.STIFFNESS_HIGH,
             )
+        /** Default spatial spring - for general UI transitions. */
         val DEFAULT =
             Spatial(
-                MR.attr.motionSpringDefaultSpatial,
-                MR.style.Motion_Material3_Spring_Standard_Default_Spatial,
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY,
+                stiffness = SpringForce.STIFFNESS_MEDIUM,
             )
+        /** Slow spatial spring - for large, dramatic transitions. */
         val SLOW =
             Spatial(
-                MR.attr.motionSpringSlowSpatial,
-                MR.style.Motion_Material3_Spring_Standard_Slow_Spatial,
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY,
+                stiffness = SpringForce.STIFFNESS_LOW,
             )
     }
 }
 
-class Effect private constructor(@AttrRes val attr: Int, @StyleRes val defaultStyle: Int) {
-    fun resolve(context: Context) = MotionUtils.resolveThemeSpringForce(context, attr, defaultStyle)
+/**
+ * Spring animation presets for effect transitions (alpha, color).
+ * Uses Material 3 spring constants for consistent motion.
+ */
+class Effect private constructor(
+    private val dampingRatio: Float,
+    private val stiffness: Float,
+) {
+    private fun createSpring(to: Float): SpringForce =
+        SpringForce(to).apply {
+            this.dampingRatio = this@Effect.dampingRatio
+            this.stiffness = this@Effect.stiffness
+        }
 
     fun alpha(view: View, to: Float, jumpOnCancellation: Boolean = false): SpringAnimation {
         val from = view.alpha
-        val springForce = resolve(view.context)
         return SpringAnimation(FloatValueHolder(from)).apply {
-            spring = springForce
+            spring = createSpring(to)
             setStartValue(from)
             setMinimumVisibleChange(DynamicAnimation.MIN_VISIBLE_CHANGE_ALPHA)
             addUpdateListener { _, value, _ ->
@@ -176,9 +191,8 @@ class Effect private constructor(@AttrRes val attr: Int, @StyleRes val defaultSt
         jumpOnCancellation: Boolean = false,
     ): SpringAnimation {
         val from = drawable.alpha
-        val springForce = resolve(context)
         return SpringAnimation(FloatValueHolder(from.toFloat())).apply {
-            spring = springForce
+            spring = createSpring(to.toFloat())
             setStartValue(from.toFloat())
             setMinimumVisibleChange(MIN_VISIBLE_CHANGE_DRAWABLE_ALPHA)
             addUpdateListener { _, value, _ -> drawable.alpha = value.toInt() }
@@ -190,20 +204,23 @@ class Effect private constructor(@AttrRes val attr: Int, @StyleRes val defaultSt
     }
 
     companion object {
+        /** Default effect spring - for general effect transitions. */
         val DEFAULT =
             Effect(
-                MR.attr.motionSpringDefaultEffects,
-                MR.style.Motion_Material3_Spring_Standard_Default_Effects,
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY,
+                stiffness = SpringForce.STIFFNESS_MEDIUM,
             )
+        /** Slow effect spring - for subtle, gradual transitions. */
         val SLOW =
             Effect(
-                MR.attr.motionSpringSlowEffects,
-                MR.style.Motion_Material3_Spring_Standard_Slow_Effects,
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY,
+                stiffness = SpringForce.STIFFNESS_LOW,
             )
+        /** Fast effect spring - for quick feedback. */
         val FAST =
             Effect(
-                MR.attr.motionSpringFastEffects,
-                MR.style.Motion_Material3_Spring_Standard_Fast_Effects,
+                dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY,
+                stiffness = SpringForce.STIFFNESS_HIGH,
             )
     }
 }

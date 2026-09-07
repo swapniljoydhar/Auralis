@@ -1,46 +1,70 @@
-# Auralis contribution guidelines
+# Contributing to Auralis
+
+Thank you for your interest in contributing to Auralis!
 
 ## Crashes & Bugs
+
 Log them in the [Issues](https://github.com/swapniljoydhar/Auralis/issues) tab.
 
-Please keep in mind when reporting an issue:
-- **Has it been reported?** Make sure an issue for the issue is not already there.
-- **Has it been already fixed?** Make sure a fix wasn't already added.
-- **Is it still relevant in the latest version?** Make sure to test it in the latest version.
+Before reporting:
+- **Search existing issues** to avoid duplicates
+- **Test with the latest version** to confirm the bug still exists
+- **Check if a fix has already been merged**
 
-If you do make an issue, Make sure to provide:
-- A description of the bug/crash
-- A summary of the steps to create the bug/crash
-- A stack trace/logcat if possible, the longer the better.
-
-If you have knowledge of Android/Kotlin in general, you could also go about fixing the bug yourself and opening a [Pull Request](https://github.com/swapniljoydhar/Auralis/pulls).
+When creating an issue, provide:
+- A clear description of the bug/crash
+- Steps to reproduce
+- Expected vs actual behavior
+- Stack trace or logcat output
+- Device model and Android version
 
 ## Feature Requests
-These should also be logged in the [Issues](https://github.com/swapniljoydhar/Auralis/issues) tab.
 
-Please keep in mind when requesting a feature:
-- **Has it already been requested?** Make sure request for this feature is not already here.
-- **Has it been already added?** Make sure this feature has not already been added in the most recent release.
-- **Will it be accepted?** Read the [Auralis architecture](https://github.com/swapniljoydhar/Auralis/blob/dev/docs/ARCHITECTURE.md) in order to see the likelihood that your request will be implemented.
+Log them in the [Issues](https://github.com/swapniljoydhar/Auralis/issues) tab.
 
-If you do make a request, provide the following:
-- What is it that you want?
-- Is it related to some problem? If so, describe why.
-- Why do you think it will benefit everyone's usage of the app?
+Before requesting:
+- **Search existing requests** to avoid duplicates
+- **Check the latest release** to see if it's already implemented
 
-If you have the knowledge, you can also implement the feature yourself and create a [Pull Request](https://github.com/swapniljoydhar/Auralis/pulls), but its recommended that **you create an issue beforehand to give me a heads up.**
-Its also recommended that you read about [Auralis's Architecture](https://github.com/swapniljoydhar/Auralis/blob/dev/docs/ARCHITECTURE.md) as well to make changes better and more efficient.
-
-## Translations
-Translation support is being reorganized under the Auralis project. Please open an issue in this repository before adding or changing translation resources.
+When creating a request:
+- Describe what you want
+- Explain the problem it solves
+- Describe why it benefits all users
 
 ## Code Contributions
-If you have knowledge of Android/Kotlin, feel free to to contribute to the project.
-- If you want to help out with an existing bug report, comment on the issue that you want to fix saying that you are going to try your hand at it.
-- If you want to add something, its recommended to open up an issue for what you want to change before you start working on it. That way I can determine if the addition will be merged in the first place, and generally gives a heads-up overall.
-- Do not bring non-free software into the project, such as Binary Blobs.
-- Stick to [F-Droid Inclusion Guidelines](https://f-droid.org/wiki/page/Inclusion_Policy)
-- Make sure you stick to Auralis's styling, which should be auto-formatted on every build.
-- Please ***FULLY TEST*** your changes before creating a PR. Untested code will not be merged.
-- Only **Kotlin** will be accepted, except for the case that a UI component must be vendored in the project.
-- Keep your branch up to date with the repository and continue to maintain it after you create the PR. This makes it easier to review and merge.
+
+### Getting Started
+1. Fork the repository
+2. Create a feature branch from `dev`
+3. Make your changes
+4. Run tests: `./gradlew app:testDebugUnitTest musikr:testDebugUnitTest`
+5. Check formatting: `./gradlew spotlessCheck`
+6. Auto-format if needed: `./gradlew spotlessApply`
+7. Submit a pull request to `dev`
+
+### Guidelines
+- **Language**: Kotlin only (except for vendored UI components)
+- **Testing**: Fully test changes before submitting a PR
+- **Formatting**: Code is auto-formatted with Spotless on every build
+- **Architecture**: Follow existing patterns (Hilt DI, ViewBinding, etc.)
+- **No proprietary code**: Do not bring non-free software into the project
+- **Keep PRs focused**: One feature/fix per PR
+
+### Build Requirements
+- JDK 17
+- Android SDK 35
+- Gradle 8.x
+
+### Code Style
+- Follow Kotlin coding conventions
+- Use meaningful variable/function names
+- Add KDoc comments for public APIs
+- Keep functions small and focused
+
+## Translations
+
+Translation support is being reorganized. Please open an issue before adding or changing translation resources.
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the GPL-3.0-or-later license.
