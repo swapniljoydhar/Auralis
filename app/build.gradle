@@ -167,8 +167,8 @@ dependencies {
     implementation "io.coil-kt.coil3:coil-core:3.0.0"
     implementation "io.coil-kt.coil3:coil:3.0.0"
 
-    // Material (1.13.0+ required for Material3Expressive theme and motion springs)
-    implementation "com.google.android.material:material:1.13.0-alpha07"
+    // Material 1.14.0 (stable, includes Material3Expressive)
+    implementation "com.google.android.material:material:1.14.0"
 
     // Dependency Injection
     implementation "com.google.dagger:hilt-android:$hilt_version"
