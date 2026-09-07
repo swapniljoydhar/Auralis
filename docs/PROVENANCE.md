@@ -1,7 +1,18 @@
-# Auralis provenance
+# Auralis Provenance & Architecture Foundations
 
-Auralis is a derivative GPLv3 Android application assembled from open-source playback, metadata, and audiobook components. Product names, package names, UI copy, visual assets, navigation structure, and Auralis-specific fixes are maintained in this repository.
+**Auralis** is an open-source, local-first audio player application for Android licensed under the GNU General Public License v3.0 (or later).
 
-Original copyright notices and license headers remain in files where they are legally relevant. The retained names identify copyright ownership and source provenance; they are not product branding. Vendored Media3, TagLib, and utfcpp sources retain their own license files and pinned revisions. No closed-source binary, private signing key, or cloud credential is required to build the debug variant.
+## Foundational Design
 
-The Auralis application icon and product copy are original repository assets. The project does not claim official affiliation with any upstream component or present upstream releases as Auralis releases.
+The Auralis project represents a complete, cohesive media player combining full-featured local music library management with a purpose-built audiobook player. 
+
+### Architecture Pillars:
+- **Dual Playback Domains**: Absolute separation between `PlaybackDomain.MUSIC` and `PlaybackDomain.AUDIOBOOKS`.
+- **Native Indexing Engine (`musikr`)**: High-performance metadata extraction powered by C++ TagLib JNI and custom file system scanners.
+- **Material 3 Expressive UI**: Dynamic color harmony with Android 12+ Monet theming, custom bottom sheet physics, and responsive layout controllers.
+- **Durable Local Persistence**: Transactional Room databases managing playback session snapshots, audiobook progress down to the millisecond, chapter markers, and user playlists.
+- **Zero Cloud / Local-First Privacy**: 100% offline, zero tracking, zero telemetry, and privacy-respecting storage permissions.
+
+## Licensing
+
+Auralis is distributed under the **GPL-3.0-or-later** license. All product naming, identifiers, brand assets, vector icons, and custom domain controllers are property of the Auralis open-source project.

@@ -119,6 +119,7 @@ constructor(context: Context, attrs: AttributeSet? = null, @AttrRes defStyleAttr
     private val squareishShapeAppearance: ShapeAppearanceModel
     private val circularShapeAppearance: ShapeAppearanceModel
     private var currentShapeAppearance: ShapeAppearanceModel
+    private var childrenConfigured = false
 
     init {
         // Obtain some StyledImageView attributes to use later when theming the custom view.
@@ -192,8 +193,9 @@ constructor(context: Context, attrs: AttributeSet? = null, @AttrRes defStyleAttr
             }
     }
 
-    override fun onFinishInflate() {
-        super.onFinishInflate()
+    private fun ensureChildren() {
+        if (childrenConfigured) return
+        childrenConfigured = true
 
         // The image isn't added if other children have populated the body. This is by design.
         if (isEmpty()) {
@@ -232,6 +234,11 @@ constructor(context: Context, attrs: AttributeSet? = null, @AttrRes defStyleAttr
                 },
             )
         }
+    }
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        ensureChildren()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -273,6 +280,7 @@ constructor(context: Context, attrs: AttributeSet? = null, @AttrRes defStyleAttr
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        ensureChildren()
         invalidateRootAlpha()
         invalidatePlaybackIndicatorAlpha(playbackIndicator ?: return)
         invalidateSelectionIndicatorAlpha(selectionBadge ?: return)
@@ -483,6 +491,7 @@ constructor(context: Context, attrs: AttributeSet? = null, @AttrRes defStyleAttr
         @DrawableRes errorRes: Int,
         shapeAppearanceModel: ShapeAppearanceModel,
     ) {
+        ensureChildren()
         // prep proper shape to use if necessary. be safe and do it now
         // idk if doing it at layout time will cause issues
         updateShapeAppearance(shapeAppearanceModel)

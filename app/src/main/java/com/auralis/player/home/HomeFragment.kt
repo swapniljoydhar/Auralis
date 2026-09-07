@@ -91,6 +91,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
     private var storagePermissionLauncher: ActivityResultLauncher<String>? = null
     private var getContentLauncher: ActivityResultLauncher<String>? = null
     private var pendingImportTarget: Playlist? = null
+    private var tabMediator: TabLayoutMediator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -188,6 +189,9 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
     override fun onDestroyBinding(binding: FragmentHomeBinding) {
         super.onDestroyBinding(binding)
         storagePermissionLauncher = null
+        tabMediator?.detach()
+        tabMediator = null
+        binding.homePager.adapter = null
         binding.homeNormalToolbar.setOnMenuItemClickListener(null)
     }
 
@@ -251,6 +255,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
     }
 
     private fun setupPager(binding: FragmentHomeBinding) {
+        tabMediator?.detach()
         binding.homePager.adapter =
             HomePagerAdapter(homeModel.currentTabTypes, childFragmentManager, viewLifecycleOwner)
 
@@ -270,12 +275,12 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
         }
 
         // Set up the mapping between the ViewPager and TabLayout.
-        TabLayoutMediator(
+        tabMediator =
+            TabLayoutMediator(
                 binding.homeTabs,
                 binding.homePager,
                 NamedTabStrategy(homeModel.currentTabTypes),
-            )
-            .attach()
+            ).also { it.attach() }
     }
 
     private fun updateCurrentTab(tabType: MusicType) {
@@ -548,5 +553,10 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
                 MusicType.PLAYLISTS -> PlaylistListFragment()
                 MusicType.AUDIOBOOKS -> AudiobookListFragment()
             }
+
+        override fun getItemId(position: Int): Long = tabs[position].ordinal.toLong()
+
+        override fun containsItem(itemId: Long): Boolean =
+            tabs.any { it.ordinal.toLong() == itemId }
     }
 }

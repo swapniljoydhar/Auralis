@@ -99,6 +99,7 @@ class ExoPlaybackStateHolder(
     private var openAudioEffectSession = false
     private val pendingAudiobookProgress = mutableListOf<AudiobookProgressSnapshot>()
     private var pausedAudiobookPositionMs: Long? = null
+    private var pausedTimestampMs: Long = 0L
     private var activeDomain = PlaybackDomain.MUSIC
 
     var sessionOngoing = false
@@ -552,6 +553,7 @@ class ExoPlaybackStateHolder(
                 activeDomain == PlaybackDomain.AUDIOBOOKS
         ) {
             pausedAudiobookPositionMs = player.currentPosition
+            pausedTimestampMs = System.currentTimeMillis()
         } else if (playWhenReady) {
             val pausedPosition = pausedAudiobookPositionMs
             if (
@@ -559,7 +561,19 @@ class ExoPlaybackStateHolder(
                     currentSong != null &&
                     activeDomain == PlaybackDomain.AUDIOBOOKS
             ) {
-                player.seekTo((pausedPosition - audiobookSettings.autoRewindMs).coerceAtLeast(0L))
+                val configuredRewind = audiobookSettings.autoRewindMs
+                val elapsedPauseMs = System.currentTimeMillis() - pausedTimestampMs
+                val rewindMs =
+                    when {
+                        configuredRewind <= 0L -> 0L
+                        elapsedPauseMs < 20_000L -> 0L
+                        elapsedPauseMs < 5 * 60_000L ->
+                            (configuredRewind / 2).coerceAtLeast(3000L).coerceAtMost(configuredRewind)
+                        else -> configuredRewind
+                    }
+                if (rewindMs > 0L) {
+                    player.seekTo((pausedPosition - rewindMs).coerceAtLeast(0L))
+                }
             }
             pausedAudiobookPositionMs = null
         }

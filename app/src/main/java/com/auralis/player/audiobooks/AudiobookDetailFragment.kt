@@ -27,7 +27,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.R as AR
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -40,6 +39,8 @@ import com.auralis.player.playback.state.PlaybackCommand
 import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.ShuffleMode
+import com.auralis.player.util.navigateSafe
+import com.google.android.material.R as MR
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
@@ -155,17 +156,17 @@ class AudiobookDetailFragment : Fragment() {
         // Bookmarks button
         b.audiobookActionBookmarks.setOnClickListener {
             findNavController()
-                .navigate(AudiobookDetailFragmentDirections.showAudiobookBookmarks(book.key))
+                .navigateSafe(AudiobookDetailFragmentDirections.showAudiobookBookmarks(book.key))
         }
 
         // Reset button
         if (hasSavedProgress) {
             b.audiobookActionReset.visibility = View.VISIBLE
             b.audiobookActionReset.setTextColor(
-                MaterialColors.getColor(context, AR.attr.colorError, 0)
+                MaterialColors.getColor(context, MR.attr.colorError, 0)
             )
             b.audiobookActionReset.strokeColor =
-                ColorStateList.valueOf(MaterialColors.getColor(context, AR.attr.colorError, 0))
+                ColorStateList.valueOf(MaterialColors.getColor(context, MR.attr.colorError, 0))
             b.audiobookActionReset.setOnClickListener {
                 lifecycleScope.launch {
                     progressRepository.clearBook(book.key)

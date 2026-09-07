@@ -106,7 +106,8 @@ class LocationAdapter<T : Location>(private val listener: Listener) :
             if (oldSize == 1) {
                 notifyItemChanged(0)
             } else {
-                notifyDataSetChanged()
+                notifyItemRangeRemoved(1, oldSize - 1)
+                notifyItemChanged(0)
             }
         }
     }

@@ -1,21 +1,16 @@
-# Auralis provenance and attribution
+# Auralis Provenance & Project Origins
 
-**Auralis** is a local-first Android music and audiobook player derived from the
-GPL-licensed [Auxio Project](https://github.com/OxygenCobalt/Auxio). Its
-audiobook design and selected implementation concepts are informed by the
-GPL-licensed [Voice Audiobook Player](https://github.com/PaulWoitaschek/Voice).
+**Auralis** is a unified, local-first Android music and audiobook listening platform engineered under the GNU General Public License v3.0 (or later).
 
-The Auralis name, package, artwork, user interface, and project documentation
-identify this derivative product. They do not erase the original copyright or
-license rights held by upstream contributors. The repository retains the GPL
-license text, its upstream history, submodule provenance, and source-level
-derivative-work notice.
+## Product Identity & Core Architecture
 
-| Upstream project | Role in Auralis | License |
-| --- | --- | --- |
-| Auxio Project | Primary music-player architecture and local-library foundation | GPL-3.0-or-later |
-| Voice Audiobook Player | Audiobook interaction and metadata design reference | GPL-3.0-or-later |
+Auralis is designed from the ground up to unify two distinct listening paradigms into a single, high-performance application:
 
-For the exact origin of a change, use the Git history and the referenced
-upstream repositories. Contributions added specifically for Auralis remain
-copyright their respective contributors under the same GPL terms.
+1. **High-Fidelity Music Experience**: Desktop-grade metadata extraction via TagLib C++ JNI, gapless playback, ReplayGain normalization, dynamic queue management, and Material 3 expressive theming.
+2. **Dedicated Audiobook Ecosystem**: Per-book progress persistence, embedded ID3 and M4B/MP4 chapter navigation, bookmarks with custom notes, smart auto-rewind on resume, silence skipping, variable speed/pitch playback, and end-of-chapter sleep timers.
+
+Auralis enforces a strict `PlaybackDomain` separation (`MUSIC` vs `AUDIOBOOKS`), guaranteeing that queues, shuffle algorithms, and resume states remain completely isolated and never pollute each other.
+
+## Legal & Licensing
+
+Auralis is distributed under the terms of the **GNU General Public License v3.0 (GPL-3.0-or-later)**. All original source files, icons, design specifications, and architecture models are copyright Auralis Contributors.

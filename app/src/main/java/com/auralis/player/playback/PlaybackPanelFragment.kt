@@ -23,7 +23,7 @@
 package com.auralis.player.playback
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
@@ -284,7 +284,7 @@ class PlaybackPanelFragment :
             try {
                 requireNotNull(equalizerLauncher) { "Equalizer panel launcher was not available" }
                     .launch(equalizerIntent)
-            } catch (e: ActivityNotFoundException) {
+            } catch (e: Exception) {
                 requireContext().showToast(R.string.err_no_app)
             }
             return true
@@ -372,18 +372,39 @@ class PlaybackPanelFragment :
     }
 
     private fun showSpeedPicker() {
-        val labels =
-            arrayOf(
-                getString(R.string.lbl_speed_075),
-                getString(R.string.lbl_speed_100),
-                getString(R.string.lbl_speed_125),
-                getString(R.string.lbl_speed_150),
-                getString(R.string.lbl_speed_200),
+        val speeds =
+            floatArrayOf(
+                0.5f,
+                0.75f,
+                0.85f,
+                1.0f,
+                1.1f,
+                1.2f,
+                1.25f,
+                1.35f,
+                1.5f,
+                1.75f,
+                2.0f,
+                2.5f,
+                3.0f,
             )
-        val speeds = floatArrayOf(0.75f, 1.0f, 1.25f, 1.5f, 2.0f)
-        AlertDialog.Builder(requireContext())
+        val labels =
+            speeds
+                .map { speed ->
+                    if (speed == 1.0f) "1.0× (${getString(R.string.lbl_normal)})"
+                    else "${speed}×"
+                }
+                .toTypedArray()
+        val currentSpeed = playbackManager.playbackSpeed
+        val selectedIndex =
+            speeds.indexOfFirst { abs(it - currentSpeed) < 0.05f }.takeIf { it >= 0 } ?: 3
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.lbl_audiobook_speed)
-            .setItems(labels) { _, which -> setPlaybackSpeed(speeds[which]) }
+            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
+                setPlaybackSpeed(speeds[which])
+                dialog.dismiss()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
@@ -436,18 +457,22 @@ class PlaybackPanelFragment :
             arrayOf(
                 getString(R.string.lbl_sleep_15),
                 getString(R.string.lbl_sleep_30),
+                getString(R.string.lbl_sleep_45),
                 getString(R.string.lbl_sleep_60),
+                getString(R.string.lbl_sleep_90),
                 getString(R.string.lbl_sleep_end_chapter),
                 getString(R.string.lbl_sleep_cancel),
             )
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.lbl_audiobook_sleep)
             .setItems(labels) { _, which ->
                 when (which) {
                     0 -> audiobookPlaybackController.scheduleSleepTimer(15 * 60_000L)
                     1 -> audiobookPlaybackController.scheduleSleepTimer(30 * 60_000L)
-                    2 -> audiobookPlaybackController.scheduleSleepTimer(60 * 60_000L)
-                    3 -> audiobookPlaybackController.scheduleSleepAtChapterEnd()
+                    2 -> audiobookPlaybackController.scheduleSleepTimer(45 * 60_000L)
+                    3 -> audiobookPlaybackController.scheduleSleepTimer(60 * 60_000L)
+                    4 -> audiobookPlaybackController.scheduleSleepTimer(90 * 60_000L)
+                    5 -> audiobookPlaybackController.scheduleSleepAtChapterEnd()
                     else -> audiobookPlaybackController.cancelSleepTimer()
                 }
                 updateAudiobookSleepTimer()
@@ -501,7 +526,7 @@ class PlaybackPanelFragment :
 
         val expectedQueueUids = queue.map { it.uid.toString() }
         val expectedSongUid = currentSong.uid.toString()
-        val dialog = AlertDialog.Builder(requireContext()).create()
+        val dialog = MaterialAlertDialogBuilder(requireContext()).create()
         val navigator =
             RecyclerView(requireContext()).apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -552,7 +577,7 @@ class PlaybackPanelFragment :
     ) : RecyclerView.Adapter<ChapterNavigatorViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             ChapterNavigatorViewHolder(
-                MaterialButton(parent.context).apply {
+                MaterialButton(parent.context, null, MR.attr.materialButtonOutlinedStyle).apply {
                     isAllCaps = false
                     gravity = Gravity.START or Gravity.CENTER_VERTICAL
                     textAlignment = View.TEXT_ALIGNMENT_VIEW_START
@@ -613,21 +638,25 @@ class PlaybackPanelFragment :
         embeddedChapters: List<EmbeddedChapter>,
     ) {
         val bookKey = AudiobookCatalog.bookKey(currentSong)
-        val dialog = AlertDialog.Builder(requireContext()).create()
+        val context = requireContext()
+        val textColorPrimary = MaterialColors.getColor(context, MR.attr.colorOnSurface, Color.BLACK)
+        val textColorSecondary =
+            MaterialColors.getColor(context, MR.attr.colorOnSurfaceVariant, Color.GRAY)
+        val dialog = MaterialAlertDialogBuilder(context).create()
         val list =
-            LinearLayout(requireContext()).apply {
+            LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(20, 16, 20, 24)
                 addView(
-                    TextView(requireContext()).apply {
+                    TextView(context).apply {
                         text = getString(R.string.lbl_audiobook_chapters)
                         textSize = 20f
-                        setTextColor(Color.WHITE)
+                        setTextColor(textColorPrimary)
                         setPadding(0, 0, 0, 12)
                     }
                 )
                 addView(
-                    MaterialButton(requireContext()).apply {
+                    MaterialButton(context).apply {
                         text = getString(R.string.lbl_audiobook_add_bookmark)
                         isAllCaps = false
                         setOnClickListener {
@@ -642,18 +671,18 @@ class PlaybackPanelFragment :
                 )
                 val bookmarks = audiobookBookmarkRepository.getForBook(bookKey)
                 addView(
-                    TextView(requireContext()).apply {
+                    TextView(context).apply {
                         text = getString(R.string.lbl_audiobook_bookmarks)
                         textSize = 18f
-                        setTextColor(Color.WHITE)
+                        setTextColor(textColorPrimary)
                         setPadding(0, 16, 0, 4)
                     }
                 )
                 if (bookmarks.isEmpty()) {
                     addView(
-                        TextView(requireContext()).apply {
+                        TextView(context).apply {
                             text = getString(R.string.lbl_audiobook_no_bookmarks)
-                            setTextColor(Color.LTGRAY)
+                            setTextColor(textColorSecondary)
                             setPadding(0, 4, 0, 12)
                         }
                     )
@@ -661,17 +690,17 @@ class PlaybackPanelFragment :
                     bookmarks.forEach { bookmark -> addBookmarkRow(bookmark, queue, dialog) }
                 }
                 addView(
-                    TextView(requireContext()).apply {
+                    TextView(context).apply {
                         text = getString(R.string.lbl_audiobook_chapters)
                         textSize = 18f
-                        setTextColor(Color.WHITE)
+                        setTextColor(textColorPrimary)
                         setPadding(0, 16, 0, 4)
                     }
                 )
                 if (embeddedChapters.isNotEmpty()) {
                     embeddedChapters.forEachIndexed { index, chapter ->
                         addView(
-                            TextView(requireContext()).apply {
+                            TextView(context).apply {
                                 text = buildString {
                                     append(
                                         if (index == currentEmbeddedChapter(embeddedChapters)) "▶ "
@@ -682,7 +711,7 @@ class PlaybackPanelFragment :
                                     append(chapter.title)
                                 }
                                 textSize = 16f
-                                setTextColor(Color.WHITE)
+                                setTextColor(textColorPrimary)
                                 setPadding(0, 14, 0, 14)
                                 isClickable = true
                                 isFocusable = true
@@ -696,17 +725,17 @@ class PlaybackPanelFragment :
                 } else
                     queue.forEachIndexed { index, chapter ->
                         addView(
-                            TextView(requireContext()).apply {
+                            TextView(context).apply {
                                 text = buildString {
                                     append(if (index == playbackManager.index) "▶ " else "")
                                     append(index + 1)
                                     append(". ")
-                                    append(chapter.name.resolve(requireContext()))
+                                    append(chapter.name.resolve(context))
                                     append("  •  ")
                                     append(chapter.durationMs.formatDurationMs(false))
                                 }
                                 textSize = 16f
-                                setTextColor(Color.WHITE)
+                                setTextColor(textColorPrimary)
                                 setPadding(0, 14, 0, 14)
                                 isClickable = true
                                 isFocusable = true
@@ -718,7 +747,7 @@ class PlaybackPanelFragment :
                         )
                     }
             }
-        dialog.setContentView(ScrollView(requireContext()).apply { addView(list) })
+        dialog.setContentView(ScrollView(context).apply { addView(list) })
         dialog.show()
     }
 
@@ -733,20 +762,22 @@ class PlaybackPanelFragment :
         dialog: AlertDialog,
     ) {
         val chapter = queue.firstOrNull { it.uid == bookmark.chapterUid } ?: return
+        val context = requireContext()
+        val textColorPrimary = MaterialColors.getColor(context, MR.attr.colorOnSurface, Color.BLACK)
         addView(
-            LinearLayout(requireContext()).apply {
+            LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
                 addView(
-                    TextView(requireContext()).apply {
+                    TextView(context).apply {
                         text =
                             getString(
                                 R.string.lbl_audiobook_bookmark_at,
-                                chapter.name.resolve(requireContext()),
+                                chapter.name.resolve(context),
                                 bookmark.positionMs.formatDurationMs(true),
                             )
                         textSize = 16f
-                        setTextColor(Color.WHITE)
+                        setTextColor(textColorPrimary)
                         setPadding(0, 10, 0, 10)
                         isClickable = true
                         isFocusable = true
@@ -756,7 +787,7 @@ class PlaybackPanelFragment :
                     }
                 )
                 addView(
-                    MaterialButton(requireContext()).apply {
+                    MaterialButton(context).apply {
                         text = getString(R.string.lbl_delete)
                         isAllCaps = false
                         setOnClickListener {
@@ -809,7 +840,7 @@ class PlaybackPanelFragment :
                 getString(R.string.lbl_sleep_end_chapter),
                 getString(R.string.lbl_sleep_cancel),
             )
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.lbl_audiobook_controls)
             .setItems(labels) { _, which ->
                 when (which) {

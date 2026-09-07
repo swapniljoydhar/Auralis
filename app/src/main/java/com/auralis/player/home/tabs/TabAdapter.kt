@@ -138,6 +138,9 @@ class TabViewHolder private constructor(private val binding: ItemTabBinding) :
          * @param parent The parent to inflate this instance from.
          * @return A new instance.
          */
-        fun from(parent: View) = TabViewHolder(ItemTabBinding.inflate(parent.context.inflater))
+        fun from(parent: View) =
+            TabViewHolder(
+                ItemTabBinding.inflate(parent.context.inflater, parent as? ViewGroup, false)
+            )
     }
 }

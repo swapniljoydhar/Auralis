@@ -68,20 +68,6 @@ class StartActionRunner : TaskerPluginRunnerActionNoOutputOrInput() {
                 .setAction(AuralisService.ACTION_START)
                 .putExtra(AuralisService.INTENT_KEY_START_ID, IntegerTable.START_ID_TASKER),
         )
-        // Poll with a bounded timeout to avoid infinite blocking if the service
-        // never reaches foreground state. Use exponential back-off to reduce CPU
-        // churn while still responding promptly.
-        var waited = 0
-        val maxWaitMs = 5000
-        val initialDelayMs = 50L
-        var delayMs = initialDelayMs
-        while (!AuralisService.isForeground && waited < maxWaitMs) {
-            Thread.sleep(delayMs)
-            waited += delayMs.toInt()
-            delayMs = (delayMs * 2).coerceAtMost(500L)
-        }
-        // Brief additional delay for media button event readiness.
-        Thread.sleep(100)
         return TaskerPluginResultSucess()
     }
 }

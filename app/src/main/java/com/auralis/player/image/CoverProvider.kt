@@ -30,6 +30,7 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import android.util.LruCache
 import com.auralis.player.BuildConfig
 import com.auralis.player.image.covers.SettingCovers
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +53,11 @@ class CoverProvider : ContentProvider() {
         return openPipeHelper(uri, "image/*", null, id) { output, _, _, _, coverId ->
             ParcelFileDescriptor.AutoCloseOutputStream(output).use { outputStream ->
                 coverId?.let { requestedId ->
+                    val cachedBytes = coverMemoryCache.get(requestedId)
+                    if (cachedBytes != null) {
+                        outputStream.write(cachedBytes)
+                        return@use
+                    }
                     // Use a bounded timeout to prevent ANR if the cover fetch hangs.
                     runBlocking(Dispatchers.IO) {
                         try {
@@ -61,8 +67,13 @@ class CoverProvider : ContentProvider() {
                                         SettingCovers.immutable(requireNotNull(context))
                                             .obtain(requestedId)
                                 ) {
-                                    is CoverResult.Hit ->
-                                        result.cover.open()?.use { it.copyTo(outputStream) }
+                                    is CoverResult.Hit -> {
+                                        val bytes = result.cover.open()?.use { it.readBytes() }
+                                        if (bytes != null) {
+                                            coverMemoryCache.put(requestedId, bytes)
+                                            outputStream.write(bytes)
+                                        }
+                                    }
                                     else -> Unit
                                 }
                             }
@@ -101,9 +112,14 @@ class CoverProvider : ContentProvider() {
     companion object {
         private const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.image.CoverProvider"
         private const val IMAGES_PATH = "covers"
-        private const val COVER_LOAD_TIMEOUT_MS = 5000L
+        private const val COVER_LOAD_TIMEOUT_MS = 3000L
         private val uriMatcher =
             UriMatcher(UriMatcher.NO_MATCH).apply { addURI(AUTHORITY, "$IMAGES_PATH/*", 1) }
+
+        private val coverMemoryCache =
+            object : LruCache<String, ByteArray>(4 * 1024 * 1024) {
+                override fun sizeOf(key: String, value: ByteArray): Int = value.size
+            }
 
         val CONTENT_URI: Uri =
             Uri.Builder()

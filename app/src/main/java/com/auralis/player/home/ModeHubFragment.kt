@@ -29,6 +29,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.auralis.player.R
 import com.auralis.player.music.MusicType
+import com.auralis.player.util.navigateSafe
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,6 +58,6 @@ class ModeHubFragment : Fragment(R.layout.fragment_mode_hub) {
 
     private fun open(mode: MusicType) {
         homeModel.selectMode(mode)
-        findNavController().navigate(ModeHubFragmentDirections.openMain())
+        findNavController().navigateSafe(ModeHubFragmentDirections.openMain())
     }
 }

@@ -65,7 +65,7 @@ internal data class MusicGraph(
             appendLine("  node [style=filled,fillcolor=lightblue];")
             songVertex.forEachIndexed { index, song ->
                 val songId = "song_$index"
-                val name = song.preSong.rawName ?: "Unknown Song"
+                val name = song.preSong.rawName
                 val uid = song.preSong.v401Uid
                 val label = "${escape(name)}\\nUID: $uid"
                 appendLine("  $songId [label=\"$label\"];")
