@@ -25,6 +25,12 @@ package com.auralis.player.search
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.list.BasicHeader
 import com.auralis.player.list.Item
 import com.auralis.player.list.PlainDivider
@@ -38,12 +44,6 @@ import com.auralis.player.list.recycler.DividerViewHolder
 import com.auralis.player.list.recycler.GenreViewHolder
 import com.auralis.player.list.recycler.PlaylistViewHolder
 import com.auralis.player.list.recycler.SongViewHolder
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Music
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 
 /**
  * An adapter that displays search results.

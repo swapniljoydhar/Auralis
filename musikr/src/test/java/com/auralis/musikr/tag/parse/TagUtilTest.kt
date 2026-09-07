@@ -23,13 +23,13 @@
  
 package com.auralis.musikr.tag.parse
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import com.auralis.musikr.tag.format.parseId3GenreNames
 import com.auralis.musikr.tag.format.parseSlashPositionField
 import com.auralis.musikr.tag.format.parseXiphPositionField
 import com.auralis.musikr.util.correctWhitespace
 import com.auralis.musikr.util.splitEscaped
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class TagUtilTest {
     @Test

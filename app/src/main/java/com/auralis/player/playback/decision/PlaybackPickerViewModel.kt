@@ -24,14 +24,14 @@
 package com.auralis.player.playback.decision
 
 import androidx.lifecycle.ViewModel
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Music
+import com.auralis.musikr.Song
 import com.auralis.player.music.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Music
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

@@ -48,6 +48,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.audiobooks.AudiobookBookmark
 import com.auralis.player.audiobooks.AudiobookBookmarkRepository
@@ -94,8 +96,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlinx.coroutines.launch
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**
@@ -709,9 +709,7 @@ class PlaybackPanelFragment :
                     }
                 )
                 val bookmarks =
-                    audiobookBookmarkRepository.getForChapters(
-                        queue.map { it.uid }.toSet()
-                    )
+                    audiobookBookmarkRepository.getForChapters(queue.map { it.uid }.toSet())
                 addView(
                     TextView(context).apply {
                         text = getString(R.string.lbl_audiobook_bookmarks)

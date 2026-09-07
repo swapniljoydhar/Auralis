@@ -30,6 +30,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.auralis.musikr.Playlist
 import com.auralis.player.R
 import com.auralis.player.databinding.DialogDeletePlaylistBinding
 import com.auralis.player.music.MusicViewModel
@@ -38,7 +39,6 @@ import com.auralis.player.ui.ViewBindingMaterialDialogFragment
 import com.auralis.player.util.collectImmediately
 import com.auralis.player.util.unlikelyToBeNull
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.Playlist
 import timber.log.Timber as L
 
 /**

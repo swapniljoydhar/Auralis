@@ -24,6 +24,7 @@
 package com.auralis.player.detail.decision
 
 import android.view.ViewGroup
+import com.auralis.musikr.Artist
 import com.auralis.player.databinding.ItemPickerChoiceBinding
 import com.auralis.player.list.ClickableListListener
 import com.auralis.player.list.adapter.FlexibleListAdapter
@@ -32,7 +33,6 @@ import com.auralis.player.list.recycler.DialogRecyclerView
 import com.auralis.player.music.resolve
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import com.auralis.musikr.Artist
 
 /**
  * A [FlexibleListAdapter] that displays a list of [Artist] navigation choices, for use with

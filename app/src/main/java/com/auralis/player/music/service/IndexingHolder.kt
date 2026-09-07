@@ -26,6 +26,9 @@ package com.auralis.player.music.service
 import android.content.Context
 import android.os.PowerManager
 import coil3.ImageLoader
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.fs.mediastore.MediaStore
+import com.auralis.musikr.fs.saf.SAF
 import com.auralis.player.BuildConfig
 import com.auralis.player.ForegroundListener
 import com.auralis.player.ForegroundServiceNotification
@@ -40,9 +43,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.fs.mediastore.MediaStore
-import com.auralis.musikr.fs.saf.SAF
 import timber.log.Timber as L
 
 class IndexingHolder

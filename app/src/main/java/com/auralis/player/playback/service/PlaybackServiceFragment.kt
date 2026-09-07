@@ -26,6 +26,8 @@ package com.auralis.player.playback.service
 import android.content.Context
 import android.content.Intent
 import android.support.v4.media.session.MediaSessionCompat
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.AuralisService.Companion.INTENT_KEY_START_ID
 import com.auralis.player.ForegroundListener
 import com.auralis.player.ForegroundServiceNotification
@@ -41,8 +43,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 class PlaybackServiceFragment

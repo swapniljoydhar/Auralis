@@ -24,6 +24,8 @@
 package com.auralis.player.playback.queue
 
 import androidx.lifecycle.ViewModel
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.QueueChange
@@ -33,8 +35,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

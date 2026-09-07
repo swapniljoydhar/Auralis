@@ -37,6 +37,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.RenderersFactory
 import androidx.media3.exoplayer.source.MediaSource
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.audiobooks.AudiobookCatalog
 import com.auralis.player.audiobooks.AudiobookPlaybackController
 import com.auralis.player.audiobooks.AudiobookProgressRepository
@@ -67,8 +69,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 @OptIn(UnstableApi::class)
@@ -245,10 +245,10 @@ class ExoPlaybackStateHolder(
                 // Resolving runs off-thread: provider queries and library scans must never
                 // block the caller, and foreign providers may omit the expected columns.
                 restoreScope.launch {
-                    val song = library.songs.firstOrNull { it.uri == action.uri }
-                        ?: findSongByDisplayAttributes(action.uri)
-                    val command =
-                        song?.let { commandFactory.songFromAll(it, ShuffleMode.IMPLICIT) }
+                    val song =
+                        library.songs.firstOrNull { it.uri == action.uri }
+                            ?: findSongByDisplayAttributes(action.uri)
+                    val command = song?.let { commandFactory.songFromAll(it, ShuffleMode.IMPLICIT) }
                     withContext(Dispatchers.Main) {
                         if (command != null) {
                             playbackManager.play(command)
@@ -266,14 +266,15 @@ class ExoPlaybackStateHolder(
     private fun findSongByDisplayAttributes(uri: android.net.Uri): Song? {
         val cursor =
             runCatching {
-                context.applicationContext.contentResolver.query(
-                    uri,
-                    arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE),
-                    null,
-                    null,
-                    null,
-                )
-            }.getOrNull() ?: return null
+                    context.applicationContext.contentResolver.query(
+                        uri,
+                        arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE),
+                        null,
+                        null,
+                        null,
+                    )
+                }
+                .getOrNull() ?: return null
         return cursor.use {
             val displayNameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
             val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
@@ -340,9 +341,10 @@ class ExoPlaybackStateHolder(
         playbackManager.playbackSpeed(
             if (command.domain == PlaybackDomain.AUDIOBOOKS) {
                 // Resume each book at its own remembered pace.
-                command.queue.firstOrNull()?.let(AudiobookCatalog::bookKey)?.let(
-                    audiobookSettings::speedForBook
-                ) ?: audiobookSettings.lastPlaybackSpeed
+                command.queue
+                    .firstOrNull()
+                    ?.let(AudiobookCatalog::bookKey)
+                    ?.let(audiobookSettings::speedForBook) ?: audiobookSettings.lastPlaybackSpeed
             } else {
                 1.0f
             }

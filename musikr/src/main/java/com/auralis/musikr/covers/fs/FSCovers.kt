@@ -28,9 +28,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import androidx.core.net.toUri
-import java.io.InputStream
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import com.auralis.musikr.covers.Cover
 import com.auralis.musikr.covers.CoverResult
 import com.auralis.musikr.covers.Covers
@@ -39,6 +36,9 @@ import com.auralis.musikr.covers.MutableCovers
 import com.auralis.musikr.fs.File
 import com.auralis.musikr.metadata.Metadata
 import com.auralis.musikr.util.unlikelyToBeNull
+import java.io.InputStream
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private const val PREFIX = "mcf:"
 

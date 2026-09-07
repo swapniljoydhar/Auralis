@@ -29,6 +29,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.databinding.DialogSongDetailBinding
 import com.auralis.player.detail.list.SongProperty
@@ -37,7 +38,6 @@ import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.player.ui.ViewBindingMaterialDialogFragment
 import com.auralis.player.util.collectImmediately
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

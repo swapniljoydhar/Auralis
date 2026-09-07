@@ -29,6 +29,8 @@ import android.os.Build
 import coil3.request.ImageRequest
 import coil3.request.transformations
 import coil3.size.Size
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.image.BitmapProvider
 import com.auralis.player.image.ImageSettings
@@ -41,8 +43,6 @@ import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.ui.UISettings
 import com.auralis.player.util.getDimenPixels
 import javax.inject.Inject
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

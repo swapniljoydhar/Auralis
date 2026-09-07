@@ -26,6 +26,7 @@ package com.auralis.player.playback
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.fragment.app.activityViewModels
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentPlaybackBarBinding
 import com.auralis.player.detail.DetailViewModel
@@ -35,7 +36,6 @@ import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.ui.ViewBindingFragment
 import com.auralis.player.util.collectImmediately
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

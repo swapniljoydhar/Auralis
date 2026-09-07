@@ -31,6 +31,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Song
 import com.auralis.player.databinding.FragmentQueueBinding
 import com.auralis.player.list.EditClickListListener
 import com.auralis.player.playback.PlaybackViewModel
@@ -38,7 +39,6 @@ import com.auralis.player.ui.ViewBindingFragment
 import com.auralis.player.util.collectImmediately
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.min
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

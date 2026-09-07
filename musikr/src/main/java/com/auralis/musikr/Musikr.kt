@@ -25,9 +25,6 @@ package com.auralis.musikr
 
 import android.content.Context
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
 import com.auralis.musikr.pipeline.EvaluateStep
 import com.auralis.musikr.pipeline.ExploreStep
 import com.auralis.musikr.pipeline.Explored
@@ -35,6 +32,9 @@ import com.auralis.musikr.pipeline.ExtractStep
 import com.auralis.musikr.pipeline.Extracted
 import com.auralis.musikr.util.merge
 import com.auralis.musikr.util.tryAsyncWith
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 
 /**
  * A highly opinionated, multi-threaded device music library.

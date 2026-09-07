@@ -30,6 +30,8 @@ import android.view.View
 import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
 import com.auralis.player.BuildConfig
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentDetailBinding
@@ -45,8 +47,6 @@ import com.google.android.material.transition.MaterialSharedAxis
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import com.auralis.musikr.Music
-import com.auralis.musikr.MusicParent
 
 abstract class DetailFragment<P : MusicParent, C : Music> :
     ListFragment<C, FragmentDetailBinding>(),

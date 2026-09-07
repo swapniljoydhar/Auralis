@@ -25,7 +25,6 @@ package com.auralis.musikr.pipeline
 
 import android.content.Context
 import android.util.Log
-import kotlinx.coroutines.channels.Channel
 import com.auralis.musikr.BuildConfig
 import com.auralis.musikr.Config
 import com.auralis.musikr.Interpretation
@@ -35,6 +34,7 @@ import com.auralis.musikr.model.LibraryFactory
 import com.auralis.musikr.playlist.db.StoredPlaylists
 import com.auralis.musikr.playlist.interpret.PlaylistInterpreter
 import com.auralis.musikr.tag.interpret.TagInterpreter
+import kotlinx.coroutines.channels.Channel
 
 internal interface EvaluateStep {
     suspend fun evaluate(extractedMusic: Channel<Extracted>): MutableLibrary

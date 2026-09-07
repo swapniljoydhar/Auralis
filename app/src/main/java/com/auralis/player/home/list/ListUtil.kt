@@ -35,6 +35,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.core.text.isDigitsOnly
+import com.auralis.musikr.tag.Name
 import com.auralis.player.ui.ExpressiveShapes
 import com.auralis.player.util.getAttrColorCompat
 import com.google.android.material.R
@@ -42,7 +43,6 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import com.auralis.musikr.tag.Name
 
 fun Name.thumb() =
     when (this) {

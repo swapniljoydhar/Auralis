@@ -24,7 +24,6 @@
 package com.auralis.musikr.tag.interpret
 
 import android.net.Uri
-import java.util.UUID
 import com.auralis.musikr.Music
 import com.auralis.musikr.covers.Cover
 import com.auralis.musikr.fs.Format
@@ -35,6 +34,7 @@ import com.auralis.musikr.tag.Name
 import com.auralis.musikr.tag.ReleaseType
 import com.auralis.musikr.tag.ReplayGainAdjustment
 import com.auralis.musikr.util.update
+import java.util.UUID
 
 internal data class PreSong(
     val v363Uid: Music.UID,

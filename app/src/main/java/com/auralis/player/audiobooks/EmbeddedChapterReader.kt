@@ -25,11 +25,11 @@ package com.auralis.player.audiobooks
 
 import android.content.Context
 import android.util.LruCache
+import com.auralis.musikr.Song
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.auralis.musikr.Song
 
 data class EmbeddedChapter(val startMs: Long, val title: String)
 
@@ -41,9 +41,10 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
 
     suspend fun read(song: Song): List<EmbeddedChapter> {
         val key = song.uid.toString()
-        synchronized(cache) { cache[key] }?.let {
-            return it
-        }
+        synchronized(cache) { cache[key] }
+            ?.let {
+                return it
+            }
         return withContext(Dispatchers.IO) {
             val chapters =
                 runCatching {
@@ -53,9 +54,7 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
                             .orEmpty()
                     }
                     .getOrDefault(emptyList())
-            synchronized(cache) {
-                cache.put(key, chapters)
-            }
+            synchronized(cache) { cache.put(key, chapters) }
             chapters
         }
     }

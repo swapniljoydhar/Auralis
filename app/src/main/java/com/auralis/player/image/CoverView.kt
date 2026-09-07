@@ -53,6 +53,12 @@ import coil3.request.ImageRequest
 import coil3.request.target
 import coil3.request.transformations
 import coil3.util.CoilUtils
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.covers.CoverCollection
 import com.auralis.player.R
 import com.auralis.player.image.coil.GalleryCoverCollection
 import com.auralis.player.image.coil.RoundedRectTransformation
@@ -73,12 +79,6 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.min
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
-import com.auralis.musikr.covers.CoverCollection
 
 /**
  * Auralis's extension of [ImageView] that enables cover art loading and playing indicator and

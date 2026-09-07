@@ -24,10 +24,6 @@
 package com.auralis.player.search
 
 import android.content.Context
-import com.auralis.player.music.resolve
-import dagger.hilt.android.qualifiers.ApplicationContext
-import java.text.Normalizer
-import javax.inject.Inject
 import com.auralis.musikr.Album
 import com.auralis.musikr.Artist
 import com.auralis.musikr.Genre
@@ -35,6 +31,10 @@ import com.auralis.musikr.Music
 import com.auralis.musikr.Playlist
 import com.auralis.musikr.Song
 import com.auralis.musikr.tag.Name
+import com.auralis.player.music.resolve
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.text.Normalizer
+import javax.inject.Inject
 import timber.log.Timber as L
 
 /**

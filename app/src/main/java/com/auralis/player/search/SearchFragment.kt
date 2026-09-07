@@ -36,6 +36,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.playlist.m3u.M3U
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentSearchBinding
 import com.auralis.player.detail.DetailViewModel
@@ -62,14 +70,6 @@ import com.auralis.player.util.setFullWidthLookup
 import com.auralis.player.util.showToast
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Music
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
-import com.auralis.musikr.playlist.m3u.M3U
 import timber.log.Timber as L
 
 /**

@@ -25,6 +25,7 @@ package com.auralis.player.playback.decision
 
 import android.view.View
 import android.view.ViewGroup
+import com.auralis.musikr.Genre
 import com.auralis.player.databinding.ItemPickerChoiceBinding
 import com.auralis.player.list.ClickableListListener
 import com.auralis.player.list.adapter.FlexibleListAdapter
@@ -33,7 +34,6 @@ import com.auralis.player.list.recycler.DialogRecyclerView
 import com.auralis.player.music.resolve
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import com.auralis.musikr.Genre
 
 /**
  * A [FlexibleListAdapter] that displays a list of [Genre] playback choices, for use with

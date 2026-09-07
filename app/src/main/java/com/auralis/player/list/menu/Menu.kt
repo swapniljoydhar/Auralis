@@ -25,14 +25,14 @@ package com.auralis.player.list.menu
 
 import android.os.Parcelable
 import androidx.annotation.MenuRes
-import com.auralis.player.playback.PlaySong
-import kotlinx.parcelize.Parcelize
 import com.auralis.musikr.Album
 import com.auralis.musikr.Artist
 import com.auralis.musikr.Genre
 import com.auralis.musikr.Music
 import com.auralis.musikr.Playlist
 import com.auralis.musikr.Song
+import com.auralis.player.playback.PlaySong
+import kotlinx.parcelize.Parcelize
 
 /**
  * Command to navigate to a specific menu dialog configuration.

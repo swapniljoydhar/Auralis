@@ -25,6 +25,8 @@ package com.auralis.player.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.auralis.musikr.Library
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.list.BasicHeader
 import com.auralis.player.list.Item
@@ -36,15 +38,13 @@ import com.auralis.player.playback.PlaySong
 import com.auralis.player.playback.PlaybackSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import com.auralis.musikr.Library
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

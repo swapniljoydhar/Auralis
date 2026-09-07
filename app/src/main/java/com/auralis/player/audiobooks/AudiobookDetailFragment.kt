@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.auralis.musikr.Music
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentAudiobookDetailBinding
 import com.auralis.player.databinding.ItemAudiobookChapterBinding
@@ -47,7 +48,6 @@ import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import com.auralis.musikr.Music
 
 @AndroidEntryPoint
 class AudiobookDetailFragment : Fragment() {
@@ -92,8 +92,7 @@ class AudiobookDetailFragment : Fragment() {
         val b = _binding ?: return
         val context = requireContext()
         val chapterUids = book.chapters.map { it.uid }
-        val progress =
-            progressRepository.getForChapters(chapterUids).associateBy { it.chapterUid }
+        val progress = progressRepository.getForChapters(chapterUids).associateBy { it.chapterUid }
         val listeningSummary =
             AudiobookListeningState.summarize(
                 book.chapters.map { chapter ->

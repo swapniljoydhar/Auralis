@@ -32,6 +32,8 @@ import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.IntegerTable
 import com.auralis.player.databinding.ItemEditHeaderBinding
 import com.auralis.player.databinding.ItemEditableSongBinding
@@ -50,8 +52,6 @@ import com.auralis.player.util.getAttrColorCompat
 import com.auralis.player.util.inflater
 import com.google.android.material.R as MR
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

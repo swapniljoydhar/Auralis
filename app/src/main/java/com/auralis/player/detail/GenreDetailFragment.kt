@@ -27,6 +27,11 @@ import android.os.Bundle
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentDetailBinding
 import com.auralis.player.detail.list.GenreDetailListAdapter
@@ -43,11 +48,6 @@ import com.auralis.player.util.getPlural
 import com.auralis.player.util.navigateSafe
 import com.auralis.player.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Music
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

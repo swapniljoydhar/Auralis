@@ -32,12 +32,12 @@ import android.database.MatrixCursor
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.util.LruCache
+import com.auralis.musikr.covers.CoverResult
 import com.auralis.player.BuildConfig
 import com.auralis.player.image.covers.SettingCovers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
-import com.auralis.musikr.covers.CoverResult
 import timber.log.Timber
 
 class CoverProvider : ContentProvider() {

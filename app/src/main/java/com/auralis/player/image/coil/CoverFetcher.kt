@@ -31,11 +31,11 @@ import coil3.fetch.Fetcher
 import coil3.fetch.SourceFetchResult
 import coil3.key.Keyer as CoilKeyer
 import coil3.request.Options
+import com.auralis.musikr.covers.Cover
 import javax.inject.Inject
 import okio.FileSystem
 import okio.buffer
 import okio.source
-import com.auralis.musikr.covers.Cover
 
 class CoverFetcher private constructor(private val cover: Cover) : Fetcher {
     override suspend fun fetch(): FetchResult? {

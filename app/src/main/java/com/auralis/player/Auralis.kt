@@ -40,8 +40,8 @@ import timber.log.Timber
 /**
  * The Auralis application: a local-first music and audiobook player for Android.
  *
- * Plants the release logging tree, migrates persisted settings, and registers the
- * dynamic launcher shortcuts.
+ * Plants the release logging tree, migrates persisted settings, and registers the dynamic launcher
+ * shortcuts.
  */
 @HiltAndroidApp
 class Auralis : Application() {

@@ -32,6 +32,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.databinding.DialogMusicChoicesBinding
 import com.auralis.player.list.ClickableListListener
@@ -41,7 +42,6 @@ import com.auralis.player.ui.ViewBindingMaterialDialogFragment
 import com.auralis.player.util.collectImmediately
 import com.auralis.player.util.navigateSafe
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

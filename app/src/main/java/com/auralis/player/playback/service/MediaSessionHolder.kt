@@ -39,6 +39,8 @@ import androidx.media.session.MediaButtonReceiver
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.BuildConfig
 import com.auralis.player.ForegroundListener
 import com.auralis.player.ForegroundServiceNotification
@@ -57,8 +59,6 @@ import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.util.newBroadcastPendingIntent
 import com.auralis.player.util.newMainPendingIntent
 import javax.inject.Inject
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

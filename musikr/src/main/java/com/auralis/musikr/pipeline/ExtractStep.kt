@@ -24,10 +24,6 @@
 package com.auralis.musikr.pipeline
 
 import android.content.Context
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import com.auralis.musikr.Config
 import com.auralis.musikr.cache.Audio
 import com.auralis.musikr.cache.CachedFile
@@ -42,6 +38,10 @@ import com.auralis.musikr.tag.parse.TagParser
 import com.auralis.musikr.util.mapParallel
 import com.auralis.musikr.util.merge
 import com.auralis.musikr.util.tryAsyncWith
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 
 internal interface ExtractStep {
     suspend fun extract(

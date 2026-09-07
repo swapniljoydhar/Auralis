@@ -23,12 +23,12 @@
  
 package com.auralis.player.audiobooks
 
+import com.auralis.musikr.Music
 import com.auralis.player.playback.persist.AudiobookProgressDao
 import com.auralis.player.playback.persist.AudiobookProgressEntity
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.auralis.musikr.Music
 
 /** A domain-level progress record independent from the global Music playback snapshot. */
 data class AudiobookProgress(
@@ -56,9 +56,9 @@ class AudiobookProgressRepository @Inject constructor(private val dao: Audiobook
     /**
      * Load progress for an exact set of chapters.
      *
-     * Chapter UIDs are the stable join between the visible book and its stored progress:
-     * unlike the display book key (which depends on the folder-organization setting),
-     * they never change when the listener regroups their library.
+     * Chapter UIDs are the stable join between the visible book and its stored progress: unlike the
+     * display book key (which depends on the folder-organization setting), they never change when
+     * the listener regroups their library.
      */
     suspend fun getForChapters(chapterUids: Collection<Music.UID>): List<AudiobookProgress> {
         if (chapterUids.isEmpty()) return emptyList()

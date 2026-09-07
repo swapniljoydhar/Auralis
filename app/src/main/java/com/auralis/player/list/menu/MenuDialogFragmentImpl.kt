@@ -27,6 +27,10 @@ import android.view.MenuItem
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.databinding.DialogMenuBinding
@@ -42,10 +46,6 @@ import com.auralis.player.util.share
 import com.auralis.player.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 
 /**
  * [MenuDialogFragment] implementation for a [Song].

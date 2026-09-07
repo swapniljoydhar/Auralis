@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
+import com.auralis.musikr.tag.interpret.Separators
 import com.auralis.player.BuildConfig
 import com.auralis.player.R
 import com.auralis.player.databinding.DialogSeparatorsBinding
@@ -35,7 +36,6 @@ import com.auralis.player.ui.ViewBindingMaterialDialogFragment
 import com.google.android.material.checkbox.MaterialCheckBox
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import com.auralis.musikr.tag.interpret.Separators
 import timber.log.Timber as L
 
 /**

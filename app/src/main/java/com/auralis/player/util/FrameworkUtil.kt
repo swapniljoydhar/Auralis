@@ -44,11 +44,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import androidx.viewpager2.widget.ViewPager2
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import java.lang.IllegalArgumentException
 import java.lang.reflect.Field
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

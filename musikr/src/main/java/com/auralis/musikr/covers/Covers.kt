@@ -24,9 +24,9 @@
 package com.auralis.musikr.covers
 
 import android.os.ParcelFileDescriptor
-import java.io.InputStream
 import com.auralis.musikr.fs.File
 import com.auralis.musikr.metadata.Metadata
+import java.io.InputStream
 
 /**
  * An immutable repository for cover information.

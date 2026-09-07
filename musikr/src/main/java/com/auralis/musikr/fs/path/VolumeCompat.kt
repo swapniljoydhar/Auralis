@@ -31,8 +31,8 @@ import android.os.Environment
 import android.os.storage.StorageManager
 import android.os.storage.StorageVolume
 import android.provider.MediaStore
-import java.lang.reflect.Method
 import com.auralis.musikr.util.lazyReflectedMethod
+import java.lang.reflect.Method
 
 // Largely derived from Material Files: https://github.com/zhanghai/MaterialFiles
 

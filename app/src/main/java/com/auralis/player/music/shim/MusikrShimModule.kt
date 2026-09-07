@@ -24,15 +24,15 @@
 package com.auralis.player.music.shim
 
 import android.content.Context
+import com.auralis.musikr.cache.MutableCache
+import com.auralis.musikr.cache.db.MutableDBCache
+import com.auralis.musikr.playlist.db.StoredPlaylists
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import com.auralis.musikr.cache.MutableCache
-import com.auralis.musikr.cache.db.MutableDBCache
-import com.auralis.musikr.playlist.db.StoredPlaylists
 
 @Module
 @InstallIn(SingletonComponent::class)

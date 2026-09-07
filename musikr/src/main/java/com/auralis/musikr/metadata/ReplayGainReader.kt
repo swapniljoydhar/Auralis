@@ -20,15 +20,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package com.auralis.musikr.metadata
 
 import java.io.InputStream
 
 /**
- * ReplayGain adjustments recovered from a container's native tag area, grouped the way
- * [Metadata] expects them so the tag parser can pick them up without container-specific
- * knowledge.
+ * ReplayGain adjustments recovered from a container's native tag area, grouped the way [Metadata]
+ * expects them so the tag parser can pick them up without container-specific knowledge.
  */
 internal data class ReplayGainTags(
     val id3v2: Map<String, List<String>> = emptyMap(),
@@ -39,10 +38,10 @@ internal data class ReplayGainTags(
 /**
  * Reads ReplayGain (and Opus R128) gain values from local audio files without native code.
  *
- * Android's [android.media.MediaMetadataRetriever] does not expose ReplayGain, so the values
- * are parsed directly from the container tag areas: ID3v2 `TXXX` frames, FLAC/OGG/Opus Vorbis
- * comments, and MP4/iTunes freeform atoms. All reads are bounded and every malformed input
- * degrades to "no gain found" rather than an error.
+ * Android's [android.media.MediaMetadataRetriever] does not expose ReplayGain, so the values are
+ * parsed directly from the container tag areas: ID3v2 `TXXX` frames, FLAC/OGG/Opus Vorbis comments,
+ * and MP4/iTunes freeform atoms. All reads are bounded and every malformed input degrades to "no
+ * gain found" rather than an error.
  */
 internal object ReplayGainReader {
     fun read(input: InputStream): ReplayGainTags =
@@ -83,8 +82,7 @@ internal object ReplayGainReader {
         var offset = 0
         if ((flags and ID3_FLAG_EXTENDED) != 0) {
             if (payloadSize < 4) return ReplayGainTags()
-            val extSize =
-                if (version == 4) synchsafe(payload, 0) else bigEndian(payload, 0) + 4
+            val extSize = if (version == 4) synchsafe(payload, 0) else bigEndian(payload, 0) + 4
             offset = extSize.coerceIn(0, payloadSize)
         }
         var track: String? = null
@@ -93,13 +91,11 @@ internal object ReplayGainReader {
             val id = payload.copyOfRange(offset, offset + 4).toString(Charsets.ISO_8859_1)
             if (id.any { it == '\u0000' }) break
             val size =
-                if (version == 4) synchsafe(payload, offset + 4)
-                else bigEndian(payload, offset + 4)
+                if (version == 4) synchsafe(payload, offset + 4) else bigEndian(payload, offset + 4)
             offset += ID3_FRAME_HEADER_BYTES
             if (size <= 0 || size > MAX_ID3_FRAME_BYTES || offset + size > payloadSize) break
             if (id == "TXXX") {
-                val (description, value) =
-                    parseTxxx(payload.copyOfRange(offset, offset + size))
+                val (description, value) = parseTxxx(payload.copyOfRange(offset, offset + size))
                 when (description?.uppercase()) {
                     "REPLAYGAIN_TRACK_GAIN" -> if (track == null) track = value
                     "REPLAYGAIN_ALBUM_GAIN" -> if (album == null) album = value
@@ -141,12 +137,20 @@ internal object ReplayGainReader {
         }
         val terminatorBytes = if (wide) 2 else 1
         val description =
-            frame.copyOfRange(1, end).toString(charset).trimEnd('\u0000').trim()
+            frame
+                .copyOfRange(1, end)
+                .toString(charset)
+                .trimEnd('\u0000')
+                .trim()
                 .takeIf(String::isNotEmpty)
         val valueStart = end + terminatorBytes
         if (valueStart >= frame.size) return description to null
         val value =
-            frame.copyOfRange(valueStart, frame.size).toString(charset).trimEnd('\u0000').trim()
+            frame
+                .copyOfRange(valueStart, frame.size)
+                .toString(charset)
+                .trimEnd('\u0000')
+                .trim()
                 .takeIf(String::isNotEmpty)
         return description to value
     }
@@ -242,8 +246,9 @@ internal object ReplayGainReader {
     // --- MP4 / M4A / M4B freeform atoms ---
 
     private fun readMp4(input: InputStream): ReplayGainTags {
-        val ilst = findBox(input, MAX_MP4_SCAN_BYTES, listOf("moov", "udta", "meta"), "ilst")
-            ?: return ReplayGainTags()
+        val ilst =
+            findBox(input, MAX_MP4_SCAN_BYTES, listOf("moov", "udta", "meta"), "ilst")
+                ?: return ReplayGainTags()
         var track: String? = null
         var album: String? = null
         var offset = 0
@@ -314,8 +319,7 @@ internal object ReplayGainReader {
                         }
                     // The target must be nested inside this box; a bounded recursive scan
                     // consumes exactly the box payload.
-                    val found =
-                        findBox(input, childAvailable, path.drop(1), target)
+                    val found = findBox(input, childAvailable, path.drop(1), target)
                     if (found != null) return found
                 }
                 else -> if (!skipFully(input, payloadSize)) return null
@@ -339,14 +343,23 @@ internal object ReplayGainReader {
                     val mean = body.dropFullBoxHeader().toString(Charsets.UTF_8).trim()
                     if (mean != "com.apple.iTunes") return null to null
                 }
-                "name" -> name = body.dropFullBoxHeader().toString(Charsets.UTF_8).trim()
-                    .takeIf(String::isNotEmpty)
+                "name" ->
+                    name =
+                        body
+                            .dropFullBoxHeader()
+                            .toString(Charsets.UTF_8)
+                            .trim()
+                            .takeIf(String::isNotEmpty)
                 "data" -> {
                     // data: 4-byte FullBox header + 4-byte type + 4-byte locale + UTF-8 text.
                     if (body.size > 12) {
                         value =
-                            body.copyOfRange(12, body.size).toString(Charsets.UTF_8)
-                                .trimEnd('\u0000').trim().takeIf(String::isNotEmpty)
+                            body
+                                .copyOfRange(12, body.size)
+                                .toString(Charsets.UTF_8)
+                                .trimEnd('\u0000')
+                                .trim()
+                                .takeIf(String::isNotEmpty)
                     }
                 }
             }

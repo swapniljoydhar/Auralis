@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package com.auralis.musikr.metadata
 
 import java.io.ByteArrayInputStream
@@ -32,13 +32,15 @@ import org.junit.Test
 class ReplayGainReaderTest {
     @Test
     fun id3v23TxxxGainsAreRead() {
-        val tag = id3Tag(
-            version = 3,
-            frames = listOf(
-                txxx("REPLAYGAIN_TRACK_GAIN", "-6.44 dB", v24 = false),
-                txxx("REPLAYGAIN_ALBUM_GAIN", "-7.10 dB", v24 = false),
-            ),
-        )
+        val tag =
+            id3Tag(
+                version = 3,
+                frames =
+                    listOf(
+                        txxx("REPLAYGAIN_TRACK_GAIN", "-6.44 dB", v24 = false),
+                        txxx("REPLAYGAIN_ALBUM_GAIN", "-7.10 dB", v24 = false),
+                    ),
+            )
         val gains = ReplayGainReader.read(ByteArrayInputStream(tag))
 
         assertEquals(listOf("-6.44 dB"), gains.id3v2["TXXX:REPLAYGAIN_TRACK_GAIN"])
@@ -49,10 +51,11 @@ class ReplayGainReaderTest {
 
     @Test
     fun id3v24TxxxGainsAreRead() {
-        val tag = id3Tag(
-            version = 4,
-            frames = listOf(txxx("replaygain_track_gain", "-1.50 dB", v24 = true)),
-        )
+        val tag =
+            id3Tag(
+                version = 4,
+                frames = listOf(txxx("replaygain_track_gain", "-1.50 dB", v24 = true)),
+            )
         val gains = ReplayGainReader.read(ByteArrayInputStream(tag))
 
         assertEquals(listOf("-1.50 dB"), gains.id3v2["TXXX:REPLAYGAIN_TRACK_GAIN"])
@@ -60,10 +63,11 @@ class ReplayGainReaderTest {
 
     @Test
     fun id3DescriptionsAreCaseInsensitive() {
-        val tag = id3Tag(
-            version = 3,
-            frames = listOf(txxx("ReplayGain_Album_Gain", "+2.00 dB", v24 = false)),
-        )
+        val tag =
+            id3Tag(
+                version = 3,
+                frames = listOf(txxx("ReplayGain_Album_Gain", "+2.00 dB", v24 = false)),
+            )
         val gains = ReplayGainReader.read(ByteArrayInputStream(tag))
 
         assertEquals(listOf("+2.00 dB"), gains.id3v2["TXXX:REPLAYGAIN_ALBUM_GAIN"])
@@ -71,9 +75,10 @@ class ReplayGainReaderTest {
 
     @Test
     fun flacVorbisCommentGainsAreRead() {
-        val block = vorbisCommentBlock(
-            listOf("REPLAYGAIN_TRACK_GAIN=-5.25 dB", "REPLAYGAIN_ALBUM_GAIN=-5.75 dB")
-        )
+        val block =
+            vorbisCommentBlock(
+                listOf("REPLAYGAIN_TRACK_GAIN=-5.25 dB", "REPLAYGAIN_ALBUM_GAIN=-5.75 dB")
+            )
         val out = ByteArrayOutputStream()
         out.write("fLaC".toByteArray())
         // Last metadata block, type 4 (VORBIS_COMMENT), 24-bit big-endian length.
@@ -90,9 +95,8 @@ class ReplayGainReaderTest {
 
     @Test
     fun opusTagsGainsAndR128AreRead() {
-        val comments = vorbisCommentBlock(
-            listOf("R128_TRACK_GAIN=-1444", "REPLAYGAIN_ALBUM_GAIN=-6.00 dB")
-        )
+        val comments =
+            vorbisCommentBlock(listOf("R128_TRACK_GAIN=-1444", "REPLAYGAIN_ALBUM_GAIN=-6.00 dB"))
         val packet = "OpusTags".toByteArray() + comments
         // Minimal single-page OGG stream: identification packet then the tags packet.
         val page = oggPage(listOf(ByteArray(19), packet))
@@ -104,24 +108,19 @@ class ReplayGainReaderTest {
 
     @Test
     fun mp4FreeformGainsAreRead() {
-        val ilst = box(
-            "ilst",
-            box("----", meanBox() + nameBox("replaygain_track_gain") + dataBox("-4.20 dB")) +
-                box("----", meanBox() + nameBox("replaygain_album_gain") + dataBox("-4.80 dB")),
-        )
+        val ilst =
+            box(
+                "ilst",
+                box("----", meanBox() + nameBox("replaygain_track_gain") + dataBox("-4.20 dB")) +
+                    box("----", meanBox() + nameBox("replaygain_album_gain") + dataBox("-4.80 dB")),
+            )
         // meta is a FullBox: 4-byte version/flags precede its children.
         val meta = box("meta", byteArrayOf(0, 0, 0, 0) + box("hdlr", ByteArray(8)) + ilst)
         val file = box("ftyp", "M4A ".toByteArray() + ByteArray(8)) + box("moov", box("udta", meta))
         val gains = ReplayGainReader.read(ByteArrayInputStream(file))
 
-        assertEquals(
-            listOf("-4.20 dB"),
-            gains.mp4["----:COM.APPLE.ITUNES:REPLAYGAIN_TRACK_GAIN"],
-        )
-        assertEquals(
-            listOf("-4.80 dB"),
-            gains.mp4["----:COM.APPLE.ITUNES:REPLAYGAIN_ALBUM_GAIN"],
-        )
+        assertEquals(listOf("-4.20 dB"), gains.mp4["----:COM.APPLE.ITUNES:REPLAYGAIN_TRACK_GAIN"])
+        assertEquals(listOf("-4.80 dB"), gains.mp4["----:COM.APPLE.ITUNES:REPLAYGAIN_ALBUM_GAIN"])
     }
 
     @Test
@@ -144,8 +143,7 @@ class ReplayGainReaderTest {
     fun truncatedId3PayloadYieldsNoGains() {
         // Declares a 64-byte tag but only carries the header plus two stray bytes,
         // so the sniff passes and the payload read is what fails.
-        val header =
-            "ID3".toByteArray() + byteArrayOf(4, 0, 0, 0, 0, 0, 64) + byteArrayOf(0, 0)
+        val header = "ID3".toByteArray() + byteArrayOf(4, 0, 0, 0, 0, 0, 64) + byteArrayOf(0, 0)
         val gains = ReplayGainReader.read(ByteArrayInputStream(header))
         assertTrue(gains.id3v2.isEmpty())
     }
@@ -153,31 +151,40 @@ class ReplayGainReaderTest {
     // --- Synthetic container builders ---
 
     private fun txxx(description: String, value: String, v24: Boolean): ByteArray {
-        val body = byteArrayOf(0) +
-            description.toByteArray(Charsets.ISO_8859_1) + byteArrayOf(0) +
-            value.toByteArray(Charsets.ISO_8859_1)
+        val body =
+            byteArrayOf(0) +
+                description.toByteArray(Charsets.ISO_8859_1) +
+                byteArrayOf(0) +
+                value.toByteArray(Charsets.ISO_8859_1)
         val size = body.size
-        val sizeBytes = if (v24) synchsafe(size) else byteArrayOf(
-            ((size shr 24) and 0xFF).toByte(),
-            ((size shr 16) and 0xFF).toByte(),
-            ((size shr 8) and 0xFF).toByte(),
-            (size and 0xFF).toByte(),
-        )
+        val sizeBytes =
+            if (v24) synchsafe(size)
+            else
+                byteArrayOf(
+                    ((size shr 24) and 0xFF).toByte(),
+                    ((size shr 16) and 0xFF).toByte(),
+                    ((size shr 8) and 0xFF).toByte(),
+                    (size and 0xFF).toByte(),
+                )
         return "TXXX".toByteArray() + sizeBytes + byteArrayOf(0, 0) + body
     }
 
     private fun id3Tag(version: Int, frames: List<ByteArray>): ByteArray {
         val payload = frames.reduce { a, b -> a + b }
-        return "ID3".toByteArray() + byteArrayOf(version.toByte(), 0) + byteArrayOf(0) +
-            synchsafe(payload.size) + payload
+        return "ID3".toByteArray() +
+            byteArrayOf(version.toByte(), 0) +
+            byteArrayOf(0) +
+            synchsafe(payload.size) +
+            payload
     }
 
-    private fun synchsafe(value: Int) = byteArrayOf(
-        ((value shr 21) and 0x7F).toByte(),
-        ((value shr 14) and 0x7F).toByte(),
-        ((value shr 7) and 0x7F).toByte(),
-        (value and 0x7F).toByte(),
-    )
+    private fun synchsafe(value: Int) =
+        byteArrayOf(
+            ((value shr 21) and 0x7F).toByte(),
+            ((value shr 14) and 0x7F).toByte(),
+            ((value shr 7) and 0x7F).toByte(),
+            (value and 0x7F).toByte(),
+        )
 
     private fun vorbisCommentBlock(entries: List<String>): ByteArray {
         val out = ByteArrayOutputStream()
@@ -205,16 +212,17 @@ class ReplayGainReaderTest {
         // Capture pattern + version + header type + granule position + serial + sequence + CRC.
         out.write("OggS".toByteArray())
         out.write(ByteArray(22))
-        val segments = packets.flatMap { packet ->
-            var remaining = packet.size
-            buildList {
-                while (remaining >= 255) {
-                    add(255)
-                    remaining -= 255
+        val segments =
+            packets.flatMap { packet ->
+                var remaining = packet.size
+                buildList {
+                    while (remaining >= 255) {
+                        add(255)
+                        remaining -= 255
+                    }
+                    add(remaining)
                 }
-                add(remaining)
             }
-        }
         out.write(segments.size)
         segments.forEach(out::write)
         packets.forEach(out::write)

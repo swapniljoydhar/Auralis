@@ -33,8 +33,8 @@ import androidx.room.Query
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
-import com.auralis.player.playback.state.RepeatMode
 import com.auralis.musikr.Music
+import com.auralis.player.playback.state.RepeatMode
 
 /**
  * Provides raw access to the database storing the persisted playback state.

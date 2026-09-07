@@ -26,9 +26,9 @@ package com.auralis.musikr.metadata
 import android.content.ContentResolver
 import android.content.Context
 import android.media.MediaMetadataRetriever
+import com.auralis.musikr.fs.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.auralis.musikr.fs.File
 
 internal interface MetadataExtractor {
     suspend fun extract(deviceFile: File): MetadataResult
@@ -79,9 +79,9 @@ private class MetadataExtractorImpl(private val contentResolver: ContentResolver
                                 ?.toLongOrNull()
                                 ?.coerceAtLeast(0L) ?: 0L
                         val bitrate =
-                            meta(MediaMetadataRetriever.METADATA_KEY_BITRATE)
-                                ?.toIntOrNull()
-                                ?.let { (it / 1000).coerceAtLeast(0) } ?: 0
+                            meta(MediaMetadataRetriever.METADATA_KEY_BITRATE)?.toIntOrNull()?.let {
+                                (it / 1000).coerceAtLeast(0)
+                            } ?: 0
                         val sampleRate =
                             meta(MediaMetadataRetriever.METADATA_KEY_SAMPLERATE)
                                 ?.toIntOrNull()
@@ -104,17 +104,20 @@ private class MetadataExtractorImpl(private val contentResolver: ContentResolver
                         // the container's native tag area. Failures degrade to "no gain".
                         val replayGain =
                             runCatching {
-                                contentResolver.openInputStream(deviceFile.uri)
-                                    ?.use(ReplayGainReader::read)
-                            }.getOrNull() ?: ReplayGainTags()
+                                    contentResolver
+                                        .openInputStream(deviceFile.uri)
+                                        ?.use(ReplayGainReader::read)
+                                }
+                                .getOrNull() ?: ReplayGainTags()
                         id3v2.putAll(replayGain.id3v2)
 
-                        val properties = Properties(
-                            mimeType = mimeType,
-                            durationMs = duration,
-                            bitrateKbps = bitrate,
-                            sampleRateHz = sampleRate,
-                        )
+                        val properties =
+                            Properties(
+                                mimeType = mimeType,
+                                durationMs = duration,
+                                bitrateKbps = bitrate,
+                                sampleRateHz = sampleRate,
+                            )
 
                         MetadataResult.Success(
                             Metadata(
@@ -139,23 +142,26 @@ private class MetadataExtractorImpl(private val contentResolver: ContentResolver
         }
 
     /**
-     * Best-effort MIME type from the file extension, used only when the platform
-     * retriever reports nothing. Defaulting every unknown file to MP3 mislabels
-     * audiobooks and lossless tracks downstream.
+     * Best-effort MIME type from the file extension, used only when the platform retriever reports
+     * nothing. Defaulting every unknown file to MP3 mislabels audiobooks and lossless tracks
+     * downstream.
      */
     private fun mimeTypeFromExtension(deviceFile: File): String {
-        val extension =
-            deviceFile.path.name?.substringAfterLast('.', "")?.lowercase().orEmpty()
+        val extension = deviceFile.path.name?.substringAfterLast('.', "")?.lowercase().orEmpty()
         return when (extension) {
-            "m4a", "m4b", "mp4", "aac" -> "audio/mp4"
+            "m4a",
+            "m4b",
+            "mp4",
+            "aac" -> "audio/mp4"
             "flac" -> "audio/flac"
-            "ogg", "oga" -> "audio/ogg"
+            "ogg",
+            "oga" -> "audio/ogg"
             "opus" -> "audio/opus"
-            "wav", "wave" -> "audio/wav"
+            "wav",
+            "wave" -> "audio/wav"
             "mp3" -> "audio/mpeg"
             "alac" -> "audio/alac"
             else -> "audio/mpeg"
         }
     }
 }
-

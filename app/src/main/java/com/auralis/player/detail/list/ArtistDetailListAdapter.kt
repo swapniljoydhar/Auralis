@@ -25,6 +25,10 @@ package com.auralis.player.detail.list
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Music
+import com.auralis.musikr.Song
 import com.auralis.player.IntegerTable
 import com.auralis.player.R
 import com.auralis.player.databinding.ItemParentBinding
@@ -36,10 +40,6 @@ import com.auralis.player.list.adapter.SimpleDiffCallback
 import com.auralis.player.music.resolve
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Music
-import com.auralis.musikr.Song
 
 /**
  * A [DetailListAdapter] implementing the header and sub-items for the [Artist] detail view.

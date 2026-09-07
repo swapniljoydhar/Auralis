@@ -23,12 +23,12 @@
  
 package com.auralis.musikr.tag.parse
 
+import com.auralis.musikr.metadata.Metadata
+import com.auralis.musikr.metadata.Properties
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
-import com.auralis.musikr.metadata.Metadata
-import com.auralis.musikr.metadata.Properties
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 

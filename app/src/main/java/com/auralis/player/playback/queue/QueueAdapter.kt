@@ -30,6 +30,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Song
 import com.auralis.player.databinding.ItemEditableSongBinding
 import com.auralis.player.list.EditClickListListener
 import com.auralis.player.list.adapter.FlexibleListAdapter
@@ -43,7 +44,6 @@ import com.auralis.player.util.getAttrColorCompat
 import com.auralis.player.util.inflater
 import com.google.android.material.R as MR
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

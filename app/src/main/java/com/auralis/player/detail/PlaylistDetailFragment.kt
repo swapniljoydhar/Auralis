@@ -32,6 +32,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.playlist.m3u.M3U
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentDetailBinding
 import com.auralis.player.detail.list.PlaylistDetailListAdapter
@@ -52,11 +57,6 @@ import com.auralis.player.util.getPlural
 import com.auralis.player.util.navigateSafe
 import com.auralis.player.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.Music
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
-import com.auralis.musikr.playlist.m3u.M3U
 import timber.log.Timber as L
 
 /**

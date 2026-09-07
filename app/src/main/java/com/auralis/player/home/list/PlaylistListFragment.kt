@@ -29,6 +29,10 @@ import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentHomeListBinding
 import com.auralis.player.detail.DetailViewModel
@@ -45,10 +49,6 @@ import com.auralis.player.music.MusicViewModel
 import com.auralis.player.playback.PlaybackViewModel
 import com.auralis.player.playback.formatDurationMsPopup
 import com.auralis.player.util.collectImmediately
-import com.auralis.musikr.Music
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 
 /**
  * A [ListFragment] that shows a list of [Playlist]s.

@@ -26,6 +26,12 @@ package com.auralis.player.music.service
 import android.content.Context
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.BuildConfig
 import com.auralis.player.R
 import com.auralis.player.detail.DetailGenerator
@@ -37,12 +43,6 @@ import com.auralis.player.music.MusicType
 import com.auralis.player.music.resolve
 import com.auralis.player.search.SearchEngine
 import javax.inject.Inject
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Music
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 
 class MusicBrowser
 private constructor(

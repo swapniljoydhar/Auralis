@@ -26,9 +26,9 @@ package com.auralis.player.playback.state
 import android.net.Uri
 import android.os.SystemClock
 import android.support.v4.media.session.PlaybackStateCompat
-import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.musikr.MusicParent
 import com.auralis.musikr.Song
+import com.auralis.player.list.adapter.UpdateInstructions
 
 /**
  * The designated "source of truth" for the current playback state. Should only be used by
@@ -77,8 +77,8 @@ interface PlaybackStateHolder {
     fun playbackSpeed(speed: Float)
 
     /**
-     * Scale the player output volume. Used for the sleep-timer fade-out; normal
-     * listening always runs at full volume.
+     * Scale the player output volume. Used for the sleep-timer fade-out; normal listening always
+     * runs at full volume.
      *
      * @param volume Linear gain in 0..1.
      */
@@ -171,9 +171,9 @@ interface PlaybackStateHolder {
     )
 
     /**
-     * Persist the currently mirrored session snapshot for the active domain, if any. Used when
-     * the coordinator is about to replace the mirrored state (for example on a domain switch)
-     * so the outgoing queue and position are not lost.
+     * Persist the currently mirrored session snapshot for the active domain, if any. Used when the
+     * coordinator is about to replace the mirrored state (for example on a domain switch) so the
+     * outgoing queue and position are not lost.
      */
     fun saveSnapshot()
 
@@ -336,8 +336,8 @@ private constructor(
      * Calculate the "real" playback position this instance contains, in milliseconds.
      *
      * @return If paused, the original position will be returned. Otherwise, it will be the original
-     *   position plus the time elapsed since this state was created, scaled by the playback
-     *   speed so audiobook listening above 1x stays accurate.
+     *   position plus the time elapsed since this state was created, scaled by the playback speed
+     *   so audiobook listening above 1x stays accurate.
      */
     fun calculateElapsedPositionMs() =
         if (isAdvancing) {
@@ -400,12 +400,7 @@ private constructor(
          * @param isAdvancing Whether the player is actively playing audio in this moment.
          * @param positionMs The current position of the player.
          */
-        fun from(
-            isPlaying: Boolean,
-            isAdvancing: Boolean,
-            positionMs: Long,
-            speed: Float = 1f,
-        ) =
+        fun from(isPlaying: Boolean, isAdvancing: Boolean, positionMs: Long, speed: Float = 1f) =
             Progression(
                 isPlaying,
                 // Minor sanity check: Make sure that advancing can't occur if already paused.

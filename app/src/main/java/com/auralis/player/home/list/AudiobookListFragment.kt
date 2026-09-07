@@ -43,6 +43,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Music
 import com.auralis.player.R
 import com.auralis.player.audiobooks.AudiobookBook
 import com.auralis.player.audiobooks.AudiobookLifecycle
@@ -69,7 +70,6 @@ import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import com.auralis.musikr.Music
 
 @AndroidEntryPoint
 class AudiobookListFragment : Fragment() {

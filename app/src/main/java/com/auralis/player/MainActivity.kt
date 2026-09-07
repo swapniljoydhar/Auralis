@@ -44,9 +44,9 @@ import timber.log.Timber as L
 /**
  * Auralis's single [AppCompatActivity].
  *
- * Applies the themed Material 3 shell, forwards launcher/shuffle/file intents into the
- * playback system as [DeferredPlayback] actions, and starts the shared
- * [AuralisService] once the window is visible.
+ * Applies the themed Material 3 shell, forwards launcher/shuffle/file intents into the playback
+ * system as [DeferredPlayback] actions, and starts the shared [AuralisService] once the window is
+ * visible.
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

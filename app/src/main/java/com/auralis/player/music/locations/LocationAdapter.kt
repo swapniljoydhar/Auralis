@@ -25,13 +25,13 @@ package com.auralis.player.music.locations
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.fs.Location
 import com.auralis.player.R
 import com.auralis.player.databinding.ItemMusicLocationBinding
 import com.auralis.player.databinding.ItemNoLocationsBinding
 import com.auralis.player.list.recycler.DialogRecyclerView
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import com.auralis.musikr.fs.Location
 import timber.log.Timber as L
 
 class LocationAdapter<T : Location>(private val listener: Listener) :

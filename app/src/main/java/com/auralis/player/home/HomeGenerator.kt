@@ -23,6 +23,11 @@
  
 package com.auralis.player.home
 
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.audiobooks.AudiobookBook
 import com.auralis.player.audiobooks.AudiobookClassifier
 import com.auralis.player.audiobooks.AudiobookRepository
@@ -33,11 +38,6 @@ import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.player.music.MusicRepository
 import com.auralis.player.music.MusicType
 import javax.inject.Inject
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 interface HomeGenerator {

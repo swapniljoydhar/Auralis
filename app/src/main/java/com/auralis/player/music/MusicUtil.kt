@@ -24,11 +24,6 @@
 package com.auralis.player.music
 
 import android.content.Context
-import com.auralis.player.R
-import com.auralis.player.util.concatLocalized
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import kotlin.math.max
 import com.auralis.musikr.Music
 import com.auralis.musikr.fs.Format
 import com.auralis.musikr.tag.Date
@@ -37,6 +32,11 @@ import com.auralis.musikr.tag.Name
 import com.auralis.musikr.tag.Placeholder
 import com.auralis.musikr.tag.ReleaseType
 import com.auralis.musikr.tag.ReleaseType.Refinement
+import com.auralis.player.R
+import com.auralis.player.util.concatLocalized
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import kotlin.math.max
 import timber.log.Timber
 
 fun Name.resolve(context: Context) =

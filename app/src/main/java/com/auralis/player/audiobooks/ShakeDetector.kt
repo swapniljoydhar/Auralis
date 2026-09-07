@@ -3,14 +3,24 @@
  * ShakeDetector.kt is part of Auralis.
  *
  * Auralis is a free-software audio player for music and audiobooks, distributed
- * under the GNU General Public License v3.0 or later.
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package com.auralis.player.audiobooks
 
 import android.content.Context
@@ -21,15 +31,11 @@ import android.hardware.SensorManager
 import kotlin.math.sqrt
 
 /**
- * A lightweight sensor listener that detects intentional shake gestures to extend
- * or reset the audiobook sleep timer without needing to unlock or look at the screen.
+ * A lightweight sensor listener that detects intentional shake gestures to extend or reset the
+ * audiobook sleep timer without needing to unlock or look at the screen.
  */
-class ShakeDetector(
-    context: Context,
-    private val onShake: () -> Unit,
-) : SensorEventListener {
-    private val sensorManager =
-        context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+class ShakeDetector(context: Context, private val onShake: () -> Unit) : SensorEventListener {
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
     private val accelerometer = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     private var isListening = false
     private var lastShakeTimestamp = 0L

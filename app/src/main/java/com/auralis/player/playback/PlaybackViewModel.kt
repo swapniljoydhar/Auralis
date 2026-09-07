@@ -25,6 +25,12 @@ package com.auralis.player.playback
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.list.ListSettings
 import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.player.playback.state.DeferredPlayback
@@ -43,12 +49,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

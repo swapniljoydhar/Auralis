@@ -23,6 +23,8 @@
  
 package com.auralis.musikr.util
 
+import com.auralis.musikr.BuildConfig
+import com.auralis.musikr.tag.Date
 import java.security.MessageDigest
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
@@ -33,8 +35,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
-import com.auralis.musikr.BuildConfig
-import com.auralis.musikr.tag.Date
 
 fun CoroutineScope.tryAsync(
     context: CoroutineContext,

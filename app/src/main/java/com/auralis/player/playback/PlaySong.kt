@@ -23,11 +23,11 @@
  
 package com.auralis.player.playback
 
-import com.auralis.player.IntegerTable
 import com.auralis.musikr.Artist
 import com.auralis.musikr.Genre
 import com.auralis.musikr.MusicParent
 import com.auralis.musikr.Playlist
+import com.auralis.player.IntegerTable
 
 /**
  * Configuration to play a song in a desired way.

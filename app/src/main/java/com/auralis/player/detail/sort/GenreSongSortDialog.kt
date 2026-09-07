@@ -26,13 +26,13 @@ package com.auralis.player.detail.sort
 import android.os.Bundle
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.auralis.musikr.Genre
 import com.auralis.player.databinding.DialogSortBinding
 import com.auralis.player.detail.DetailViewModel
 import com.auralis.player.list.sort.Sort
 import com.auralis.player.list.sort.SortDialog
 import com.auralis.player.util.collectImmediately
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.Genre
 import timber.log.Timber as L
 
 /**

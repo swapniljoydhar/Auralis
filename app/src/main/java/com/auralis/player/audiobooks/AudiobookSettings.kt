@@ -25,11 +25,11 @@ package com.auralis.player.audiobooks
 
 import android.content.Context
 import androidx.core.content.edit
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.settings.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import com.auralis.musikr.Song
 
 interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
     val manualSongUids: Set<String>
@@ -51,9 +51,9 @@ interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
     fun recordPlaybackSpeed(speed: Float)
 
     /**
-     * The playback speed remembered for a specific book, or [lastPlaybackSpeed] when the
-     * book has no remembered pace yet. Dedicated audiobook players keep a per-book pace
-     * because dense non-fiction and light novels are rarely enjoyed at the same speed.
+     * The playback speed remembered for a specific book, or [lastPlaybackSpeed] when the book has
+     * no remembered pace yet. Dedicated audiobook players keep a per-book pace because dense
+     * non-fiction and light novels are rarely enjoyed at the same speed.
      */
     fun speedForBook(bookKey: String): Float
 

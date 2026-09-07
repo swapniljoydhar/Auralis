@@ -23,13 +23,13 @@
  
 package com.auralis.musikr.covers.embedded
 
-import java.io.ByteArrayInputStream
 import com.auralis.musikr.covers.Cover
 import com.auralis.musikr.covers.CoverResult
 import com.auralis.musikr.covers.MemoryCover
 import com.auralis.musikr.covers.MutableCovers
 import com.auralis.musikr.fs.File
 import com.auralis.musikr.metadata.Metadata
+import java.io.ByteArrayInputStream
 
 /**
  * A [MutableCovers] implementation for embedded covers, which are stored in the metadata of a

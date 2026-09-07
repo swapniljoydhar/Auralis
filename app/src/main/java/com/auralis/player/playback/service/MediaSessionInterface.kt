@@ -30,6 +30,15 @@ import android.provider.MediaStore
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Library
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.tag.Name
 import com.auralis.player.BuildConfig
 import com.auralis.player.audiobooks.AudiobookClassifier
 import com.auralis.player.audiobooks.AudiobookSettings
@@ -48,15 +57,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.apache.commons.text.similarity.JaroWinklerSimilarity
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Library
-import com.auralis.musikr.Music
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
-import com.auralis.musikr.tag.Name
 
 class MediaSessionInterface
 @Inject

@@ -25,10 +25,6 @@ package com.auralis.player.image.covers
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.auralis.player.image.CoverMode
-import com.auralis.player.image.ImageSettings
-import java.util.UUID
-import javax.inject.Inject
 import com.auralis.musikr.covers.Cover
 import com.auralis.musikr.covers.Covers
 import com.auralis.musikr.covers.FDCover
@@ -44,6 +40,10 @@ import com.auralis.musikr.covers.stored.CoverStorage
 import com.auralis.musikr.covers.stored.MutableStoredCovers
 import com.auralis.musikr.covers.stored.NoTranscoding
 import com.auralis.musikr.covers.stored.StoredCovers
+import com.auralis.player.image.CoverMode
+import com.auralis.player.image.ImageSettings
+import java.util.UUID
+import javax.inject.Inject
 
 interface SettingCovers {
     suspend fun mutate(context: Context, revision: UUID): MutableCovers<out Cover>

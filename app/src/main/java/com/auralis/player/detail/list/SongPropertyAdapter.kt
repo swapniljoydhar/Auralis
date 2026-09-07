@@ -28,6 +28,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Music
+import com.auralis.musikr.fs.Format
+import com.auralis.musikr.fs.Path
+import com.auralis.musikr.tag.Date
 import com.auralis.player.R
 import com.auralis.player.databinding.ItemSongPropertyBinding
 import com.auralis.player.list.adapter.FlexibleListAdapter
@@ -39,10 +43,6 @@ import com.auralis.player.playback.formatDurationMs
 import com.auralis.player.playback.replaygain.formatDb
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import com.auralis.musikr.Music
-import com.auralis.musikr.fs.Format
-import com.auralis.musikr.fs.Path
-import com.auralis.musikr.tag.Date
 
 /**
  * An adapter for [SongProperty] instances.

@@ -24,7 +24,6 @@
 package com.auralis.musikr.graph
 
 import android.content.Context
-import java.io.File
 import com.auralis.musikr.Music
 import com.auralis.musikr.playlist.SongPointer
 import com.auralis.musikr.playlist.interpret.PrePlaylist
@@ -34,6 +33,7 @@ import com.auralis.musikr.tag.interpret.PreArtistsFrom
 import com.auralis.musikr.tag.interpret.PreGenre
 import com.auralis.musikr.tag.interpret.PreSong
 import com.auralis.musikr.util.unlikelyToBeNull
+import java.io.File
 
 internal data class MusicGraph(
     val songVertex: List<SongVertex>,

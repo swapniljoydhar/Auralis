@@ -25,12 +25,12 @@ package com.auralis.player.playback.ui.swiper
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Song
 import com.auralis.player.databinding.ItemCoverBinding
 import com.auralis.player.list.adapter.FlexibleListAdapter
 import com.auralis.player.list.adapter.SimpleDiffCallback
 import com.auralis.player.playback.ui.stepper.StepperOverlay
 import com.auralis.player.util.inflater
-import com.auralis.musikr.Song
 
 /**
  * A [FlexibleListAdapter] that hosts [CoverViewHolder]s containing a [Song]'s cover and step

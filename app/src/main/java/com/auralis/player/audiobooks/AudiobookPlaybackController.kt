@@ -29,6 +29,7 @@ import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.core.content.ContextCompat
+import com.auralis.musikr.Song
 import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -41,7 +42,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.auralis.musikr.Song
 
 @Singleton
 class AudiobookPlaybackController
@@ -100,10 +100,10 @@ constructor(
     }
 
     /**
-     * Ramps the output volume down over [fadeMs] so the sleep timer eases the
-     * listener out instead of cutting off mid-word. Runs inline in the timer job
-     * so pausing or cancelling the timer aborts the fade; every exit path
-     * restores full volume through [clearSleepTimer] or [restoreVolume].
+     * Ramps the output volume down over [fadeMs] so the sleep timer eases the listener out instead
+     * of cutting off mid-word. Runs inline in the timer job so pausing or cancelling the timer
+     * aborts the fade; every exit path restores full volume through [clearSleepTimer] or
+     * [restoreVolume].
      */
     private suspend fun runFadeOut(fadeMs: Long) {
         if (fadeMs <= 0L) return
@@ -166,8 +166,7 @@ constructor(
                     VibrationEffect.createOneShot(120L, VibrationEffect.DEFAULT_AMPLITUDE)
                 )
             } else {
-                @Suppress("DEPRECATION")
-                vibrator?.vibrate(120L)
+                @Suppress("DEPRECATION") vibrator?.vibrate(120L)
             }
         } catch (_: Exception) {
             // Ignore if vibration is not supported or permission denied

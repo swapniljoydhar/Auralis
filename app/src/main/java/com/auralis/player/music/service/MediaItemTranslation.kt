@@ -31,14 +31,6 @@ import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat
 import androidx.annotation.StringRes
 import androidx.media.utils.MediaConstants
-import com.auralis.player.BuildConfig
-import com.auralis.player.R
-import com.auralis.player.audiobooks.AudiobookBook
-import com.auralis.player.image.CoverProvider
-import com.auralis.player.music.resolve
-import com.auralis.player.music.resolveNames
-import com.auralis.player.playback.formatDurationDs
-import com.auralis.player.util.getPlural
 import com.auralis.musikr.Album
 import com.auralis.musikr.Artist
 import com.auralis.musikr.Genre
@@ -47,6 +39,14 @@ import com.auralis.musikr.Music.UID
 import com.auralis.musikr.MusicParent
 import com.auralis.musikr.Playlist
 import com.auralis.musikr.Song
+import com.auralis.player.BuildConfig
+import com.auralis.player.R
+import com.auralis.player.audiobooks.AudiobookBook
+import com.auralis.player.image.CoverProvider
+import com.auralis.player.music.resolve
+import com.auralis.player.music.resolveNames
+import com.auralis.player.playback.formatDurationDs
+import com.auralis.player.util.getPlural
 
 sealed interface MediaSessionUID {
     data class Tab(val node: TabNode) : MediaSessionUID {

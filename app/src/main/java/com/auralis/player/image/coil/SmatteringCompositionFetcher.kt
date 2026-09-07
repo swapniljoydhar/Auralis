@@ -39,11 +39,11 @@ import coil3.fetch.Fetcher
 import coil3.key.Keyer as CoilKeyer
 import coil3.request.Options
 import coil3.size.Size
+import com.auralis.musikr.covers.CoverCollection
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
-import com.auralis.musikr.covers.CoverCollection
 
 private const val OUTSET_PERCENT = 0.08f
 

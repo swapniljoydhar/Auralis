@@ -39,6 +39,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.auralis.musikr.IndexingProgress
+import com.auralis.musikr.Music
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.playlist.m3u.M3U
 import com.auralis.player.R
 import com.auralis.player.databinding.FragmentHomeBinding
 import com.auralis.player.detail.DetailViewModel
@@ -70,10 +74,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import com.auralis.musikr.IndexingProgress
-import com.auralis.musikr.Music
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.playlist.m3u.M3U
 import timber.log.Timber as L
 
 /**

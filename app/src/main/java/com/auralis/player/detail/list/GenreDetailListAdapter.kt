@@ -25,14 +25,14 @@ package com.auralis.player.detail.list
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.auralis.player.list.Item
-import com.auralis.player.list.adapter.SimpleDiffCallback
-import com.auralis.player.list.recycler.ArtistViewHolder
-import com.auralis.player.list.recycler.SongViewHolder
 import com.auralis.musikr.Artist
 import com.auralis.musikr.Genre
 import com.auralis.musikr.Music
 import com.auralis.musikr.Song
+import com.auralis.player.list.Item
+import com.auralis.player.list.adapter.SimpleDiffCallback
+import com.auralis.player.list.recycler.ArtistViewHolder
+import com.auralis.player.list.recycler.SongViewHolder
 
 /**
  * A [DetailListAdapter] implementing the header and sub-items for the [Genre] detail view.

@@ -29,15 +29,15 @@ import androidx.media3.common.Format
 import androidx.media3.common.Player
 import androidx.media3.common.audio.AudioProcessor
 import androidx.media3.common.audio.BaseAudioProcessor
+import com.auralis.musikr.Album
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import com.auralis.player.playback.PlaybackSettings
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.QueueChange
 import java.nio.ByteBuffer
 import javax.inject.Inject
 import kotlin.math.pow
-import com.auralis.musikr.Album
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

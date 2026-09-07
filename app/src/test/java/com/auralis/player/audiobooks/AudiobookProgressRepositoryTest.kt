@@ -23,13 +23,13 @@
  
 package com.auralis.player.audiobooks
 
+import com.auralis.musikr.Music
 import com.auralis.player.playback.persist.AudiobookProgressDao
 import com.auralis.player.playback.persist.AudiobookProgressEntity
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import com.auralis.musikr.Music
 
 class AudiobookProgressRepositoryTest {
     private val chapterUid =

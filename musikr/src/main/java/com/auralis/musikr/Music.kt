@@ -26,10 +26,6 @@ package com.auralis.musikr
 import android.net.Uri
 import android.os.Parcelable
 import androidx.room.TypeConverter
-import java.security.MessageDigest
-import java.util.UUID
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import com.auralis.musikr.covers.Cover
 import com.auralis.musikr.covers.CoverCollection
 import com.auralis.musikr.fs.Format
@@ -40,6 +36,10 @@ import com.auralis.musikr.tag.Name
 import com.auralis.musikr.tag.ReleaseType
 import com.auralis.musikr.tag.ReplayGainAdjustment
 import com.auralis.musikr.util.toUuidOrNull
+import java.security.MessageDigest
+import java.util.UUID
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 /**
  * Abstract music data. This contains universal information about all concrete music

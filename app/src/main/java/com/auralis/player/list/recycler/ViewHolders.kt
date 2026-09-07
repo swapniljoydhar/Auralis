@@ -26,6 +26,11 @@ package com.auralis.player.list.recycler
 import android.annotation.SuppressLint
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.IntegerTable
 import com.auralis.player.R
 import com.auralis.player.databinding.ItemHeaderBinding
@@ -43,11 +48,6 @@ import com.auralis.player.util.context
 import com.auralis.player.util.getPlural
 import com.auralis.player.util.inflater
 import com.google.android.material.divider.MaterialDivider
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 
 /**
  * A [RecyclerView.ViewHolder] that displays a [Song]. Use [from] to create an instance.

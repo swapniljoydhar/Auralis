@@ -24,12 +24,6 @@
 package com.auralis.player.detail
 
 import androidx.annotation.StringRes
-import com.auralis.player.R
-import com.auralis.player.list.ListSettings
-import com.auralis.player.list.sort.Sort
-import com.auralis.player.music.MusicRepository
-import com.auralis.player.music.MusicType
-import javax.inject.Inject
 import com.auralis.musikr.Album
 import com.auralis.musikr.Artist
 import com.auralis.musikr.Genre
@@ -39,6 +33,12 @@ import com.auralis.musikr.Playlist
 import com.auralis.musikr.Song
 import com.auralis.musikr.tag.Disc
 import com.auralis.musikr.tag.ReleaseType
+import com.auralis.player.R
+import com.auralis.player.list.ListSettings
+import com.auralis.player.list.sort.Sort
+import com.auralis.player.music.MusicRepository
+import com.auralis.player.music.MusicType
+import javax.inject.Inject
 import timber.log.Timber as L
 
 interface DetailGenerator {

@@ -35,6 +35,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.auralis.musikr.Music
+import com.auralis.musikr.Song
 import com.auralis.player.databinding.FragmentMainBinding
 import com.auralis.player.detail.DetailViewModel
 import com.auralis.player.detail.Show
@@ -73,8 +75,6 @@ import java.lang.reflect.Method
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
-import com.auralis.musikr.Music
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

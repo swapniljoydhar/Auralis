@@ -23,13 +23,13 @@
  
 package com.auralis.player.list.sort
 
-import com.auralis.player.IntegerTable
-import com.auralis.player.R
 import com.auralis.musikr.Album
 import com.auralis.musikr.Artist
 import com.auralis.musikr.Genre
 import com.auralis.musikr.Playlist
 import com.auralis.musikr.Song
+import com.auralis.player.IntegerTable
+import com.auralis.player.R
 
 /**
  * A sorting method.

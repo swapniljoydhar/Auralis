@@ -23,17 +23,17 @@
  
 package com.auralis.player.playback.state
 
-import com.auralis.player.list.ListSettings
-import com.auralis.player.list.sort.Sort
-import com.auralis.player.music.MusicRepository
-import com.auralis.player.playback.PlaybackSettings
-import javax.inject.Inject
 import com.auralis.musikr.Album
 import com.auralis.musikr.Artist
 import com.auralis.musikr.Genre
 import com.auralis.musikr.MusicParent
 import com.auralis.musikr.Playlist
 import com.auralis.musikr.Song
+import com.auralis.player.list.ListSettings
+import com.auralis.player.list.sort.Sort
+import com.auralis.player.music.MusicRepository
+import com.auralis.player.playback.PlaybackSettings
+import javax.inject.Inject
 
 /**
  * A playback command that can be passed to [PlaybackStateManager] to start new playback.

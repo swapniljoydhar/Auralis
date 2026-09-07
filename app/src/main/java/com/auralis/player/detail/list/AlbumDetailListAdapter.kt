@@ -28,6 +28,9 @@ import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Album
+import com.auralis.musikr.Song
+import com.auralis.musikr.tag.Disc
 import com.auralis.player.IntegerTable
 import com.auralis.player.R
 import com.auralis.player.databinding.ItemAlbumSongBinding
@@ -49,9 +52,6 @@ import com.auralis.player.util.context
 import com.auralis.player.util.getAttrColorCompat
 import com.auralis.player.util.inflater
 import com.google.android.material.divider.MaterialDivider
-import com.auralis.musikr.Album
-import com.auralis.musikr.Song
-import com.auralis.musikr.tag.Disc
 
 /**
  * An [DetailListAdapter] implementing the header and sub-items for the [Album] detail view.

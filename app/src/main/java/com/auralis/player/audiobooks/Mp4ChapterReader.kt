@@ -139,9 +139,9 @@ internal object Mp4ChapterReader {
     private const val CHAPTER_TIMESTAMP_BYTES = 8
     private const val TICKS_PER_MILLISECOND = 10_000L
     /**
-     * Upper bound for the top-level box scan. Chapter metadata lives in `moov`, which sane
-     * writers place near the start; files with `moov` past this point would otherwise force
-     * a multi-gigabyte streaming scan on every first read.
+     * Upper bound for the top-level box scan. Chapter metadata lives in `moov`, which sane writers
+     * place near the start; files with `moov` past this point would otherwise force a
+     * multi-gigabyte streaming scan on every first read.
      */
     private const val MAX_SCAN_BYTES = 32L * 1024 * 1024
     private const val MAX_CHAPTER_LIST_BYTES = 1L * 1024 * 1024

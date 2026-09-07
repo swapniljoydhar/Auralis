@@ -24,11 +24,6 @@
 package com.auralis.musikr.playlist.m3u
 
 import android.content.Context
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.io.OutputStream
 import com.auralis.musikr.Playlist
 import com.auralis.musikr.fs.Components
 import com.auralis.musikr.fs.Path
@@ -40,6 +35,11 @@ import com.auralis.musikr.playlist.PossiblePaths
 import com.auralis.musikr.tag.Name
 import com.auralis.musikr.util.correctWhitespace
 import com.auralis.musikr.util.unlikelyToBeNull
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStream
 
 /**
  * Minimal M3U file format implementation.
@@ -237,8 +237,8 @@ private class M3UImpl(private val volumeManager: VolumeManager) : M3U() {
     }
 
     /**
-     * Read one line, capping the retained prefix at [MAX_LINE_CHARS]. Any remainder of an
-     * over-long line is consumed and discarded so framing stays intact.
+     * Read one line, capping the retained prefix at [MAX_LINE_CHARS]. Any remainder of an over-long
+     * line is consumed and discarded so framing stays intact.
      *
      * @return The line without its terminator, or null at end of stream.
      */

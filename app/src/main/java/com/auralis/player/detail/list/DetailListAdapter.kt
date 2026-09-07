@@ -28,6 +28,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.TooltipCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.auralis.musikr.Music
 import com.auralis.player.IntegerTable
 import com.auralis.player.databinding.ItemSortHeaderBinding
 import com.auralis.player.list.BasicHeader
@@ -41,7 +42,6 @@ import com.auralis.player.list.recycler.BasicHeaderViewHolder
 import com.auralis.player.list.recycler.DividerViewHolder
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import com.auralis.musikr.Music
 
 /**
  * A [RecyclerView.Adapter] that implements shared behavior between lists of child items in the

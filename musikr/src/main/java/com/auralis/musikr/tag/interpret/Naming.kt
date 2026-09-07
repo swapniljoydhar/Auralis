@@ -25,11 +25,11 @@ package com.auralis.musikr.tag.interpret
 
 import android.icu.text.Transliterator
 import android.os.Build
-import java.text.CollationKey
-import java.text.Collator
 import com.auralis.musikr.tag.Name
 import com.auralis.musikr.tag.Placeholder
 import com.auralis.musikr.tag.Token
+import java.text.CollationKey
+import java.text.Collator
 
 abstract class Naming {
     fun name(raw: String?, sort: String?, placeholder: Placeholder): Name =

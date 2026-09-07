@@ -23,12 +23,12 @@
  
 package com.auralis.player.playback.state
 
-import com.auralis.player.list.adapter.UpdateInstructions
-import com.auralis.player.playback.state.PlaybackStateManager.Listener
-import javax.inject.Inject
 import com.auralis.musikr.Music
 import com.auralis.musikr.MusicParent
 import com.auralis.musikr.Song
+import com.auralis.player.list.adapter.UpdateInstructions
+import com.auralis.player.playback.state.PlaybackStateManager.Listener
+import javax.inject.Inject
 import timber.log.Timber as L
 
 /**

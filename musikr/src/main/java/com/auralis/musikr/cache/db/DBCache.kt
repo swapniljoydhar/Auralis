@@ -25,8 +25,6 @@ package com.auralis.musikr.cache.db
 
 import android.content.Context
 import android.net.Uri
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import com.auralis.musikr.cache.Audio
 import com.auralis.musikr.cache.Cache
 import com.auralis.musikr.cache.CacheResult
@@ -35,6 +33,8 @@ import com.auralis.musikr.cache.MutableCache
 import com.auralis.musikr.fs.File
 import com.auralis.musikr.metadata.Properties
 import com.auralis.musikr.tag.parse.ParsedTags
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * An immutable [Cache] backed by an internal Room database.

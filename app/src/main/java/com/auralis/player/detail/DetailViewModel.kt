@@ -25,6 +25,13 @@ package com.auralis.player.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import com.auralis.player.R
 import com.auralis.player.detail.list.DiscDivider
 import com.auralis.player.detail.list.DiscHeader
@@ -50,13 +57,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.auralis.musikr.Album
-import com.auralis.musikr.Artist
-import com.auralis.musikr.Genre
-import com.auralis.musikr.Music
-import com.auralis.musikr.MusicParent
-import com.auralis.musikr.Playlist
-import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**
@@ -552,10 +552,7 @@ constructor(
             // showing "0 kbps" or a fabricated 44.1 kHz.
             if (song.bitrateKbps > 0) {
                 add(
-                    SongProperty(
-                        R.string.lbl_bitrate,
-                        SongProperty.Value.Bitrate(song.bitrateKbps),
-                    )
+                    SongProperty(R.string.lbl_bitrate, SongProperty.Value.Bitrate(song.bitrateKbps))
                 )
             }
             if (song.sampleRateHz > 0) {

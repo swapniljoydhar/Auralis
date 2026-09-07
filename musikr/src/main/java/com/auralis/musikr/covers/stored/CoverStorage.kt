@@ -24,6 +24,7 @@
 package com.auralis.musikr.covers.stored
 
 import android.os.ParcelFileDescriptor
+import com.auralis.musikr.covers.FDCover
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
@@ -31,7 +32,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import com.auralis.musikr.covers.FDCover
 
 /**
  * A cover storage interface backing [StoredCovers].

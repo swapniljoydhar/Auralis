@@ -27,14 +27,6 @@ import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore as AOSPMediaStore
 import androidx.core.database.getStringOrNull
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import com.auralis.musikr.fs.AddedMs
 import com.auralis.musikr.fs.FS
 import com.auralis.musikr.fs.FSUpdate
@@ -46,6 +38,14 @@ import com.auralis.musikr.fs.saf.contentResolverSafe
 import com.auralis.musikr.fs.saf.useQuery
 import com.auralis.musikr.fs.track.LocationObserver
 import com.auralis.musikr.util.tryAsyncWith
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 /**
  * MediaStore implementation of [FS] that queries the Android MediaStore database for audio files

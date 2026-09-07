@@ -24,18 +24,6 @@
 package com.auralis.player.music
 
 import android.content.Context
-import com.auralis.player.image.covers.SettingCovers
-import com.auralis.player.music.MusicRepository.IndexingWorker
-import com.auralis.player.music.locations.LocationMode
-import com.auralis.player.music.shim.WriteOnlyMutableCache
-import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.UUID
-import javax.inject.Inject
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.yield
 import com.auralis.musikr.Config
 import com.auralis.musikr.IndexingProgress
 import com.auralis.musikr.Interpretation
@@ -52,6 +40,18 @@ import com.auralis.musikr.fs.saf.SAF
 import com.auralis.musikr.playlist.db.StoredPlaylists
 import com.auralis.musikr.tag.interpret.Naming
 import com.auralis.musikr.tag.interpret.Separators
+import com.auralis.player.image.covers.SettingCovers
+import com.auralis.player.music.MusicRepository.IndexingWorker
+import com.auralis.player.music.locations.LocationMode
+import com.auralis.player.music.shim.WriteOnlyMutableCache
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.UUID
+import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import timber.log.Timber as L
 
 /**

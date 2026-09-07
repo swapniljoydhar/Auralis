@@ -26,12 +26,12 @@ package com.auralis.player.music.service
 import android.content.Context
 import android.os.SystemClock
 import androidx.core.app.NotificationCompat
+import com.auralis.musikr.IndexingProgress
 import com.auralis.player.BuildConfig
 import com.auralis.player.ForegroundServiceNotification
 import com.auralis.player.IntegerTable
 import com.auralis.player.R
 import com.auralis.player.util.newMainPendingIntent
-import com.auralis.musikr.IndexingProgress
 import timber.log.Timber as L
 
 /**
