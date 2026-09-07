@@ -25,7 +25,7 @@ package com.auralis.player.list
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import org.oxycblt.musikr.Music
+import com.auralis.musikr.Music
 
 /**
  * A Fragment containing a selectable list.

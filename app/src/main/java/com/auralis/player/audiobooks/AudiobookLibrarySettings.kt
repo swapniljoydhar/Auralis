@@ -108,8 +108,20 @@ object AudiobookFolderOrganizationResolver {
 
 /** Pure folder-scoping contract for the Audiobooks projection over the shared local media index. */
 object AudiobookFolderScope {
-    fun includes(directory: String, enabled: Boolean, selectedFolders: Set<String>) =
-        !enabled || directory in selectedFolders
+    /**
+     * A directory is included when scoping is disabled, or when it is a selected folder or
+     * nested below one. Recursion matters: book folders almost always live *under* the
+     * folder the listener picks, and the [AudiobookFolderOrganizationResolver] grouping
+     * models resolve nested chapters against the same selected roots.
+     */
+    fun includes(directory: String, enabled: Boolean, selectedFolders: Set<String>): Boolean {
+        if (!enabled) return true
+        val normalized = directory.trimEnd('/')
+        return selectedFolders.any { selected ->
+            val root = selected.trimEnd('/')
+            root.isNotEmpty() && (normalized == root || normalized.startsWith("$root/"))
+        }
+    }
 
     fun <T> filterSnapshot(
         snapshot: Collection<T>,

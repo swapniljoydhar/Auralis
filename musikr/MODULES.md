@@ -5,7 +5,7 @@ This document provides a detailed breakdown of all modules and packages within t
 ## Package Structure
 
 ```
-org.oxycblt.musikr/
+com.auralis.musikr/
 ├── cache/          # Metadata caching system
 ├── covers/         # Cover art management
 ├── fs/             # File system abstraction

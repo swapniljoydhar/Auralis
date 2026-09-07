@@ -42,7 +42,7 @@ import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
-import org.oxycblt.musikr.covers.CoverCollection
+import com.auralis.musikr.covers.CoverCollection
 
 data class StackCoverComposition(
     override val covers: CoverCollection,

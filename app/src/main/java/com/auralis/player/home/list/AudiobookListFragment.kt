@@ -69,7 +69,7 @@ import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import org.oxycblt.musikr.Music
+import com.auralis.musikr.Music
 
 @AndroidEntryPoint
 class AudiobookListFragment : Fragment() {
@@ -132,7 +132,9 @@ class AudiobookListFragment : Fragment() {
             val progress =
                 books.associate { book ->
                     book.key to
-                        progressRepository.getForBook(book.key).associateBy { it.chapterUid }
+                        progressRepository
+                            .getForChapters(book.chapters.map { it.uid })
+                            .associateBy { it.chapterUid }
                 }
             adapter.setProgress(progress)
         }

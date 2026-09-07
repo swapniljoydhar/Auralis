@@ -43,11 +43,11 @@ import com.auralis.player.util.getPlural
 import com.auralis.player.util.navigateSafe
 import com.auralis.player.util.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

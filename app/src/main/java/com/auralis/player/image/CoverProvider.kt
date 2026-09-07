@@ -37,7 +37,7 @@ import com.auralis.player.image.covers.SettingCovers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
-import org.oxycblt.musikr.covers.CoverResult
+import com.auralis.musikr.covers.CoverResult
 import timber.log.Timber
 
 class CoverProvider : ContentProvider() {
@@ -48,7 +48,7 @@ class CoverProvider : ContentProvider() {
             return null
         }
         val id = uri.lastPathSegment ?: return null
-        if (id.contains("..")) {
+        if (id.isBlank() || id.length > MAX_COVER_ID_LENGTH || id.contains("..")) {
             return null
         }
         return openPipeHelper(uri, "image/*", null, id) { output, _, _, _, coverId ->
@@ -114,6 +114,7 @@ class CoverProvider : ContentProvider() {
         private const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.image.CoverProvider"
         private const val IMAGES_PATH = "covers"
         private const val COVER_LOAD_TIMEOUT_MS = 3000L
+        private const val MAX_COVER_ID_LENGTH = 256
         private val uriMatcher =
             UriMatcher(UriMatcher.NO_MATCH).apply { addURI(AUTHORITY, "$IMAGES_PATH/*", 1) }
 

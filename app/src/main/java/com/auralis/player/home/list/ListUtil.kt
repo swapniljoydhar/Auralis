@@ -42,7 +42,7 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
-import org.oxycblt.musikr.tag.Name
+import com.auralis.musikr.tag.Name
 
 fun Name.thumb() =
     when (this) {

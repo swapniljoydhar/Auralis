@@ -29,7 +29,7 @@ import com.auralis.player.R
 import com.auralis.player.settings.Settings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Song
 
 interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
     val manualSongUids: Set<String>
@@ -49,6 +49,19 @@ interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
 
     /** Record [speed] as the last speed actively used during audiobook playback. */
     fun recordPlaybackSpeed(speed: Float)
+
+    /**
+     * The playback speed remembered for a specific book, or [lastPlaybackSpeed] when the
+     * book has no remembered pace yet. Dedicated audiobook players keep a per-book pace
+     * because dense non-fiction and light novels are rarely enjoyed at the same speed.
+     */
+    fun speedForBook(bookKey: String): Float
+
+    /** Remember [speed] as this book's pace (and as the most recently used speed). */
+    fun recordBookSpeed(bookKey: String, speed: Float)
+
+    /** Whether the sleep timer fades the volume out instead of stopping abruptly. */
+    val sleepFadeOut: Boolean
 
     /**
      * The rewind interval applied when audiobook playback resumes after a pause, in milliseconds.
@@ -97,6 +110,8 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
     private val skipDurationKey = context.getString(R.string.set_key_audiobook_skip_duration)
     private val defaultSpeedKey = context.getString(R.string.set_key_audiobook_default_speed)
     private val lastSpeedKey = context.getString(R.string.set_key_audiobook_last_speed)
+    private val bookSpeedPrefix = context.getString(R.string.set_key_audiobook_book_speed_prefix)
+    private val sleepFadeOutKey = context.getString(R.string.set_key_audiobook_sleep_fade_out)
     private val autoRewindKey = context.getString(R.string.set_key_audiobook_auto_rewind)
     private val skipSilenceKey = context.getString(R.string.set_key_audiobook_skip_silence)
     private val shakeResetKey = context.getString(R.string.set_key_audiobook_shake_reset)
@@ -109,7 +124,7 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         context.getString(R.string.set_key_audiobook_library_presentation)
 
     override val manualSongUids: Set<String>
-        get() = sharedPreferences.getStringSet(key, emptySet()).orEmpty()
+        get() = sharedPreferences.getStringSet(key, emptySet()).orEmpty().toSet()
 
     override val skipDurationMs: Long
         get() =
@@ -117,8 +132,9 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
 
     override val defaultPlaybackSpeed: Float
         get() =
-            sharedPreferences.getInt(defaultSpeedKey, DEFAULT_SPEED_PERCENT).coerceIn(75, 200) /
-                100f
+            sharedPreferences
+                .getInt(defaultSpeedKey, DEFAULT_SPEED_PERCENT)
+                .coerceIn(SPEED_PERCENT_MIN, SPEED_PERCENT_MAX) / 100f
 
     override val lastPlaybackSpeed: Float
         get() {
@@ -131,9 +147,34 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         }
 
     override fun recordPlaybackSpeed(speed: Float) {
-        val percent = (speed * 100f).toInt().coerceIn(SPEED_PERCENT_MIN, SPEED_PERCENT_MAX)
+        val percent = speedPercent(speed)
         sharedPreferences.edit { putInt(lastSpeedKey, percent) }
     }
+
+    override fun speedForBook(bookKey: String): Float {
+        val percent = sharedPreferences.getInt(bookSpeedKey(bookKey), -1)
+        return if (percent in SPEED_PERCENT_MIN..SPEED_PERCENT_MAX) {
+            percent / 100f
+        } else {
+            lastPlaybackSpeed
+        }
+    }
+
+    override fun recordBookSpeed(bookKey: String, speed: Float) {
+        val percent = speedPercent(speed)
+        sharedPreferences.edit {
+            putInt(bookSpeedKey(bookKey), percent)
+            putInt(lastSpeedKey, percent)
+        }
+    }
+
+    override val sleepFadeOut: Boolean
+        get() = sharedPreferences.getBoolean(sleepFadeOutKey, true)
+
+    private fun speedPercent(speed: Float) =
+        (speed * 100f).toInt().coerceIn(SPEED_PERCENT_MIN, SPEED_PERCENT_MAX)
+
+    private fun bookSpeedKey(bookKey: String) = "$bookSpeedPrefix$bookKey"
 
     override val autoRewindMs: Long
         get() =
@@ -149,7 +190,7 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         get() = sharedPreferences.getBoolean(selectedFoldersEnabledKey, false)
 
     override val selectedFolders: Set<String>
-        get() = sharedPreferences.getStringSet(selectedFoldersKey, emptySet()).orEmpty()
+        get() = sharedPreferences.getStringSet(selectedFoldersKey, emptySet()).orEmpty().toSet()
 
     override val folderOrganization: AudiobookFolderOrganization
         get() =
@@ -180,6 +221,7 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
                 key == skipSilenceKey ||
                 key == shakeResetKey ||
                 key == skipDurationKey ||
+                key == sleepFadeOutKey ||
                 key == defaultSpeedKey
         ) {
             listener.onAudiobookPlaybackSettingsChanged()

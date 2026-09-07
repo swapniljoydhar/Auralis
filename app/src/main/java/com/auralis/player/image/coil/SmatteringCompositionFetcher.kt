@@ -43,7 +43,7 @@ import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
-import org.oxycblt.musikr.covers.CoverCollection
+import com.auralis.musikr.covers.CoverCollection
 
 private const val OUTSET_PERCENT = 0.08f
 

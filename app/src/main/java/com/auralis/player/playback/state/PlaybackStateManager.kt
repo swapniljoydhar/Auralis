@@ -23,13 +23,12 @@
  
 package com.auralis.player.playback.state
 
-import com.auralis.player.BuildConfig
 import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.player.playback.state.PlaybackStateManager.Listener
 import javax.inject.Inject
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**
@@ -145,8 +144,9 @@ interface PlaybackStateManager {
      * Play a [Song] at the given position in the queue.
      *
      * @param index The position of the [Song] in the queue to start playing.
+     * @param positionMs Optional position to start at, applied atomically with the jump.
      */
-    fun goto(index: Int)
+    fun goto(index: Int, positionMs: Long? = null)
 
     /**
      * Add [Song]s to the top of the queue.
@@ -252,6 +252,9 @@ interface PlaybackStateManager {
 
     /** Set the current playback speed. */
     fun playbackSpeed(speed: Float)
+
+    /** Scale the player output volume (linear gain in 0..1). */
+    fun setVolume(volume: Float)
 
     fun endSession()
 
@@ -426,6 +429,9 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
         val stateHolder = stateHolder ?: return
         val outgoingDomain = stateMirror.domain
         domainSnapshots[outgoingDomain] = stateMirror
+        // Persist the outgoing snapshot now, while the mirror still describes it. Waiting
+        // for the asynchronous pause event would capture the incoming domain instead.
+        stateHolder.saveSnapshot()
         stateHolder.playing(false)
 
         val target =
@@ -553,17 +559,21 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     }
 
     @Synchronized
-    override fun goto(index: Int) {
+    override fun goto(index: Int, positionMs: Long?) {
         val stateHolder = stateHolder ?: return
         L.d("Going to index $index")
-        stateHolder.goto(index)
+        stateHolder.goto(index, positionMs?.coerceAtLeast(0L))
     }
 
     @Synchronized
     override fun playNext(songs: List<Song>) {
+        if (songs.any { !stateMirror.domain.accepts(it) }) {
+            L.w("Rejecting ${stateMirror.domain} queue insertion with foreign items")
+            return
+        }
         if (currentSong == null) {
             L.d("Nothing playing, short-circuiting to new playback")
-            play(QueueCommand(songs))
+            play(QueueCommand(stateMirror.domain, songs))
         } else {
             val stateHolder = stateHolder ?: return
             L.d("Adding ${songs.size} songs to start of queue")
@@ -573,9 +583,13 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
 
     @Synchronized
     override fun addToQueue(songs: List<Song>) {
+        if (songs.any { !stateMirror.domain.accepts(it) }) {
+            L.w("Rejecting ${stateMirror.domain} queue insertion with foreign items")
+            return
+        }
         if (currentSong == null) {
             L.d("Nothing playing, short-circuiting to new playback")
-            play(QueueCommand(songs))
+            play(QueueCommand(stateMirror.domain, songs))
         } else {
             val stateHolder = stateHolder ?: return
             L.d("Adding ${songs.size} songs to end of queue")
@@ -583,8 +597,10 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
         }
     }
 
-    private class QueueCommand(override val queue: List<Song>) : PlaybackCommand {
-        override val domain = PlaybackDomain.MUSIC
+    private class QueueCommand(
+        override val domain: PlaybackDomain,
+        override val queue: List<Song>,
+    ) : PlaybackCommand {
         override val song: Song? = null
         override val parent: MusicParent? = null
         override val shuffled = false
@@ -624,7 +640,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
 
     @Synchronized
     override fun requestAction(stateHolder: PlaybackStateHolder) {
-        if (BuildConfig.DEBUG && this.stateHolder !== stateHolder) {
+        if (this.stateHolder !== stateHolder) {
             L.w("Given internal player did not match current internal player")
             return
         }
@@ -652,8 +668,11 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     @Synchronized
     override fun seekTo(positionMs: Long) {
         val stateHolder = stateHolder ?: return
-        L.d("Seeking to ${positionMs}ms")
-        stateHolder.seekTo(positionMs)
+        // External controllers (lockscreen, Auto, Bluetooth) can request negative or absurd
+        // positions; clamp before the value reaches the player.
+        val clamped = positionMs.coerceAtLeast(0L)
+        L.d("Seeking to ${clamped}ms")
+        stateHolder.seekTo(clamped)
     }
 
     @Synchronized
@@ -669,6 +688,11 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
     }
 
     @Synchronized
+    override fun setVolume(volume: Float) {
+        stateHolder?.setVolume(volume)
+    }
+
+    @Synchronized
     override fun endSession() {
         val stateHolder = stateHolder ?: return
         L.d("Ending session")
@@ -677,7 +701,7 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
 
     @Synchronized
     override fun ack(stateHolder: PlaybackStateHolder, ack: StateAck) {
-        if (BuildConfig.DEBUG && this.stateHolder !== stateHolder) {
+        if (this.stateHolder !== stateHolder) {
             L.w("Given internal player did not match current internal player")
             return
         }
@@ -863,7 +887,9 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
 
         val shuffledMapping =
             savedState.shuffledMapping.mapNotNullTo(mutableListOf()) { index ->
-                adjustments[index]?.let { index + it }
+                // Persisted rows can reference heap slots that no longer exist (library
+                // changed, database edited, older bug). Drop them instead of crashing.
+                adjustments.getOrNull(index)?.let { index + it }
             }
 
         // Make sure we re-align the index to point to the previously playing song.

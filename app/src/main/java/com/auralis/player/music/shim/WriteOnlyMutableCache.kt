@@ -23,10 +23,10 @@
  
 package com.auralis.player.music.shim
 
-import org.oxycblt.musikr.cache.CacheResult
-import org.oxycblt.musikr.cache.CachedFile
-import org.oxycblt.musikr.cache.MutableCache
-import org.oxycblt.musikr.fs.File
+import com.auralis.musikr.cache.CacheResult
+import com.auralis.musikr.cache.CachedFile
+import com.auralis.musikr.cache.MutableCache
+import com.auralis.musikr.fs.File
 
 class WriteOnlyMutableCache(private val inner: MutableCache) : MutableCache {
     override suspend fun read(file: File): CacheResult {

@@ -41,8 +41,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 class PlaybackServiceFragment

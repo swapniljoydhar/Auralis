@@ -40,11 +40,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

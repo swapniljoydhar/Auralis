@@ -24,22 +24,24 @@
 package com.auralis.player.audiobooks
 
 import android.content.Context
+import android.util.LruCache
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Song
 
 data class EmbeddedChapter(val startMs: Long, val title: String)
 
 /** Reads embedded chapters from local ID3v2 `CHAP` and MP4 `chpl` metadata. */
 class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val context: Context) {
-    private val cache = ConcurrentHashMap<String, List<EmbeddedChapter>>()
+    // Bounded and thread-safe: an unbounded map would pin every chapter list ever read,
+    // including stale entries for files that changed on storage.
+    private val cache = LruCache<String, List<EmbeddedChapter>>(MAX_CACHED_SONGS)
 
     suspend fun read(song: Song): List<EmbeddedChapter> {
         val key = song.uid.toString()
-        cache[key]?.let {
+        synchronized(cache) { cache[key] }?.let {
             return it
         }
         return withContext(Dispatchers.IO) {
@@ -51,7 +53,10 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
                             .orEmpty()
                     }
                     .getOrDefault(emptyList())
-            cache.putIfAbsent(key, chapters) ?: chapters
+            synchronized(cache) {
+                cache.put(key, chapters)
+            }
+            chapters
         }
     }
 
@@ -76,7 +81,7 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
         var offset =
             if ((header[5].toInt() and 0x40) != 0) extendedHeaderSize(payload, version) else 0
         val chapters = mutableListOf<EmbeddedChapter>()
-        while (offset + FRAME_HEADER_BYTES <= payload.size) {
+        while (offset + FRAME_HEADER_BYTES <= payload.size && chapters.size < MAX_CHAPTERS) {
             val id = payload.copyOfRange(offset, offset + 4).toString(Charsets.ISO_8859_1)
             if (id.any { it == '\u0000' }) break
             val size =
@@ -156,6 +161,8 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
             (bytes[offset + 3].toInt() and 0xFF)
 
     private companion object {
+        const val MAX_CACHED_SONGS = 48
+        const val MAX_CHAPTERS = 512
         const val MAX_TAG_BYTES = 16 * 1024 * 1024
         const val ID3_HEADER_BYTES = 10
         const val FRAME_HEADER_BYTES = 10

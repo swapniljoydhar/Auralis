@@ -32,6 +32,7 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media.session.MediaButtonReceiver
@@ -56,8 +57,8 @@ import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.util.newBroadcastPendingIntent
 import com.auralis.player.util.newMainPendingIntent
 import javax.inject.Inject
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**
@@ -436,11 +437,21 @@ private class PlaybackNotification(
 
         addAction(buildRepeatAction(context, RepeatMode.NONE))
         addAction(
-            buildAction(context, PlaybackActions.ACTION_SKIP_PREV, R.drawable.ic_skip_prev_24)
+            buildAction(
+                context,
+                PlaybackActions.ACTION_SKIP_PREV,
+                R.string.desc_skip_prev,
+                R.drawable.ic_skip_prev_24,
+            )
         )
         addAction(buildPlayPauseAction(context, true))
         addAction(
-            buildAction(context, PlaybackActions.ACTION_SKIP_NEXT, R.drawable.ic_skip_next_24)
+            buildAction(
+                context,
+                PlaybackActions.ACTION_SKIP_NEXT,
+                R.string.desc_skip_next,
+                R.drawable.ic_skip_next_24,
+            )
         )
         addAction(buildShuffleAction(context, false))
 
@@ -496,52 +507,58 @@ private class PlaybackNotification(
         mActions.clear()
         if (domain == PlaybackDomain.AUDIOBOOKS) {
             addAction(
-                buildAction(context, PlaybackActions.ACTION_SEEK_BACK, R.drawable.ic_replay_24)
+                buildAction(
+                    context,
+                    PlaybackActions.ACTION_SEEK_BACK,
+                    R.string.desc_audiobook_rewind,
+                    R.drawable.ic_replay_24,
+                )
             )
             addAction(
-                buildAction(context, PlaybackActions.ACTION_SKIP_PREV, R.drawable.ic_skip_prev_24)
+                buildAction(
+                    context,
+                    PlaybackActions.ACTION_SKIP_PREV,
+                    R.string.desc_skip_prev,
+                    R.drawable.ic_skip_prev_24,
+                )
             )
             addAction(buildPlayPauseAction(context, isPlaying))
             addAction(
-                buildAction(context, PlaybackActions.ACTION_SKIP_NEXT, R.drawable.ic_skip_next_24)
+                buildAction(
+                    context,
+                    PlaybackActions.ACTION_SKIP_NEXT,
+                    R.string.desc_skip_next,
+                    R.drawable.ic_skip_next_24,
+                )
             )
             addAction(
-                buildAction(context, PlaybackActions.ACTION_SEEK_FORWARD, R.drawable.ic_forward_24)
+                buildAction(
+                    context,
+                    PlaybackActions.ACTION_SEEK_FORWARD,
+                    R.string.desc_audiobook_forward,
+                    R.drawable.ic_forward_24,
+                )
             )
         } else {
             addAction(buildRepeatAction(context, repeatMode))
             addAction(
-                buildAction(context, PlaybackActions.ACTION_SKIP_PREV, R.drawable.ic_skip_prev_24)
+                buildAction(
+                    context,
+                    PlaybackActions.ACTION_SKIP_PREV,
+                    R.string.desc_skip_prev,
+                    R.drawable.ic_skip_prev_24,
+                )
             )
             addAction(buildPlayPauseAction(context, isPlaying))
             addAction(
-                buildAction(context, PlaybackActions.ACTION_SKIP_NEXT, R.drawable.ic_skip_next_24)
+                buildAction(
+                    context,
+                    PlaybackActions.ACTION_SKIP_NEXT,
+                    R.string.desc_skip_next,
+                    R.drawable.ic_skip_next_24,
+                )
             )
             addAction(buildShuffleAction(context, isShuffled))
-        }
-    }
-
-    /**
-     * Update the secondary action in this notification to show the current [RepeatMode].
-     *
-     * @param repeatMode The current [RepeatMode].
-     */
-    fun updateRepeatMode(repeatMode: RepeatMode) {
-        L.d("Applying repeat mode action: $repeatMode")
-        if (mActions.size > 0) {
-            mActions[0] = buildRepeatAction(context, repeatMode)
-        }
-    }
-
-    /**
-     * Update the secondary action in this notification to show the current shuffle state.
-     *
-     * @param isShuffled Whether the queue is currently shuffled or not.
-     */
-    fun updateShuffled(isShuffled: Boolean) {
-        L.d("Applying shuffle action: $isShuffled")
-        if (mActions.size > 4) {
-            mActions[4] = buildShuffleAction(context, isShuffled)
         }
     }
 
@@ -557,14 +574,24 @@ private class PlaybackNotification(
             } else {
                 R.drawable.ic_play_24
             }
-        return buildAction(context, PlaybackActions.ACTION_PLAY_PAUSE, drawableRes)
+        return buildAction(
+            context,
+            PlaybackActions.ACTION_PLAY_PAUSE,
+            R.string.desc_play_pause,
+            drawableRes,
+        )
     }
 
     private fun buildRepeatAction(
         context: Context,
         repeatMode: RepeatMode,
     ): NotificationCompat.Action {
-        return buildAction(context, PlaybackActions.ACTION_INC_REPEAT_MODE, repeatMode.icon)
+        return buildAction(
+            context,
+            PlaybackActions.ACTION_INC_REPEAT_MODE,
+            R.string.desc_change_repeat,
+            repeatMode.icon,
+        )
     }
 
     private fun buildShuffleAction(
@@ -577,13 +604,23 @@ private class PlaybackNotification(
             } else {
                 R.drawable.ic_shuffle_off_24
             }
-        return buildAction(context, PlaybackActions.ACTION_INVERT_SHUFFLE, drawableRes)
+        return buildAction(
+            context,
+            PlaybackActions.ACTION_INVERT_SHUFFLE,
+            R.string.desc_shuffle,
+            drawableRes,
+        )
     }
 
-    private fun buildAction(context: Context, actionName: String, @DrawableRes iconRes: Int) =
+    private fun buildAction(
+        context: Context,
+        actionName: String,
+        @StringRes titleRes: Int,
+        @DrawableRes iconRes: Int,
+    ) =
         NotificationCompat.Action.Builder(
                 iconRes,
-                actionName,
+                context.getString(titleRes),
                 context.newBroadcastPendingIntent(actionName),
             )
             .build()

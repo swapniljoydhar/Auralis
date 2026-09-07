@@ -44,10 +44,10 @@ import com.auralis.player.util.showToast
 import com.google.android.material.R as MR
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import org.oxycblt.musikr.fs.Location
-import org.oxycblt.musikr.fs.Volume
-import org.oxycblt.musikr.fs.mediastore.MediaStore
-import org.oxycblt.musikr.fs.saf.SAF
+import com.auralis.musikr.fs.Location
+import com.auralis.musikr.fs.Volume
+import com.auralis.musikr.fs.mediastore.MediaStore
+import com.auralis.musikr.fs.saf.SAF
 import timber.log.Timber as L
 
 @AndroidEntryPoint

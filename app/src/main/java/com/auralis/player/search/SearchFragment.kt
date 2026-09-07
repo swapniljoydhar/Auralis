@@ -62,14 +62,14 @@ import com.auralis.player.util.setFullWidthLookup
 import com.auralis.player.util.showToast
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
-import org.oxycblt.musikr.playlist.m3u.M3U
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.playlist.m3u.M3U
 import timber.log.Timber as L
 
 /**

@@ -50,13 +50,13 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**
@@ -548,13 +548,24 @@ constructor(
             add(SongProperty(R.string.lbl_size, SongProperty.Value.Size(song.size)))
             add(SongProperty(R.string.lbl_duration, SongProperty.Value.Duration(song.durationMs)))
             add(SongProperty(R.string.lbl_format, SongProperty.Value.ItemFormat(song.format)))
-            add(SongProperty(R.string.lbl_bitrate, SongProperty.Value.Bitrate(song.bitrateKbps)))
-            add(
-                SongProperty(
-                    R.string.lbl_sample_rate,
-                    SongProperty.Value.SampleRate(song.sampleRateHz),
+            // Zero means the platform could not report the value; hiding it beats
+            // showing "0 kbps" or a fabricated 44.1 kHz.
+            if (song.bitrateKbps > 0) {
+                add(
+                    SongProperty(
+                        R.string.lbl_bitrate,
+                        SongProperty.Value.Bitrate(song.bitrateKbps),
+                    )
                 )
-            )
+            }
+            if (song.sampleRateHz > 0) {
+                add(
+                    SongProperty(
+                        R.string.lbl_sample_rate,
+                        SongProperty.Value.SampleRate(song.sampleRateHz),
+                    )
+                )
+            }
             song.replayGainAdjustment.track?.let {
                 add(SongProperty(R.string.lbl_replaygain_track, SongProperty.Value.Decibels(it)))
             }

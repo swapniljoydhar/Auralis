@@ -34,7 +34,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import com.auralis.player.playback.state.RepeatMode
-import org.oxycblt.musikr.Music
+import com.auralis.musikr.Music
 
 /**
  * Provides raw access to the database storing the persisted playback state.
@@ -276,11 +276,17 @@ interface AudiobookProgressDao {
     @Query("SELECT * FROM AudiobookProgressEntity WHERE chapterUid = :chapterUid LIMIT 1")
     suspend fun getForChapter(chapterUid: String): AudiobookProgressEntity?
 
+    @Query("SELECT * FROM AudiobookProgressEntity WHERE chapterUid IN (:chapterUids)")
+    suspend fun getForChapters(chapterUids: List<String>): List<AudiobookProgressEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(progress: AudiobookProgressEntity)
 
     @Query("DELETE FROM AudiobookProgressEntity WHERE bookKey = :bookKey")
     suspend fun deleteForBook(bookKey: String)
+
+    @Query("DELETE FROM AudiobookProgressEntity WHERE chapterUid IN (:chapterUids)")
+    suspend fun deleteForChapters(chapterUids: List<String>)
 }
 
 @Entity

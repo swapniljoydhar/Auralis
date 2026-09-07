@@ -20,12 +20,10 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class org.oxycblt.musikr.metadata.NativeInputStream { *; }
--keep class org.oxycblt.musikr.metadata.Metadata { *; }
--keep class org.oxycblt.musikr.metadata.Properties { *; }
--keep class org.oxycblt.musikr.metadata.NativeTagMap { *; }
--keep class org.oxycblt.musikr.metadata.MetadataResult { *; }
--keep class org.oxycblt.musikr.metadata.MetadataResult$Success { *; }
--keep class org.oxycblt.musikr.metadata.MetadataResult$NoMetadata { *; }
--keep class org.oxycblt.musikr.metadata.MetadataResult$NotAudio { *; }
--keep class org.oxycblt.musikr.metadata.MetadataResult$ProviderFailed { *; }
+-keep class com.auralis.musikr.metadata.Metadata { *; }
+-keep class com.auralis.musikr.metadata.Properties { *; }
+-keep class com.auralis.musikr.metadata.MetadataResult { *; }
+-keep class com.auralis.musikr.metadata.MetadataResult$Success { *; }
+-keep class com.auralis.musikr.metadata.MetadataResult$NoMetadata { *; }
+-keep class com.auralis.musikr.metadata.MetadataResult$NotAudio { *; }
+-keep class com.auralis.musikr.metadata.MetadataResult$ProviderFailed { *; }

@@ -1,19 +1,40 @@
-# Auralis Release Verification
+# Auralis Release Process
 
-The current verified release artifact is `artifacts/auralis-4.1.21-material3-release-signed.apk`. It was built from the repository’s minified `release` variant with the pinned Android SDK, NDK `28.2.13676358`, CMake `3.22.1`, taglib, and utfcpp inputs initialized.
+This document describes how to cut a verified Auralis release. The build is pure
+Kotlin/Java — no NDK, CMake, submodules, or native checkouts are required. Any machine
+with JDK 21 and the Android SDK (platform 36, build-tools) can reproduce the artifacts.
 
-Version **4.1.21** is the first Auralis Material 3 experience release. It retains the existing native Material 3 dependency and theme contract, then makes the shared hierarchy more intentional across Music and Audiobooks: the home app bar now states the active library context; indexing, empty states, Music detail, search, mini-player, and expanded-player surfaces use clearer tonal roles; and the long-form Audiobook detail and bookmarks screens use Material 3 type and action hierarchy. The release preserves local-only media, explicit `PlaybackDomain`, independent Music/Audiobooks snapshots, and domain-pure queues.
+## Preconditions
 
-The Auralis identity is now vector-first and Material 3-ready. An original open-listening-page mark replaces the prior detailed raster foreground in the adaptive launcher icon, legacy launcher fallback, Android themed monochrome layer, Android 12+ splash, and compact widget glyph. The mark represents Music listening and Audiobook storytelling without reproducing another product's branding.
+- Working tree clean on the release commit.
+- `local.properties` (if present) points at a valid SDK; it is never committed.
+- A persistent release signing key stored **outside** the repository. Ephemeral keys
+  break seamless updates: every past ephemeral-key build had to be uninstalled before
+  the next could be installed. Publish the release certificate SHA-256 fingerprint
+  before distributing the APK.
 
-The APK passed `apksigner verify` using APK Signature Schemes v2 and v3. Its certificate SHA-256 fingerprint is:
+## Release gate
 
-```text
-174a8b0c7ba4f7a86293350a1b4d7d84388cb268ded7d6ca541acd6f75708ddb
+Run the full gate from the repository root:
+
+```bash
+./gradlew spotlessCheck
+./gradlew musikr:testDebug app:testDebug
+./gradlew app:assembleRelease
 ```
 
-The SHA-256 checksum is recorded in [`../artifacts/SHA256SUMS.txt`](../artifacts/SHA256SUMS.txt) and the release-specific sidecar file. The final verified checksum is `12c3a9e23c5e71653c7c8e1857deffde11f8a39e09c4ea086a431799f7ad8a89`.
+All three steps must pass: formatting, the `musikr` and app unit-test suites
+(playback-domain isolation, snapshot isolation, audiobook organization, chapters,
+bookmarks, lifecycle, ReplayGain parsing), and the minified `release` build with
+R8 and resource shrinking enabled.
 
-The signing key was generated outside the repository only for this verification artifact and was deleted after signing. It is **not** a production update key. Because previous Auralis repair releases were also signed with deleted ephemeral keys, this APK must be installed after uninstalling an older ephemeral-key build. Future seamless installable updates require a securely managed, persistent release key whose fingerprint is published before distribution.
+## Signing and verification
 
-The 4.1.21 release gate completed successfully with the app and `musikr` unit tests, debug lint, `spotlessCheck`, and both debug and minified release builds. Focused existing playback-domain, Music snapshot-isolation, Audiobooks organization, chapter, bookmark, and lifecycle tests remain part of the passing suite. Static verification does not replace a physical-device review of launcher masks, Android themed icons, large-font layouts, TalkBack traversal, or the user’s own local media library.
+1. Sign the unsigned release APK with `apksigner` and the persistent release key.
+2. Verify with `apksigner verify --print-certs`.
+3. Record the APK SHA-256 checksum in the release notes.
+
+Static verification does not replace a physical-device review: launcher masks,
+themed icons, large-font layouts, TalkBack traversal, permission flows, library
+scan, Music and Audiobooks playback, background playback, the widget, explicit
+domain switching, and upgrade installs over the previous release.

@@ -70,10 +70,10 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.transition.MaterialSharedAxis
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.IndexingProgress
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.playlist.m3u.M3U
+import com.auralis.musikr.IndexingProgress
+import com.auralis.musikr.Music
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.playlist.m3u.M3U
 import timber.log.Timber as L
 
 /**

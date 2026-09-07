@@ -73,12 +73,12 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.min
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
-import org.oxycblt.musikr.covers.CoverCollection
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.covers.CoverCollection
 
 /**
  * Auralis's extension of [ImageView] that enables cover art loading and playing indicator and

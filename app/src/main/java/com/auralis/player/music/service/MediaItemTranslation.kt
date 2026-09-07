@@ -39,14 +39,14 @@ import com.auralis.player.music.resolve
 import com.auralis.player.music.resolveNames
 import com.auralis.player.playback.formatDurationDs
 import com.auralis.player.util.getPlural
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.Music.UID
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.Music.UID
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 
 sealed interface MediaSessionUID {
     data class Tab(val node: TabNode) : MediaSessionUID {

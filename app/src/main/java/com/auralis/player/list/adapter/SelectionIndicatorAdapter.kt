@@ -26,7 +26,7 @@ package com.auralis.player.list.adapter
 import android.view.View
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import org.oxycblt.musikr.Music
+import com.auralis.musikr.Music
 import timber.log.Timber as L
 
 /**

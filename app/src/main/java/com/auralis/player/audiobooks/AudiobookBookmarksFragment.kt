@@ -117,8 +117,9 @@ class AudiobookBookmarksFragment : Fragment() {
 
     private fun refresh() {
         val book = currentBook ?: return
+        val chapterUids = book.chapters.map { it.uid }.toSet()
         val rows =
-            bookmarkRepository.getForBook(book.key).map { bookmark ->
+            bookmarkRepository.getForChapters(chapterUids).map { bookmark ->
                 val chapter = book.chapters.firstOrNull { it.uid == bookmark.chapterUid }
                 BookmarkRow(bookmark, chapter)
             }
@@ -208,7 +209,8 @@ class AudiobookBookmarksFragment : Fragment() {
             val embedded =
                 row.bookmark.embeddedChapterStartMs
                     ?.let {
-                        " · ${context.getString(R.string.lbl_audiobook_embedded_chapter)} ${it.formatDurationMs(true)}"
+                        val label = context.getString(R.string.lbl_audiobook_embedded_chapter)
+                        " · $label ${it.formatDurationMs(true)}"
                     }
                     .orEmpty()
             holder.title.text = chapterTitle

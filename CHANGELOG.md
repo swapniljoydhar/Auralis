@@ -1,6 +1,41 @@
 # Auralis Changelog
 
-## 4.2.0 (Latest)
+## 4.3.0 (Latest)
+
+### Complete Rewrite & Identity
+* **Single `com.auralis` codebase:** every module, package, resource, and document now lives under the Auralis identity. All upstream package paths, branding references, and inherited scaffolding are gone from the code (upstream GPL attribution is retained in `PROVENANCE.md` as the license requires).
+* **Dead code purge:** removed the empty NDK/C++ tree, vendored submodule pins, unused metadata stubs, legacy single-session DAO providers, and stale commented-out manifest blocks.
+
+### Music: ReplayGain Actually Works Now
+* **Pure-Kotlin ReplayGain reader:** track/album gain (and Opus R128) is parsed straight from ID3v2 `TXXX` frames, FLAC/Vorbis/Opus comments, and MP4 freeform atoms. Android's retriever never exposed these values, so normalization previously did nothing — now it does.
+* **Richer extraction:** composer tags, extension-based MIME fallback instead of mislabeling everything MP3, and honest bitrate/sample-rate reporting (unknown values are hidden in details instead of showing fabricated numbers).
+
+### Audiobooks: Smarter Listening
+* **Per-book pace:** each book remembers its own playback speed; queues spanning books switch pace automatically.
+* **Sleep-timer fade-out:** the volume eases down over the final 15 seconds instead of cutting off mid-word (toggleable in Settings → Audiobooks).
+* **Timers survive pauses:** countdown and end-of-chapter timers freeze while paused and resume afterwards instead of silently dying.
+* **Bookmark jumps are atomic:** jumping to a bookmark seeks to the chapter and position in one operation, eliminating landing on the wrong chapter.
+* **Progress survives regrouping:** progress and bookmarks are keyed by stable chapter identity, so reorganizing folders or rescanning no longer orphans them.
+
+### Playback Core
+* **Speed-aware position tracking** so the UI and chapter-end timers stay exact at 1.25x–3.0x.
+* **Error breaker:** repeated unplayable items pause instead of hot-looping through the queue forever.
+* **Bounded shutdown saves** so teardown can never stall, and session state is persisted on release.
+* **Background file-open resolution** with tolerant provider queries; assistant/voice-search matching moved off the session thread.
+
+### Security & Hardening
+* Playback lifecycle, audio-effects, and widget broadcasts are scoped to Auralis' own package.
+* M3U import caps line length and entry count; chapter/tag parsers enforce container bounds.
+* Cover provider rejects blank, over-long, and traversal-bearing identifiers; cover cache identifiers upgraded from MD5 to SHA-256.
+* Notification actions expose human-readable titles to accessibility services.
+
+### Build & Tooling
+* CI re-enabled: build, `spotlessCheck`, and the `musikr` + app unit-test suites run on every push and pull request.
+* Material updated to stable 1.14.0; release process documented in `docs/RELEASE.md`.
+
+---
+
+## 4.2.0
 
 ### Architecture & Build Modernization
 * **Zero NDK / Pure Kotlin Pipeline**: Completely eliminated legacy C++ / NDK TagLib compilation and vendored submodules. `musikr` now uses pure Kotlin with Android's platform `MediaMetadataRetriever` for resilient, fast, and concurrent metadata extraction.

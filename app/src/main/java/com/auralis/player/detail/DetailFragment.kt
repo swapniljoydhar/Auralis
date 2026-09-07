@@ -45,8 +45,8 @@ import com.google.android.material.transition.MaterialSharedAxis
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.MusicParent
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
 
 abstract class DetailFragment<P : MusicParent, C : Music> :
     ListFragment<C, FragmentDetailBinding>(),

@@ -23,9 +23,9 @@
  
 package com.auralis.player.audiobooks
 
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.Song
-import org.oxycblt.musikr.tag.Name
+import com.auralis.musikr.Music
+import com.auralis.musikr.Song
+import com.auralis.musikr.tag.Name
 
 /**
  * A chapter is backed by the existing [Song] model so Music playback remains unchanged.

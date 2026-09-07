@@ -24,7 +24,7 @@
 package com.auralis.player.image.covers
 
 import java.util.UUID
-import org.oxycblt.musikr.covers.stored.Transcoding
+import com.auralis.musikr.covers.stored.Transcoding
 
 class RevisionedTranscoding(revision: UUID, private val inner: Transcoding) : Transcoding by inner {
     override val tag = "_$revision${inner.tag}"

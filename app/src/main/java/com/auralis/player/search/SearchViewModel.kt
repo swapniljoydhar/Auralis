@@ -39,10 +39,12 @@ import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import org.oxycblt.musikr.Library
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Library
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**
@@ -109,7 +111,8 @@ constructor(
         L.d("Searching music library for $query")
         currentSearchJob =
             viewModelScope.launch {
-                _searchResults.value = searchImpl(library, query).also { yield() }
+                val results = withContext(Dispatchers.Default) { searchImpl(library, query) }
+                _searchResults.value = results.also { yield() }
             }
     }
 

@@ -32,7 +32,7 @@ import coil3.size.Size
 import coil3.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Song
 
 /**
  * A utility to provide bitmaps in a race-less manner.

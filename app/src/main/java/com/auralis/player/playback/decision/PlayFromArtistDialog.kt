@@ -40,8 +40,8 @@ import com.auralis.player.ui.ViewBindingMaterialDialogFragment
 import com.auralis.player.util.collectImmediately
 import com.auralis.player.util.unlikelyToBeNull
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

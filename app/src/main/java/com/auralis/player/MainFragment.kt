@@ -73,8 +73,8 @@ import java.lang.reflect.Method
 import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Music
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

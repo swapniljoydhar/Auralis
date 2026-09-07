@@ -31,16 +31,29 @@ internal object Mp4ChapterReader {
         runCatching { readBoxes(input, MAX_SCAN_BYTES) }.getOrDefault(emptyList())
 
     private fun readBoxes(input: InputStream, bytesAvailable: Long): List<EmbeddedChapter> {
-        var remaining = bytesAvailable
+        var remaining = bytesAvailable.coerceAtMost(MAX_SCAN_BYTES)
         while (remaining >= BOX_HEADER_BYTES) {
             val header = readExact(input, BOX_HEADER_BYTES.toInt()) ?: return emptyList()
-            val size = unsignedInt(header, 0)
+            remaining -= BOX_HEADER_BYTES
+            var size = unsignedInt(header, 0)
             val type = header.copyOfRange(4, 8).toString(Charsets.US_ASCII)
-            val payloadSize = size - BOX_HEADER_BYTES
-            if (size < BOX_HEADER_BYTES || payloadSize > remaining - BOX_HEADER_BYTES) {
+            var headerBytes = BOX_HEADER_BYTES
+            when (size) {
+                // Box extends to the end of the available bytes.
+                0L -> size = remaining + BOX_HEADER_BYTES
+                // 64-bit largesize follows the header.
+                1L -> {
+                    val large = readExact(input, LARGE_SIZE_BYTES.toInt()) ?: return emptyList()
+                    remaining -= LARGE_SIZE_BYTES
+                    headerBytes += LARGE_SIZE_BYTES
+                    size = unsignedLong(large, 0)
+                }
+            }
+            val payloadSize = size - headerBytes
+            if (size < headerBytes || payloadSize > remaining) {
                 return emptyList()
             }
-            remaining -= size
+            remaining -= size - headerBytes
 
             when (type) {
                 "moov",
@@ -121,9 +134,15 @@ internal object Mp4ChapterReader {
     }
 
     private const val BOX_HEADER_BYTES = 8L
+    private const val LARGE_SIZE_BYTES = 8L
     private const val CHAPTER_LIST_HEADER_BYTES = 9
     private const val CHAPTER_TIMESTAMP_BYTES = 8
     private const val TICKS_PER_MILLISECOND = 10_000L
-    private const val MAX_SCAN_BYTES = Long.MAX_VALUE
+    /**
+     * Upper bound for the top-level box scan. Chapter metadata lives in `moov`, which sane
+     * writers place near the start; files with `moov` past this point would otherwise force
+     * a multi-gigabyte streaming scan on every first read.
+     */
+    private const val MAX_SCAN_BYTES = 32L * 1024 * 1024
     private const val MAX_CHAPTER_LIST_BYTES = 1L * 1024 * 1024
 }

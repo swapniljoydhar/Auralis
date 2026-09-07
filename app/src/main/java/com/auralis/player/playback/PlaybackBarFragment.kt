@@ -35,7 +35,7 @@ import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.ui.ViewBindingFragment
 import com.auralis.player.util.collectImmediately
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

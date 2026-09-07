@@ -43,7 +43,7 @@ import com.auralis.player.util.getAttrColorCompat
 import com.auralis.player.util.inflater
 import com.google.android.material.R as MR
 import com.google.android.material.shape.MaterialShapeDrawable
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

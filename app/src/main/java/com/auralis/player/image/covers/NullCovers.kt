@@ -23,12 +23,12 @@
  
 package com.auralis.player.image.covers
 
-import org.oxycblt.musikr.covers.Cover
-import org.oxycblt.musikr.covers.CoverResult
-import org.oxycblt.musikr.covers.MutableCovers
-import org.oxycblt.musikr.covers.stored.CoverStorage
-import org.oxycblt.musikr.fs.File
-import org.oxycblt.musikr.metadata.Metadata
+import com.auralis.musikr.covers.Cover
+import com.auralis.musikr.covers.CoverResult
+import com.auralis.musikr.covers.MutableCovers
+import com.auralis.musikr.covers.stored.CoverStorage
+import com.auralis.musikr.fs.File
+import com.auralis.musikr.metadata.Metadata
 
 class NullCovers(private val storage: CoverStorage) : MutableCovers<NullCover> {
     override suspend fun obtain(id: String) = CoverResult.Hit(NullCover)

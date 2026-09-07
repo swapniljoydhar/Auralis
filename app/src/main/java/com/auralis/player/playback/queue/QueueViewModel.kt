@@ -33,8 +33,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

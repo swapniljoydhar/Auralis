@@ -29,10 +29,10 @@ import com.auralis.player.list.Item
 import com.auralis.player.list.adapter.SimpleDiffCallback
 import com.auralis.player.list.recycler.ArtistViewHolder
 import com.auralis.player.list.recycler.SongViewHolder
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Music
+import com.auralis.musikr.Song
 
 /**
  * A [DetailListAdapter] implementing the header and sub-items for the [Genre] detail view.

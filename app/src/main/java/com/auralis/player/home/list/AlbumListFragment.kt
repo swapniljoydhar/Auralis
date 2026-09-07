@@ -47,10 +47,10 @@ import com.auralis.player.playback.formatDurationMsPopup
 import com.auralis.player.util.collectImmediately
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Album
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 
 /**
  * A [ListFragment] that shows a list of [Album]s.

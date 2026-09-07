@@ -31,7 +31,7 @@ import com.auralis.player.databinding.ItemNoLocationsBinding
 import com.auralis.player.list.recycler.DialogRecyclerView
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import org.oxycblt.musikr.fs.Location
+import com.auralis.musikr.fs.Location
 import timber.log.Timber as L
 
 class LocationAdapter<T : Location>(private val listener: Listener) :

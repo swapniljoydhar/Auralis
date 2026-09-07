@@ -84,7 +84,7 @@ import kotlin.math.roundToInt
  * Attributions as per the Apache 2.0 license:
  * - ORIGINAL AUTHOR: Hai Zhang [https://github.com/zhanghai]
  * - PROJECT: Android Fast Scroll [https://github.com/zhanghai/AndroidFastScroll]
- * - MODIFIER: Auralis [https://github.com/oxygencobalt]
+ * - MODIFIER: Auralis Contributors [https://github.com/swapniljoydhar/Auralis]
  *
  * !!! MODIFICATIONS !!!:
  * - Scroller will no longer show itself on startup or relayouts, which looked unpleasant with

@@ -59,6 +59,12 @@
             app:key="@string/set_key_audiobook_shake_reset"
             app:summary="@string/set_audiobook_shake_reset_desc"
             app:title="@string/set_audiobook_shake_reset" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="@string/set_key_audiobook_sleep_fade_out"
+            app:summary="@string/set_audiobook_sleep_fade_out_desc"
+            app:title="@string/set_audiobook_sleep_fade_out" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/set_audiobook_appearance">

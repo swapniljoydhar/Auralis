@@ -27,8 +27,8 @@ import android.net.Uri
 import android.os.SystemClock
 import android.support.v4.media.session.PlaybackStateCompat
 import com.auralis.player.list.adapter.UpdateInstructions
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 
 /**
  * The designated "source of truth" for the current playback state. Should only be used by
@@ -77,6 +77,14 @@ interface PlaybackStateHolder {
     fun playbackSpeed(speed: Float)
 
     /**
+     * Scale the player output volume. Used for the sleep-timer fade-out; normal
+     * listening always runs at full volume.
+     *
+     * @param volume Linear gain in 0..1.
+     */
+    fun setVolume(volume: Float)
+
+    /**
      * Update the repeat mode of the audio player.
      *
      * @param repeatMode The new repeat mode.
@@ -93,8 +101,9 @@ interface PlaybackStateHolder {
      * Go to a specific index in the queue.
      *
      * @param index The index to go to. Should be in the queue.
+     * @param positionMs Optional position to start at, applied atomically with the jump.
      */
-    fun goto(index: Int)
+    fun goto(index: Int, positionMs: Long? = null)
 
     /**
      * Add songs to the currently playing item in the queue.
@@ -160,6 +169,13 @@ interface PlaybackStateHolder {
         repeatMode: RepeatMode,
         ack: StateAck.NewPlayback?,
     )
+
+    /**
+     * Persist the currently mirrored session snapshot for the active domain, if any. Used when
+     * the coordinator is about to replace the mirrored state (for example on a domain switch)
+     * so the outgoing queue and position are not lost.
+     */
+    fun saveSnapshot()
 
     /** End whatever ongoing playback session may be going on */
     fun endSession()
@@ -313,16 +329,19 @@ private constructor(
     private val initPositionMs: Long,
     /** The time this instance was created, as a unix epoch timestamp. */
     private val creationTime: Long,
+    /** The playback speed the position advances at while [isAdvancing]. */
+    private val speed: Float,
 ) {
     /**
      * Calculate the "real" playback position this instance contains, in milliseconds.
      *
      * @return If paused, the original position will be returned. Otherwise, it will be the original
-     *   position plus the time elapsed since this state was created.
+     *   position plus the time elapsed since this state was created, scaled by the playback
+     *   speed so audiobook listening above 1x stays accurate.
      */
     fun calculateElapsedPositionMs() =
         if (isAdvancing) {
-            initPositionMs + (SystemClock.elapsedRealtime() - creationTime)
+            initPositionMs + ((SystemClock.elapsedRealtime() - creationTime) * speed).toLong()
         } else {
             // Not advancing due to buffering or some unrelated pausing, such as
             // a transient audio focus change.
@@ -346,7 +365,7 @@ private constructor(
             },
             initPositionMs,
             if (isAdvancing) {
-                1f
+                speed
             } else {
                 // Not advancing, so don't move the position.
                 0f
@@ -361,12 +380,14 @@ private constructor(
         other is Progression &&
             isPlaying == other.isPlaying &&
             isAdvancing == other.isAdvancing &&
-            initPositionMs == other.initPositionMs
+            initPositionMs == other.initPositionMs &&
+            speed == other.speed
 
     override fun hashCode(): Int {
         var result = isPlaying.hashCode()
         result = 31 * result + isAdvancing.hashCode()
         result = 31 * result + initPositionMs.hashCode()
+        result = 31 * result + speed.hashCode()
         return result
     }
 
@@ -379,13 +400,19 @@ private constructor(
          * @param isAdvancing Whether the player is actively playing audio in this moment.
          * @param positionMs The current position of the player.
          */
-        fun from(isPlaying: Boolean, isAdvancing: Boolean, positionMs: Long) =
+        fun from(
+            isPlaying: Boolean,
+            isAdvancing: Boolean,
+            positionMs: Long,
+            speed: Float = 1f,
+        ) =
             Progression(
                 isPlaying,
                 // Minor sanity check: Make sure that advancing can't occur if already paused.
                 isPlaying && isAdvancing,
                 positionMs,
                 SystemClock.elapsedRealtime(),
+                speed.coerceIn(0.25f, 4f),
             )
 
         fun nil() =
@@ -394,6 +421,7 @@ private constructor(
                 isAdvancing = false,
                 initPositionMs = 0,
                 creationTime = SystemClock.elapsedRealtime(),
+                speed = 1f,
             )
     }
 }

@@ -94,8 +94,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlinx.coroutines.launch
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**
@@ -460,8 +460,8 @@ class PlaybackPanelFragment :
     private fun showBookmarksList() {
         val currentSong = playbackManager.currentSong ?: return
         if (playbackManager.domain != PlaybackDomain.AUDIOBOOKS) return
-        val bookKey = AudiobookCatalog.bookKey(currentSong)
-        val bookmarks = audiobookBookmarkRepository.getForBook(bookKey)
+        val chapterUids = playbackManager.queue.map { it.uid }.toSet()
+        val bookmarks = audiobookBookmarkRepository.getForChapters(chapterUids)
         if (bookmarks.isEmpty()) {
             requireContext().showToast(R.string.msg_audiobook_no_bookmarks)
             return
@@ -481,9 +481,12 @@ class PlaybackPanelFragment :
                 val targetIndex =
                     playbackManager.queue.indexOfFirst { it.uid == selected.chapterUid }
                 if (targetIndex >= 0 && targetIndex != playbackManager.index) {
-                    playbackManager.goto(targetIndex)
+                    // Jump and seek atomically: a separate seekTo could land on the
+                    // outgoing chapter before the jump executes.
+                    playbackManager.goto(targetIndex, selected.positionMs)
+                } else if (targetIndex >= 0) {
+                    playbackManager.seekTo(selected.positionMs)
                 }
-                playbackManager.seekTo(selected.positionMs)
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
@@ -705,7 +708,10 @@ class PlaybackPanelFragment :
                         }
                     }
                 )
-                val bookmarks = audiobookBookmarkRepository.getForBook(bookKey)
+                val bookmarks =
+                    audiobookBookmarkRepository.getForChapters(
+                        queue.map { it.uid }.toSet()
+                    )
                 addView(
                     TextView(context).apply {
                         text = getString(R.string.lbl_audiobook_bookmarks)

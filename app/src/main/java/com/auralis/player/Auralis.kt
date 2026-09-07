@@ -38,9 +38,10 @@ import javax.inject.Inject
 import timber.log.Timber
 
 /**
- * A simple, rational music player for android.
+ * The Auralis application: a local-first music and audiobook player for Android.
  *
- * @author Auralis Contributors
+ * Plants the release logging tree, migrates persisted settings, and registers the
+ * dynamic launcher shortcuts.
  */
 @HiltAndroidApp
 class Auralis : Application() {

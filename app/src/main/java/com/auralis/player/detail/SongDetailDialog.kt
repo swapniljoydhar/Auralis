@@ -37,7 +37,7 @@ import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.player.ui.ViewBindingMaterialDialogFragment
 import com.auralis.player.util.collectImmediately
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

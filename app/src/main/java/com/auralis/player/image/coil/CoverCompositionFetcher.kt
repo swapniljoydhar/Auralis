@@ -45,7 +45,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
-import org.oxycblt.musikr.covers.CoverCollection
+import com.auralis.musikr.covers.CoverCollection
 
 interface CoverComposition {
     val covers: CoverCollection

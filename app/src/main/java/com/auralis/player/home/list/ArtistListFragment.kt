@@ -47,10 +47,10 @@ import com.auralis.player.playback.formatDurationMsPopup
 import com.auralis.player.util.collectImmediately
 import com.auralis.player.util.positiveOrNull
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 
 /**
  * A [ListFragment] that shows a list of [Artist]s.

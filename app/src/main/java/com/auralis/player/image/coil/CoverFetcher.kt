@@ -35,7 +35,7 @@ import javax.inject.Inject
 import okio.FileSystem
 import okio.buffer
 import okio.source
-import org.oxycblt.musikr.covers.Cover
+import com.auralis.musikr.covers.Cover
 
 class CoverFetcher private constructor(private val cover: Cover) : Fetcher {
     override suspend fun fetch(): FetchResult? {

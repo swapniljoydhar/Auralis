@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace 'org.oxycblt.musikr'
+    namespace 'com.auralis.musikr'
     compileSdk target_sdk
 
     defaultConfig {

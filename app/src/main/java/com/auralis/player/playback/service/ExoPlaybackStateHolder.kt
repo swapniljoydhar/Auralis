@@ -67,8 +67,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 @OptIn(UnstableApi::class)
@@ -98,6 +98,7 @@ class ExoPlaybackStateHolder(
     private val restoreScope = CoroutineScope(Dispatchers.IO + saveJob)
     @Volatile private var currentSaveJob: Job? = null
     private var openAudioEffectSession = false
+    private var consecutiveErrors = 0
     private val pendingAudiobookProgress = mutableListOf<AudiobookProgressSnapshot>()
     private var pausedAudiobookPositionMs: Long? = null
     private var pausedTimestampMs: Long = 0L
@@ -127,21 +128,28 @@ class ExoPlaybackStateHolder(
             synchronized(pendingAudiobookProgress) {
                 pendingAudiobookProgress.toList().also { pendingAudiobookProgress.clear() }
             }
-        // Perform synchronous save on the IO dispatcher without runBlocking to avoid ANR.
-        // Use a blocking latch with a timeout as a safety net.
-        val latch = java.util.concurrent.CountDownLatch(1)
-        saveScope.launch {
-            try {
-                for (snapshot in snapshots) {
-                    saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs, snapshot.domain)
+        if (sessionOngoing || snapshots.isNotEmpty() || currentMediaItem != null) {
+            // The service contract requires persistence before teardown, so block the
+            // caller briefly. The work is a couple of Room writes (chapter metadata is
+            // cached), strictly bounded so release can never stall teardown.
+            kotlinx.coroutines.runBlocking {
+                kotlinx.coroutines.withTimeoutOrNull(RELEASE_SAVE_TIMEOUT_MS) {
+                    kotlinx.coroutines.withContext(Dispatchers.IO) {
+                        for (snapshot in snapshots) {
+                            saveAudiobookProgress(
+                                snapshot.mediaItem,
+                                snapshot.positionMs,
+                                snapshot.domain,
+                            )
+                        }
+                        saveAudiobookProgress(currentMediaItem, currentPosition, activeDomain)
+                        if (sessionOngoing) {
+                            persistenceRepository.saveState(playbackManager.toSavedState())
+                        }
+                    }
                 }
-                saveAudiobookProgress(currentMediaItem, currentPosition, activeDomain)
-            } finally {
-                latch.countDown()
             }
         }
-        // Wait with a timeout to prevent indefinite blocking if the coroutine gets stuck.
-        latch.await(3, java.util.concurrent.TimeUnit.SECONDS)
         saveJob.cancel()
         playbackManager.unregisterStateHolder(this)
         musicRepository.removeUpdateListener(this)
@@ -158,10 +166,15 @@ class ExoPlaybackStateHolder(
 
     override val progression: Progression
         get() {
-            val mediaItem = player.currentMediaItem ?: return Progression.nil()
-            val duration = mediaItem.mediaMetadata.extras?.getLong("durationMs") ?: Long.MAX_VALUE
-            val clampedPosition = player.currentPosition.coerceAtLeast(0).coerceAtMost(duration)
-            return Progression.from(player.playWhenReady, player.isPlaying, clampedPosition)
+            if (player.currentMediaItem == null) return Progression.nil()
+            val duration = player.duration.takeIf { it > 0L } ?: Long.MAX_VALUE
+            val clampedPosition = player.currentPosition.coerceIn(0L, duration)
+            return Progression.from(
+                player.playWhenReady,
+                player.isPlaying,
+                clampedPosition,
+                player.playbackParameters.speed,
+            )
         }
 
     override val repeatMode
@@ -229,40 +242,48 @@ class ExoPlaybackStateHolder(
             // Open -> Try to find the Song for the given file and then play it from all songs
             is DeferredPlayback.Open -> {
                 L.d("Opening specified file")
-                context.applicationContext.contentResolver
-                    .query(
-                        action.uri,
-                        arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE),
-                        null,
-                        null,
-                        null,
-                    )
-                    ?.use { cursor ->
-                        val displayNameIndex =
-                            cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME)
-                        val sizeIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
-                        if (cursor.moveToFirst()) {
-                            val displayName = cursor.getString(displayNameIndex)
-                            val size = cursor.getLong(sizeIndex)
-                            val song =
-                                library.songs.find {
-                                    it.path.name == displayName && it.size == size
-                                }
-                            if (song != null) {
-                                val command =
-                                    requireNotNull(
-                                        commandFactory.songFromAll(song, ShuffleMode.IMPLICIT)
-                                    ) {
-                                        "Invalid playback command"
-                                    }
-                                playbackManager.play(command)
-                            }
+                // Resolving runs off-thread: provider queries and library scans must never
+                // block the caller, and foreign providers may omit the expected columns.
+                restoreScope.launch {
+                    val song = library.songs.firstOrNull { it.uri == action.uri }
+                        ?: findSongByDisplayAttributes(action.uri)
+                    val command =
+                        song?.let { commandFactory.songFromAll(it, ShuffleMode.IMPLICIT) }
+                    withContext(Dispatchers.Main) {
+                        if (command != null) {
+                            playbackManager.play(command)
+                        } else {
+                            L.w("Opened file is not in the library, ignoring ${action.uri}")
                         }
                     }
+                }
             }
         }
 
         return true
+    }
+
+    private fun findSongByDisplayAttributes(uri: android.net.Uri): Song? {
+        val cursor =
+            runCatching {
+                context.applicationContext.contentResolver.query(
+                    uri,
+                    arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE),
+                    null,
+                    null,
+                    null,
+                )
+            }.getOrNull() ?: return null
+        return cursor.use {
+            val displayNameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+            if (displayNameIndex < 0 || sizeIndex < 0 || !it.moveToFirst()) return null
+            val displayName = it.getString(displayNameIndex)
+            val size = it.getLong(sizeIndex)
+            musicRepository.library?.songs?.find { song ->
+                song.path.name == displayName && song.size == size
+            }
+        }
     }
 
     override fun playing(playing: Boolean) {
@@ -271,7 +292,7 @@ class ExoPlaybackStateHolder(
 
     override fun seekTo(positionMs: Long) {
         pausedAudiobookPositionMs = null
-        player.seekTo(positionMs)
+        player.seekTo(positionMs.coerceAtLeast(0L))
         deferSave()
         // Ack handled w/ExoPlayer events
     }
@@ -280,10 +301,20 @@ class ExoPlaybackStateHolder(
         val coerced = speed.coerceIn(0.5f, 3.0f)
         player.setPlaybackSpeed(coerced)
         if (activeDomain == PlaybackDomain.AUDIOBOOKS) {
-            // Remember the listener's pace so it survives restarts and domain switches.
-            audiobookSettings.recordPlaybackSpeed(coerced)
+            // Remember the listener's pace so it survives restarts and domain switches,
+            // keeping a separate pace per book like dedicated audiobook players do.
+            val bookKey = player.currentMediaItem?.song?.let(AudiobookCatalog::bookKey)
+            if (bookKey != null) {
+                audiobookSettings.recordBookSpeed(bookKey, coerced)
+            } else {
+                audiobookSettings.recordPlaybackSpeed(coerced)
+            }
         }
         deferSave()
+    }
+
+    override fun setVolume(volume: Float) {
+        player.volume = volume.coerceIn(0f, 1f)
     }
 
     override fun repeatMode(repeatMode: RepeatMode) {
@@ -308,15 +339,17 @@ class ExoPlaybackStateHolder(
         player.setMediaItems(command.queue.map { it.buildMediaItem() })
         playbackManager.playbackSpeed(
             if (command.domain == PlaybackDomain.AUDIOBOOKS) {
-                audiobookSettings.lastPlaybackSpeed
+                // Resume each book at its own remembered pace.
+                command.queue.firstOrNull()?.let(AudiobookCatalog::bookKey)?.let(
+                    audiobookSettings::speedForBook
+                ) ?: audiobookSettings.lastPlaybackSpeed
             } else {
                 1.0f
             }
         )
+        player.volume = 1f
         val startIndex =
-            command.song
-                ?.let { command.queue.indexOf(it) }
-                .also { check(it != -1) { "Start song not in queue" } }
+            command.song?.let { command.queue.indexOf(it).takeIf { index -> index >= 0 } }
         if (command.shuffled) {
             player.setShuffleOrder(BetterShuffleOrder(command.queue.size, startIndex ?: -1))
         }
@@ -380,14 +413,16 @@ class ExoPlaybackStateHolder(
         deferSave()
     }
 
-    override fun goto(index: Int) {
+    override fun goto(index: Int, positionMs: Long?) {
         val indices = player.unscrambleQueueIndices()
         if (indices.isEmpty() || index !in indices.indices) {
             return
         }
 
         val trueIndex = indices[index]
-        player.seekTo(trueIndex, C.TIME_UNSET) // Handles remaining custom logic
+        // A combined window+position seek is atomic in ExoPlayer; issuing the position
+        // separately could land on the outgoing item before the jump executes.
+        player.seekTo(trueIndex, positionMs?.coerceAtLeast(0L) ?: C.TIME_UNSET)
         if (!playbackSettings.rememberPause) {
             player.play()
         }
@@ -523,6 +558,20 @@ class ExoPlaybackStateHolder(
         }
     }
 
+    override fun saveSnapshot() {
+        val snapshot = playbackManager.toSavedState()
+        val currentMediaItem = player.currentMediaItem
+        val currentPosition = player.currentPosition
+        val currentDomain = activeDomain
+        saveScope.launch {
+            if (sessionOngoing) {
+                persistenceRepository.saveState(snapshot)
+            }
+            savePendingAudiobookProgress()
+            saveAudiobookProgress(currentMediaItem, currentPosition, currentDomain)
+        }
+    }
+
     override fun endSession() {
         // This session has ended, so we need to reset this flag for when the next
         // session starts.
@@ -614,6 +663,9 @@ class ExoPlaybackStateHolder(
     override fun onPlaybackStateChanged(playbackState: Int) {
         super.onPlaybackStateChanged(playbackState)
 
+        if (playbackState == Player.STATE_READY) {
+            consecutiveErrors = 0
+        }
         if (playbackState == Player.STATE_ENDED && player.repeatMode == Player.REPEAT_MODE_OFF) {
             audiobookPlaybackController.onPlaybackEnded(activeDomain)
             goto(0)
@@ -682,10 +734,16 @@ class ExoPlaybackStateHolder(
     }
 
     override fun onPlayerError(error: PlaybackException) {
-        // TODO: Replace with no skipping and a notification instead
-        // If there's any issue, just go to the next song.
-        L.e("Player error occurred")
-        L.e(error.stackTraceToString())
+        L.e("Player error occurred: ${error.errorCodeName}")
+        consecutiveErrors++
+        if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+            // Every item is failing (storage revoked, files moved, corrupt media). Stop
+            // advancing so the player does not hot-loop through the queue forever.
+            L.e("Too many consecutive playback errors, pausing instead of skipping")
+            consecutiveErrors = 0
+            player.pause()
+            return
+        }
         player.prepare()
         playbackManager.next()
     }
@@ -721,6 +779,15 @@ class ExoPlaybackStateHolder(
     private fun applyAudiobookAudioSettings() {
         player.skipSilenceEnabled =
             activeDomain == PlaybackDomain.AUDIOBOOKS && audiobookSettings.skipSilence
+        if (activeDomain == PlaybackDomain.AUDIOBOOKS) {
+            // Queues can span books (e.g. continuous play); each new book resumes
+            // at its own remembered pace instead of inheriting the previous one.
+            val song = player.currentMediaItem?.song ?: return
+            val speed = audiobookSettings.speedForBook(AudiobookCatalog.bookKey(song))
+            if (abs(player.playbackParameters.speed - speed) > 0.001f) {
+                player.setPlaybackSpeed(speed)
+            }
+        }
     }
 
     override fun onPauseOnRepeatChanged() {
@@ -765,12 +832,14 @@ class ExoPlaybackStateHolder(
     }
 
     private suspend fun savePendingAudiobookProgress() {
-        while (true) {
-            val snapshot =
-                synchronized(pendingAudiobookProgress) {
-                    pendingAudiobookProgress.removeFirstOrNull()
-                } ?: return
-            saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs, snapshot.domain)
+        kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+            while (true) {
+                val snapshot =
+                    synchronized(pendingAudiobookProgress) {
+                        pendingAudiobookProgress.removeFirstOrNull()
+                    } ?: return@withContext
+                saveAudiobookProgress(snapshot.mediaItem, snapshot.positionMs, snapshot.domain)
+            }
         }
     }
 
@@ -930,5 +999,7 @@ class ExoPlaybackStateHolder(
 
     private companion object {
         const val SAVE_BUFFER = 5000L
+        const val RELEASE_SAVE_TIMEOUT_MS = 2000L
+        const val MAX_CONSECUTIVE_ERRORS = 3
     }
 }

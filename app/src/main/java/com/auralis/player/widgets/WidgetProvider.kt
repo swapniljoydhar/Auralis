@@ -180,7 +180,10 @@ class WidgetProvider : AppWidgetProvider() {
      */
     private fun requestUpdate(context: Context) {
         L.d("Sending update intent to PlaybackService")
-        val intent = Intent(ACTION_WIDGET_UPDATE).addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY)
+        val intent =
+            Intent(ACTION_WIDGET_UPDATE)
+                .setPackage(context.packageName)
+                .addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY)
         context.sendBroadcast(intent)
     }
 

@@ -29,7 +29,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.oxycblt.musikr.Music
+import com.auralis.musikr.Music
 
 class AudiobookProgressRepositoryTest {
     private val chapterUid =

@@ -49,9 +49,9 @@ import com.auralis.player.util.context
 import com.auralis.player.util.getAttrColorCompat
 import com.auralis.player.util.inflater
 import com.google.android.material.divider.MaterialDivider
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Song
-import org.oxycblt.musikr.tag.Disc
+import com.auralis.musikr.Album
+import com.auralis.musikr.Song
+import com.auralis.musikr.tag.Disc
 
 /**
  * An [DetailListAdapter] implementing the header and sub-items for the [Album] detail view.

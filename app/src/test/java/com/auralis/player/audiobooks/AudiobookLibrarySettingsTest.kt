@@ -141,6 +141,26 @@ class AudiobookLibrarySettingsTest {
     }
 
     @Test
+    fun folderScopeIncludesDirectoriesNestedBelowSelectedRoots() {
+        val selected = setOf("/storage/emulated/0/Audiobooks")
+
+        assertTrue(
+            AudiobookFolderScope.includes(
+                directory = "/storage/emulated/0/Audiobooks/Pride and Prejudice/chapters",
+                enabled = true,
+                selectedFolders = selected,
+            )
+        )
+        assertFalse(
+            AudiobookFolderScope.includes(
+                directory = "/storage/emulated/0/Audiobookshelf",
+                enabled = true,
+                selectedFolders = selected,
+            )
+        )
+    }
+
+    @Test
     fun unknownPresentationFallsBackToCompact() {
         assertEquals(
             AudiobookLibraryPresentation.COMPACT,

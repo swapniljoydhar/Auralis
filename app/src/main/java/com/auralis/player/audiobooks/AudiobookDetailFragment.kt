@@ -47,7 +47,7 @@ import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import org.oxycblt.musikr.Music
+import com.auralis.musikr.Music
 
 @AndroidEntryPoint
 class AudiobookDetailFragment : Fragment() {
@@ -91,7 +91,9 @@ class AudiobookDetailFragment : Fragment() {
     private suspend fun render(book: AudiobookBook) {
         val b = _binding ?: return
         val context = requireContext()
-        val progress = progressRepository.getForBook(book.key).associateBy { it.chapterUid }
+        val chapterUids = book.chapters.map { it.uid }
+        val progress =
+            progressRepository.getForChapters(chapterUids).associateBy { it.chapterUid }
         val listeningSummary =
             AudiobookListeningState.summarize(
                 book.chapters.map { chapter ->
@@ -170,7 +172,7 @@ class AudiobookDetailFragment : Fragment() {
                 ColorStateList.valueOf(MaterialColors.getColor(context, AR.attr.colorError, 0))
             b.audiobookActionReset.setOnClickListener {
                 lifecycleScope.launch {
-                    progressRepository.clearBook(book.key)
+                    progressRepository.clearChapters(book.chapters.map { it.uid })
                     render(book)
                 }
             }

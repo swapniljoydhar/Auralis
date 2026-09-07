@@ -30,7 +30,7 @@ import androidx.preference.PreferenceManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import org.oxycblt.musikr.Music
+import com.auralis.musikr.Music
 
 /** Offline audiobook bookmarks stored independently from global Music playback state. */
 data class AudiobookBookmark(
@@ -54,6 +54,21 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
             .filter { it.bookKey == bookKey }
             .sortedBy { it.createdMs }
 
+    /**
+     * Load bookmarks for an exact set of chapter UIDs. Preferred over [getForBook]: chapter
+     * UIDs are stable across folder-organization changes while display book keys are not.
+     */
+    fun getForChapters(chapterUids: Set<Music.UID>): List<AudiobookBookmark> {
+        if (chapterUids.isEmpty()) return emptyList()
+        return preferences
+            .getStringSet(KEY_BOOKMARKS, emptySet())
+            .orEmpty()
+            .mapNotNull(::decode)
+            .filter { it.chapterUid in chapterUids }
+            .sortedBy { it.createdMs }
+    }
+
+    @Synchronized
     fun add(
         bookKey: String,
         chapterUid: Music.UID,
@@ -86,6 +101,7 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
         preferences.edit { putStringSet(KEY_BOOKMARKS, encoded) }
     }
 
+    @Synchronized
     fun remove(bookmark: AudiobookBookmark) {
         val encoded = preferences.getStringSet(KEY_BOOKMARKS, emptySet()).orEmpty().toMutableSet()
         encoded.remove(encode(bookmark))

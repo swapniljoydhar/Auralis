@@ -32,7 +32,7 @@ import com.auralis.player.list.sort.Sort
 import com.auralis.player.list.sort.SortDialog
 import com.auralis.player.util.collectImmediately
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.Playlist
+import com.auralis.musikr.Playlist
 import timber.log.Timber as L
 
 /**

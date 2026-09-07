@@ -24,10 +24,10 @@
 package com.auralis.player.playback
 
 import com.auralis.player.IntegerTable
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Playlist
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
 
 /**
  * Configuration to play a song in a desired way.

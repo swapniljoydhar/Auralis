@@ -25,6 +25,7 @@ package com.auralis.player.audiobooks
 
 import android.content.Context
 import android.os.Build
+import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.core.content.ContextCompat
@@ -39,7 +40,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.oxycblt.musikr.Song
+import kotlinx.coroutines.withContext
+import com.auralis.musikr.Song
 
 @Singleton
 class AudiobookPlaybackController
@@ -56,6 +58,8 @@ constructor(
     private var sleepAtChapterEnd = false
     private var embeddedSleepBoundary: EmbeddedSleepBoundary? = null
     private var lastScheduledDurationMs: Long = 0L
+    private var plainTimerEndsAtElapsedMs: Long = 0L
+    private var plainTimerRemainingMs: Long = 0L
 
     private val shakeDetector =
         ShakeDetector(context) {
@@ -76,9 +80,16 @@ constructor(
         if (audiobookSettings.shakeToResetSleepTimer) {
             shakeDetector.start()
         }
+        schedulePlainTimer(durationMs.coerceAtLeast(0L))
+    }
+
+    private fun schedulePlainTimer(remainingMs: Long) {
+        plainTimerEndsAtElapsedMs = SystemClock.elapsedRealtime() + remainingMs
+        val fadeMs = fadeDurationMs(remainingMs)
         sleepTimerJob =
             scope.launch {
-                delay(durationMs.coerceAtLeast(0L))
+                delay(remainingMs - fadeMs)
+                runFadeOut(fadeMs)
                 if (
                     AudiobookSleepTimerPolicy.shouldPause(scheduledDomain, playbackManager.domain)
                 ) {
@@ -86,6 +97,31 @@ constructor(
                 }
                 clearSleepTimer()
             }
+    }
+
+    /**
+     * Ramps the output volume down over [fadeMs] so the sleep timer eases the
+     * listener out instead of cutting off mid-word. Runs inline in the timer job
+     * so pausing or cancelling the timer aborts the fade; every exit path
+     * restores full volume through [clearSleepTimer] or [restoreVolume].
+     */
+    private suspend fun runFadeOut(fadeMs: Long) {
+        if (fadeMs <= 0L) return
+        val steps = (fadeMs / FADE_STEP_MS).toInt().coerceAtLeast(1)
+        val stepMs = fadeMs / steps
+        repeat(steps) { step ->
+            delay(stepMs)
+            playbackManager.setVolume(1f - (step + 1) / steps.toFloat())
+        }
+    }
+
+    private fun fadeDurationMs(remainingMs: Long): Long {
+        if (!audiobookSettings.sleepFadeOut) return 0L
+        return FADE_DURATION_MS.coerceAtMost(remainingMs.coerceAtLeast(0L))
+    }
+
+    private fun restoreVolume() {
+        playbackManager.setVolume(1f)
     }
 
     fun scheduleSleepAtChapterEnd() {
@@ -99,7 +135,8 @@ constructor(
             shakeDetector.start()
         }
         scope.launch {
-            val chapters = embeddedChapterReader.read(song)
+            // Chapter parsing touches storage; never run it on the Main dispatcher.
+            val chapters = withContext(Dispatchers.IO) { embeddedChapterReader.read(song) }
             if (
                 chapters.isEmpty() ||
                     scheduledDomain != PlaybackDomain.AUDIOBOOKS ||
@@ -159,13 +196,34 @@ constructor(
         isPlaying: Boolean,
     ) {
         if (domain != PlaybackDomain.AUDIOBOOKS || scheduledDomain != domain) return
-        val boundary = embeddedSleepBoundary ?: return
-        if (song?.uid != boundary.song.uid) return
-        if (isPlaying) {
-            refreshEmbeddedSleepBoundary(positionMs)
-        } else {
-            sleepTimerJob?.cancel()
-            sleepTimerJob = null
+        val boundary = embeddedSleepBoundary
+        if (boundary != null && song?.uid == boundary.song.uid) {
+            // Chapter-end timers are position-derived: drop the pending job while paused
+            // and recompute it from the resume position.
+            if (isPlaying) {
+                refreshEmbeddedSleepBoundary(positionMs)
+            } else {
+                sleepTimerJob?.cancel()
+                sleepTimerJob = null
+                restoreVolume()
+            }
+            return
+        }
+        if (boundary == null && !sleepAtChapterEnd) {
+            // Plain countdown timers freeze while paused and resume afterwards instead
+            // of silently dying with the timer still showing as active.
+            if (isPlaying) {
+                if (sleepTimerJob == null && plainTimerRemainingMs > 0L) {
+                    schedulePlainTimer(plainTimerRemainingMs)
+                    plainTimerRemainingMs = 0L
+                }
+            } else {
+                sleepTimerJob?.cancel()
+                sleepTimerJob = null
+                restoreVolume()
+                plainTimerRemainingMs =
+                    (plainTimerEndsAtElapsedMs - SystemClock.elapsedRealtime()).coerceAtLeast(0L)
+            }
         }
     }
 
@@ -189,12 +247,15 @@ constructor(
     }
 
     private fun clearSleepTimer() {
+        restoreVolume()
         shakeDetector.stop()
         sleepTimerJob = null
         scheduledDomain = null
         sleepAtChapterEnd = false
         embeddedSleepBoundary = null
         lastScheduledDurationMs = 0L
+        plainTimerEndsAtElapsedMs = 0L
+        plainTimerRemainingMs = 0L
     }
 
     private fun refreshEmbeddedSleepBoundary(positionMs: Long) {
@@ -203,12 +264,16 @@ constructor(
             AudiobookSleepTimerPolicy.nextEmbeddedChapterStart(boundary.chapters, positionMs)
                 ?: return
         sleepTimerJob?.cancel()
+        // A seek or speed change during the fade must not leave the volume lowered.
+        restoreVolume()
         val speed = playbackManager.playbackSpeed.coerceAtLeast(0.1f)
         val remainingAudioMs = (nextStartMs - positionMs).coerceAtLeast(0L)
         val wallDelayMs = (remainingAudioMs / speed).toLong()
+        val fadeMs = fadeDurationMs(wallDelayMs)
         sleepTimerJob =
             scope.launch {
-                delay(wallDelayMs)
+                delay((wallDelayMs - fadeMs).coerceAtLeast(0L))
+                runFadeOut(fadeMs)
                 val currentSong = playbackManager.currentSong
                 if (
                     scheduledDomain == PlaybackDomain.AUDIOBOOKS &&
@@ -220,6 +285,9 @@ constructor(
                         playbackManager.playing(false)
                         clearSleepTimer()
                     } else {
+                        // Drift (seek, speed change) moved the boundary: back to full
+                        // volume and recompute from the fresh position.
+                        restoreVolume()
                         refreshEmbeddedSleepBoundary(currentPosition)
                     }
                 }
@@ -227,6 +295,11 @@ constructor(
     }
 
     private data class EmbeddedSleepBoundary(val song: Song, val chapters: List<EmbeddedChapter>)
+
+    private companion object {
+        const val FADE_DURATION_MS = 15_000L
+        const val FADE_STEP_MS = 500L
+    }
 }
 
 internal object AudiobookSleepTimerPolicy {

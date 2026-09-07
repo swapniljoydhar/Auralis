@@ -40,9 +40,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.fs.mediastore.MediaStore
-import org.oxycblt.musikr.fs.saf.SAF
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.fs.mediastore.MediaStore
+import com.auralis.musikr.fs.saf.SAF
 import timber.log.Timber as L
 
 class IndexingHolder

@@ -35,7 +35,7 @@ import com.auralis.player.ui.ViewBindingMaterialDialogFragment
 import com.google.android.material.checkbox.MaterialCheckBox
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import org.oxycblt.musikr.tag.interpret.Separators
+import com.auralis.musikr.tag.interpret.Separators
 import timber.log.Timber as L
 
 /**

@@ -30,9 +30,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import org.oxycblt.musikr.cache.MutableCache
-import org.oxycblt.musikr.cache.db.MutableDBCache
-import org.oxycblt.musikr.playlist.db.StoredPlaylists
+import com.auralis.musikr.cache.MutableCache
+import com.auralis.musikr.cache.db.MutableDBCache
+import com.auralis.musikr.playlist.db.StoredPlaylists
 
 @Module
 @InstallIn(SingletonComponent::class)

@@ -39,10 +39,10 @@ import com.auralis.player.playback.formatDurationMs
 import com.auralis.player.playback.replaygain.formatDb
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.fs.Format
-import org.oxycblt.musikr.fs.Path
-import org.oxycblt.musikr.tag.Date
+import com.auralis.musikr.Music
+import com.auralis.musikr.fs.Format
+import com.auralis.musikr.fs.Path
+import com.auralis.musikr.tag.Date
 
 /**
  * An adapter for [SongProperty] instances.

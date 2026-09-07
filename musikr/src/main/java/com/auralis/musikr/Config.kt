@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2024 Auralis Contributors
+ * Config.kt is part of Auralis.
+ *
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+ 
+package com.auralis.musikr
+
+import com.auralis.musikr.cache.MutableCache
+import com.auralis.musikr.covers.Cover
+import com.auralis.musikr.covers.MutableCovers
+import com.auralis.musikr.fs.FS
+import com.auralis.musikr.playlist.db.StoredPlaylists
+import com.auralis.musikr.tag.interpret.Naming
+import com.auralis.musikr.tag.interpret.Separators
+
+data class Config(val fs: FS, val storage: Storage, val interpretation: Interpretation)
+
+/** Side-effect laden [Config] for use during music loading and [MutableLibrary] operation. */
+data class Storage(
+    /**
+     * A repository of cached metadata to read and write from over the course of music loading. This
+     * will only be used during music loading.
+     */
+    val cache: MutableCache,
+
+    /**
+     * A repository of cover images to for re-use during music loading. Should be kept in lock-step
+     * with the cache for best performance. This will be used during music loading and when
+     * retrieving cover information from the library.
+     */
+    val covers: MutableCovers<out Cover>,
+
+    /**
+     * A repository of user-created playlists that should also be loaded into the library. This will
+     * be used during music loading and mutated when creating, renaming, or deleting playlists in
+     * the library.
+     */
+    val storedPlaylists: StoredPlaylists,
+)
+
+data class Interpretation(
+    /** How to construct names from audio tags. */
+    val naming: Naming,
+
+    /** What separators delimit multi-value audio tags. */
+    val separators: Separators,
+)

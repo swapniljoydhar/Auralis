@@ -29,21 +29,21 @@ import com.auralis.player.image.CoverMode
 import com.auralis.player.image.ImageSettings
 import java.util.UUID
 import javax.inject.Inject
-import org.oxycblt.musikr.covers.Cover
-import org.oxycblt.musikr.covers.Covers
-import org.oxycblt.musikr.covers.FDCover
-import org.oxycblt.musikr.covers.MutableCovers
-import org.oxycblt.musikr.covers.chained.ChainedCovers
-import org.oxycblt.musikr.covers.chained.MutableChainedCovers
-import org.oxycblt.musikr.covers.embedded.CoverIdentifier
-import org.oxycblt.musikr.covers.embedded.EmbeddedCovers
-import org.oxycblt.musikr.covers.fs.FSCovers
-import org.oxycblt.musikr.covers.fs.MutableFSCovers
-import org.oxycblt.musikr.covers.stored.Compress
-import org.oxycblt.musikr.covers.stored.CoverStorage
-import org.oxycblt.musikr.covers.stored.MutableStoredCovers
-import org.oxycblt.musikr.covers.stored.NoTranscoding
-import org.oxycblt.musikr.covers.stored.StoredCovers
+import com.auralis.musikr.covers.Cover
+import com.auralis.musikr.covers.Covers
+import com.auralis.musikr.covers.FDCover
+import com.auralis.musikr.covers.MutableCovers
+import com.auralis.musikr.covers.chained.ChainedCovers
+import com.auralis.musikr.covers.chained.MutableChainedCovers
+import com.auralis.musikr.covers.embedded.CoverIdentifier
+import com.auralis.musikr.covers.embedded.EmbeddedCovers
+import com.auralis.musikr.covers.fs.FSCovers
+import com.auralis.musikr.covers.fs.MutableFSCovers
+import com.auralis.musikr.covers.stored.Compress
+import com.auralis.musikr.covers.stored.CoverStorage
+import com.auralis.musikr.covers.stored.MutableStoredCovers
+import com.auralis.musikr.covers.stored.NoTranscoding
+import com.auralis.musikr.covers.stored.StoredCovers
 
 interface SettingCovers {
     suspend fun mutate(context: Context, revision: UUID): MutableCovers<out Cover>
@@ -69,7 +69,7 @@ class SettingCoversImpl @Inject constructor(private val imageSettings: ImageSett
         val revisionedTranscoding = RevisionedTranscoding(revision, transcoding)
         val storedCovers =
             MutableStoredCovers(
-                EmbeddedCovers(CoverIdentifier.md5()),
+                EmbeddedCovers(CoverIdentifier.sha256()),
                 coverStorage,
                 revisionedTranscoding,
             )

@@ -34,9 +34,9 @@ import com.auralis.player.util.unlikelyToBeNull
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
 import javax.inject.Inject
-import org.oxycblt.musikr.fs.Location
-import org.oxycblt.musikr.fs.mediastore.MediaStore
-import org.oxycblt.musikr.fs.saf.SAF
+import com.auralis.musikr.fs.Location
+import com.auralis.musikr.fs.mediastore.MediaStore
+import com.auralis.musikr.fs.saf.SAF
 import timber.log.Timber as L
 
 /**

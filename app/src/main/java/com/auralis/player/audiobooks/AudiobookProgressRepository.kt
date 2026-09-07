@@ -28,7 +28,7 @@ import com.auralis.player.playback.persist.AudiobookProgressEntity
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.oxycblt.musikr.Music
+import com.auralis.musikr.Music
 
 /** A domain-level progress record independent from the global Music playback snapshot. */
 data class AudiobookProgress(
@@ -52,6 +52,20 @@ class AudiobookProgressRepository @Inject constructor(private val dao: Audiobook
 
     suspend fun getForChapter(chapterUid: Music.UID): AudiobookProgress? =
         withContext(Dispatchers.IO) { dao.getForChapter(chapterUid.toString())?.let(::toDomain) }
+
+    /**
+     * Load progress for an exact set of chapters.
+     *
+     * Chapter UIDs are the stable join between the visible book and its stored progress:
+     * unlike the display book key (which depends on the folder-organization setting),
+     * they never change when the listener regroups their library.
+     */
+    suspend fun getForChapters(chapterUids: Collection<Music.UID>): List<AudiobookProgress> {
+        if (chapterUids.isEmpty()) return emptyList()
+        return withContext(Dispatchers.IO) {
+            dao.getForChapters(chapterUids.map(Music.UID::toString)).mapNotNull(::toDomain)
+        }
+    }
 
     suspend fun save(
         bookKey: String,
@@ -86,6 +100,11 @@ class AudiobookProgressRepository @Inject constructor(private val dao: Audiobook
 
     suspend fun clearBook(bookKey: String) =
         withContext(Dispatchers.IO) { dao.deleteForBook(bookKey) }
+
+    suspend fun clearChapters(chapterUids: Collection<Music.UID>) {
+        if (chapterUids.isEmpty()) return
+        withContext(Dispatchers.IO) { dao.deleteForChapters(chapterUids.map(Music.UID::toString)) }
+    }
 
     private fun toDomain(entity: AudiobookProgressEntity): AudiobookProgress? {
         val uid = Music.UID.fromString(entity.chapterUid) ?: return null

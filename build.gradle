@@ -40,9 +40,4 @@ spotless {
         licenseHeaderFile("NOTICE")
     }
 
-    cpp {
-        target("*/src/**/cpp/*.cpp", "*/src/**/cpp/*.h", "*/src/**/cpp/*.hpp")
-        eclipseCdt().configFile("eclipse-cdt.xml")
-        licenseHeaderFile("NOTICE")
-    }
 }

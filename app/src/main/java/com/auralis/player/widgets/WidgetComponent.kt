@@ -41,8 +41,8 @@ import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.ui.UISettings
 import com.auralis.player.util.getDimenPixels
 import javax.inject.Inject
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

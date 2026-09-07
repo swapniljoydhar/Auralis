@@ -44,16 +44,9 @@ import timber.log.Timber as L
 /**
  * Auralis's single [AppCompatActivity].
  *
- * @author Auralis Contributors
- *
- * TODO: Add error screens
- * TODO: Custom language support
- * TODO: Use proper material attributes (Not the weird dimen attributes I currently have)
- * TODO: Migrate to material animation system
- * TODO: Unit testing
- * TODO: Fix UID naming
- * TODO: Leverage FlexibleListAdapter more in dialogs (Disable item anims)
- * TODO: Improve multi-threading support in shared objects
+ * Applies the themed Material 3 shell, forwards launcher/shuffle/file intents into the
+ * playback system as [DeferredPlayback] actions, and starts the shared
+ * [AuralisService] once the window is visible.
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

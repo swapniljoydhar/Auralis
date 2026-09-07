@@ -30,7 +30,7 @@ import com.auralis.player.list.adapter.FlexibleListAdapter
 import com.auralis.player.list.adapter.SimpleDiffCallback
 import com.auralis.player.playback.ui.stepper.StepperOverlay
 import com.auralis.player.util.inflater
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Song
 
 /**
  * A [FlexibleListAdapter] that hosts [CoverViewHolder]s containing a [Song]'s cover and step

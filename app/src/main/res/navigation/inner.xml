@@ -163,7 +163,7 @@
         tools:layout="@layout/dialog_song_detail">
         <argument
             android:name="songUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
     </dialog>
 
     <fragment
@@ -234,7 +234,7 @@
         tools:layout="@layout/fragment_detail">
         <argument
             android:name="albumUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
         <action
             android:id="@+id/sort"
             app:destination="@+id/album_song_sort_dialog" />
@@ -283,7 +283,7 @@
         tools:layout="@layout/fragment_detail">
         <argument
             android:name="artistUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
         <action
             android:id="@+id/sort"
             app:destination="@+id/artist_song_sort_dialog" />
@@ -332,7 +332,7 @@
         tools:layout="@layout/fragment_detail">
         <argument
             android:name="genreUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
         <action
             android:id="@+id/sort"
             app:destination="@+id/genre_song_sort_dialog" />
@@ -381,7 +381,7 @@
         tools:layout="@layout/fragment_detail">
         <argument
             android:name="playlistUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
         <action
             android:id="@+id/sort"
             app:destination="@+id/playlist_song_sort_dialog" />
@@ -439,7 +439,7 @@
         tools:layout="@layout/dialog_playlist_name">
         <argument
             android:name="songUids"
-            app:argType="org.oxycblt.musikr.Music$UID[]" />
+            app:argType="com.auralis.musikr.Music$UID[]" />
         <argument
             android:name="template"
             app:argType="string"
@@ -456,14 +456,14 @@
         tools:layout="@layout/dialog_playlist_name">
         <argument
             android:name="playlistUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
         <argument
             android:name="template"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="applySongUids"
-            app:argType="org.oxycblt.musikr.Music$UID[]" />
+            app:argType="com.auralis.musikr.Music$UID[]" />
         <argument
             android:name="reason"
             app:argType="com.auralis.player.music.PlaylistDecision$Rename$Reason" />
@@ -476,7 +476,7 @@
         tools:layout="@layout/dialog_playlist_name">
         <argument
             android:name="playlistUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
     </dialog>
 
     <dialog
@@ -486,7 +486,7 @@
         tools:layout="@layout/dialog_playlist_name">
         <argument
             android:name="playlistUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
     </dialog>
 
     <dialog
@@ -496,7 +496,7 @@
         tools:layout="@layout/dialog_playlist_name">
         <argument
             android:name="songUids"
-            app:argType="org.oxycblt.musikr.Music$UID[]" />
+            app:argType="com.auralis.musikr.Music$UID[]" />
         <action
             android:id="@+id/new_playlist"
             app:destination="@id/new_playlist_dialog" />
@@ -509,7 +509,7 @@
         tools:layout="@layout/dialog_music_choices">
         <argument
             android:name="itemUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
     </dialog>
 
     <dialog
@@ -519,7 +519,7 @@
         tools:layout="@layout/dialog_music_choices">
         <argument
             android:name="songUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
     </dialog>
 
     <dialog
@@ -529,7 +529,7 @@
         tools:layout="@layout/dialog_music_choices">
         <argument
             android:name="songUid"
-            app:argType="org.oxycblt.musikr.Music$UID" />
+            app:argType="com.auralis.musikr.Music$UID" />
     </dialog>
 
     <dialog

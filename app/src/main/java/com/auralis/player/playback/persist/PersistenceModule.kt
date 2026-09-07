@@ -59,10 +59,9 @@ class PersistenceRoomModule {
             .fallbackToDestructiveMigration(true)
             .build()
 
-    @Provides fun playbackStateDao(database: PersistenceDatabase) = database.playbackStateDao()
-
-    @Provides fun queueDao(database: PersistenceDatabase) = database.queueDao()
-
+    // Note: the legacy single-session PlaybackState/Queue tables are intentionally left
+    // without providers. The tables still exist so the 39->40 migration can copy them into
+    // the domain-keyed snapshots; nothing else may read or write them.
     @Provides
     fun audiobookProgressDao(database: PersistenceDatabase) = database.audiobookProgressDao()
 

@@ -36,22 +36,22 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import org.oxycblt.musikr.Config
-import org.oxycblt.musikr.IndexingProgress
-import org.oxycblt.musikr.Interpretation
-import org.oxycblt.musikr.Library
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.Musikr
-import org.oxycblt.musikr.MutableLibrary
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
-import org.oxycblt.musikr.Storage
-import org.oxycblt.musikr.cache.MutableCache
-import org.oxycblt.musikr.fs.mediastore.MediaStore
-import org.oxycblt.musikr.fs.saf.SAF
-import org.oxycblt.musikr.playlist.db.StoredPlaylists
-import org.oxycblt.musikr.tag.interpret.Naming
-import org.oxycblt.musikr.tag.interpret.Separators
+import com.auralis.musikr.Config
+import com.auralis.musikr.IndexingProgress
+import com.auralis.musikr.Interpretation
+import com.auralis.musikr.Library
+import com.auralis.musikr.Music
+import com.auralis.musikr.Musikr
+import com.auralis.musikr.MutableLibrary
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.Storage
+import com.auralis.musikr.cache.MutableCache
+import com.auralis.musikr.fs.mediastore.MediaStore
+import com.auralis.musikr.fs.saf.SAF
+import com.auralis.musikr.playlist.db.StoredPlaylists
+import com.auralis.musikr.tag.interpret.Naming
+import com.auralis.musikr.tag.interpret.Separators
 import timber.log.Timber as L
 
 /**

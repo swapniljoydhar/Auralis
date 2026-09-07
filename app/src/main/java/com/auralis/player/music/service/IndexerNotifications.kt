@@ -31,7 +31,7 @@ import com.auralis.player.ForegroundServiceNotification
 import com.auralis.player.IntegerTable
 import com.auralis.player.R
 import com.auralis.player.util.newMainPendingIntent
-import org.oxycblt.musikr.IndexingProgress
+import com.auralis.musikr.IndexingProgress
 import timber.log.Timber as L
 
 /**

@@ -33,7 +33,7 @@ import com.auralis.player.list.recycler.DialogRecyclerView
 import com.auralis.player.music.resolve
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import org.oxycblt.musikr.Genre
+import com.auralis.musikr.Genre
 
 /**
  * A [FlexibleListAdapter] that displays a list of [Genre] playback choices, for use with

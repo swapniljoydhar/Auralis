@@ -93,7 +93,7 @@ class ErrorDetailsDialog : ViewBindingMaterialDialogFragment<DialogErrorDetailsB
     private companion object {
         /** The URL to the bug report issue form */
         const val LINK_ISSUES =
-            "https://github.com/Auralis/Auralis/issues/new" +
+            "https://github.com/swapniljoydhar/Auralis/issues/new" +
                 "?assignees=Auralis&labels=bug&projects=&template=bug-crash-report.yml"
     }
 }

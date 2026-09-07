@@ -33,7 +33,7 @@ import com.auralis.player.list.recycler.DialogRecyclerView
 import com.auralis.player.music.resolve
 import com.auralis.player.util.context
 import com.auralis.player.util.inflater
-import org.oxycblt.musikr.Artist
+import com.auralis.musikr.Artist
 
 /**
  * A [FlexibleListAdapter] that displays a list of [Artist] playback choices, for use with

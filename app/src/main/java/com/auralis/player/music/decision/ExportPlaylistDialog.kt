@@ -40,9 +40,9 @@ import com.auralis.player.ui.ViewBindingMaterialDialogFragment
 import com.auralis.player.util.collectImmediately
 import com.auralis.player.util.unlikelyToBeNull
 import dagger.hilt.android.AndroidEntryPoint
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.playlist.ExportConfig
-import org.oxycblt.musikr.playlist.m3u.M3U
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.playlist.ExportConfig
+import com.auralis.musikr.playlist.m3u.M3U
 import timber.log.Timber as L
 
 /**

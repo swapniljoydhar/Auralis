@@ -43,11 +43,11 @@ import com.auralis.player.util.context
 import com.auralis.player.util.getPlural
 import com.auralis.player.util.inflater
 import com.google.android.material.divider.MaterialDivider
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
 
 /**
  * A [RecyclerView.ViewHolder] that displays a [Song]. Use [from] to create an instance.

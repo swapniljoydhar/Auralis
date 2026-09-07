@@ -24,7 +24,7 @@
 package com.auralis.player.playback.state
 
 import com.auralis.player.audiobooks.AudiobookClassifier
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Song
 
 /** The explicit local-library domain that owns a playback command and its queue. */
 enum class PlaybackDomain {

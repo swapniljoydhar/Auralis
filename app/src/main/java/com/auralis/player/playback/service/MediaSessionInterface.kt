@@ -43,16 +43,20 @@ import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.playback.state.ShuffleMode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.apache.commons.text.similarity.JaroWinklerSimilarity
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.Artist
-import org.oxycblt.musikr.Genre
-import org.oxycblt.musikr.Library
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
-import org.oxycblt.musikr.tag.Name
+import com.auralis.musikr.Album
+import com.auralis.musikr.Artist
+import com.auralis.musikr.Genre
+import com.auralis.musikr.Library
+import com.auralis.musikr.Music
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.tag.Name
 
 class MediaSessionInterface
 @Inject
@@ -64,23 +68,7 @@ constructor(
     private val musicRepository: MusicRepository,
 ) : MediaSessionCompat.Callback() {
     private val jaroWinkler = JaroWinklerSimilarity()
-
-    //    STUBS: We already automatically prepare playback.
-    //    override fun onPrepare() {
-    //        super.onPrepare()
-    //    }
-
-    //    override fun onPrepareFromMediaId(mediaId: String?, extras: Bundle?) {
-    //        super.onPrepareFromMediaId(mediaId, extras)
-    //    }
-    //
-    //    override fun onPrepareFromUri(uri: Uri?, extras: Bundle?) {
-    //        super.onPrepareFromUri(uri, extras)
-    //    }
-    //
-    //    override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
-    //        super.onPlayFromUri(uri, extras)
-    //    }
+    private val searchScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
         super.onPlayFromMediaId(mediaId, extras)
@@ -99,8 +87,14 @@ constructor(
     override fun onPlayFromSearch(query: String, extras: Bundle) {
         super.onPlayFromSearch(query, extras)
         val library = musicRepository.library ?: return
-        val command = expandSearchInfoCommand(query.ifBlank { null }, extras, library) ?: return
-        playbackManager.play(command)
+        // Fuzzy-matching the whole library is expensive; never run it on the session
+        // callback thread where it would stall other media clients.
+        searchScope.launch {
+            val command = expandSearchInfoCommand(query.ifBlank { null }, extras, library)
+            if (command != null) {
+                playbackManager.play(command)
+            }
+        }
     }
 
     override fun onAddQueueItem(description: MediaDescriptionCompat) {
@@ -207,8 +201,9 @@ constructor(
     }
 
     override fun onStop() {
-        // Get the service to shut down with the ACTION_EXIT intent
-        context.sendBroadcast(Intent(PlaybackActions.ACTION_EXIT))
+        // Get the service to shut down with the ACTION_EXIT intent. Scoped to this app so
+        // no other receiver can observe the playback lifecycle.
+        context.sendBroadcast(Intent(PlaybackActions.ACTION_EXIT).setPackage(context.packageName))
     }
 
     override fun onCustomAction(action: String, extras: Bundle?) {

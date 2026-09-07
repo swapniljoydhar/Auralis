@@ -35,9 +35,9 @@ import com.auralis.player.playback.state.QueueChange
 import java.nio.ByteBuffer
 import javax.inject.Inject
 import kotlin.math.pow
-import org.oxycblt.musikr.Album
-import org.oxycblt.musikr.MusicParent
-import org.oxycblt.musikr.Song
+import com.auralis.musikr.Album
+import com.auralis.musikr.MusicParent
+import com.auralis.musikr.Song
 import timber.log.Timber as L
 
 /**

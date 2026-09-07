@@ -20,8 +20,8 @@ Each domain maintains its own distinct:
 
 ## 🎵 Music Experience
 
-* **High-Performance Metadata Engine (`musikr`)**: Robust, asynchronous scanning pipeline parsing ID3v2, Vorbis, MP4, and FLAC metadata using pure Android media APIs without heavy native NDK dependencies.
-* **Audiophile Playback**: True gapless playback, full ReplayGain track and album gain normalization with custom pre-amp controls, and system equalizer integration.
+* **High-Performance Metadata Engine (`musikr`)**: Robust, asynchronous scanning pipeline combining Android media APIs with a pure-Kotlin tag reader (ID3v2, Vorbis comments, MP4 freeform) — no NDK, no native dependencies.
+* **Audiophile Playback**: True gapless playback, ReplayGain track/album normalization (including Opus R128) recovered straight from your files, custom pre-amp controls, and system equalizer integration.
 * **Comprehensive Library Organization**: Fast browsing by Songs, Albums, Artists, Genres, and Playlists with fast alphabetic index scrolling and customizable navigation tabs.
 * **Dynamic Queue Management**: Drag-and-drop queue reordering, non-repeating shuffle algorithms, and flexible repeat modes.
 * **Material 3 Expressive UI**: Dynamic color theming (Monet on Android 12+), AMOLED pure black theme, edge-to-edge window insets, and fluid collapsible bottom-sheet player panel.
@@ -36,10 +36,12 @@ Each domain maintains its own distinct:
 * **Embedded & File-Based Chapters**: Seamless navigation across MP4/M4B embedded chapters and file-based chapters, with direct jump-to-chapter support.
 * **Intelligent Sleep Timers with Shake-to-Reset**:
   * Set countdown timers (15, 30, 45, 60, 90 minutes) or auto-stop at the "End of Chapter" (scaled dynamically to playback speed).
+  * **Gentle fade-out**: the volume eases down over the final seconds instead of cutting off mid-word (toggleable in settings).
+  * Timers pause with playback and resume where they left off — they never silently die.
   * **Shake to Extend**: Gently shake your device in bed while the sleep timer is running to reset or extend it, confirmed with a subtle haptic vibration pulse—no need to look at your screen.
 * **Smart Auto-Rewind on Resume**: Automatically rewinds playback by a configurable interval (off, 2s, 5s, 10s) upon resuming after a pause so you never lose context.
 * **Bookmarks & Study Notes**: Save timestamped bookmarks with custom notes and jump directly to bookmarked moments from the player or the dedicated bookmarks browser.
-* **Granular Playback Speed & Silence Trimming**: Fine-grained speed control (0.5× to 3.0×) with pitch correction and automatic silence skipping.
+* **Granular Playback Speed & Silence Trimming**: Fine-grained speed control (0.5× to 3.0×) with pitch correction and automatic silence skipping. Each book remembers its own pace.
 
 ---
 
@@ -64,7 +66,7 @@ Auralis/
 │   │   └── settings/     # Preference screens and settings management
 │   └── src/main/res/     # Layouts, vector drawables, Material 3 styles
 ├── musikr/               # High-speed media extraction and indexing library
-│   └── src/main/java/org/oxycblt/musikr/
+│   └── src/main/java/com/auralis/musikr/
 │       ├── metadata/     # MediaMetadataRetriever metadata parsing
 │       ├── model/        # Graph models for songs, albums, artists, genres
 │       └── pipeline/     # Asynchronous file extraction and evaluation pipeline
@@ -77,13 +79,13 @@ Auralis/
 
 ```bash
 # Build debug APK
-gradle :app:assembleDebug
+./gradlew app:assembleDebug
 
 # Run unit tests
-gradle :app:testDebugUnitTest :musikr:test
+./gradlew musikr:testDebug app:testDebug
 
-# Check linting
-gradle :app:lintDebug
+# Check formatting
+./gradlew spotlessCheck
 ```
 
 ---

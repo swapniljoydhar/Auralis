@@ -34,10 +34,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.Playlist
-import org.oxycblt.musikr.Song
-import org.oxycblt.musikr.playlist.ExportConfig
+import com.auralis.musikr.Music
+import com.auralis.musikr.Playlist
+import com.auralis.musikr.Song
+import com.auralis.musikr.playlist.ExportConfig
 import timber.log.Timber as L
 
 /**

@@ -29,14 +29,14 @@ import com.auralis.player.util.concatLocalized
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import kotlin.math.max
-import org.oxycblt.musikr.Music
-import org.oxycblt.musikr.fs.Format
-import org.oxycblt.musikr.tag.Date
-import org.oxycblt.musikr.tag.Disc
-import org.oxycblt.musikr.tag.Name
-import org.oxycblt.musikr.tag.Placeholder
-import org.oxycblt.musikr.tag.ReleaseType
-import org.oxycblt.musikr.tag.ReleaseType.Refinement
+import com.auralis.musikr.Music
+import com.auralis.musikr.fs.Format
+import com.auralis.musikr.tag.Date
+import com.auralis.musikr.tag.Disc
+import com.auralis.musikr.tag.Name
+import com.auralis.musikr.tag.Placeholder
+import com.auralis.musikr.tag.ReleaseType
+import com.auralis.musikr.tag.ReleaseType.Refinement
 import timber.log.Timber
 
 fun Name.resolve(context: Context) =
