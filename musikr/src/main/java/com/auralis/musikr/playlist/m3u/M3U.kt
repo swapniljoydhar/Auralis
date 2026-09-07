@@ -271,7 +271,7 @@ private class M3UImpl(private val volumeManager: VolumeManager) : M3U() {
 
     /** Strip control characters so written fields can never break M3U line framing. */
     private fun sanitizeField(field: String): String =
-        field.replace(Regex("[\p{Cntrl}]"), " ").correctWhitespace() ?: "Unknown"
+        field.replace(Regex("[\\p{Cntrl}]"), " ").correctWhitespace() ?: "Unknown"
 
     private fun Components.absoluteTo(workingDirectory: Components): Components {
         var absoluteComponents = workingDirectory
