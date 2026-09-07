@@ -485,9 +485,7 @@ private class PlaybackNotification(
         }
     }
 
-    /**
-     * Update the domain actions shown in this notification.
-     */
+    /** Update the domain actions shown in this notification. */
     fun updateDomain(
         domain: PlaybackDomain,
         isPlaying: Boolean,

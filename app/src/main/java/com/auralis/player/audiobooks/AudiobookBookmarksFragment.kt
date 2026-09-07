@@ -98,9 +98,7 @@ class AudiobookBookmarksFragment : Fragment() {
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20.dp(), 24.dp(), 20.dp(), 24.dp())
-            setBackgroundColor(
-                MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK)
-            )
+            setBackgroundColor(MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK))
             addView(title)
             addView(empty)
             addView(recycler, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
@@ -213,15 +211,14 @@ class AudiobookBookmarksFragment : Fragment() {
                     }
                     .orEmpty()
             holder.title.text = chapterTitle
-            holder.subtitle.text =
-                buildString {
-                    append(row.bookmark.positionMs.formatDurationMs(true))
-                    append(embedded)
-                    if (row.bookmark.note.isNotBlank()) {
-                        append('\n')
-                        append(row.bookmark.note)
-                    }
+            holder.subtitle.text = buildString {
+                append(row.bookmark.positionMs.formatDurationMs(true))
+                append(embedded)
+                if (row.bookmark.note.isNotBlank()) {
+                    append('\n')
+                    append(row.bookmark.note)
                 }
+            }
             holder.resume.isEnabled = row.chapter != null
             holder.resume.text = context.getString(R.string.lbl_audiobook_resume)
             holder.resume.setOnClickListener { onResume(row) }
@@ -282,8 +279,7 @@ class AudiobookBookmarksFragment : Fragment() {
                             old.bookmark.chapterUid == new.bookmark.chapterUid &&
                             old.bookmark.createdMs == new.bookmark.createdMs
 
-                    override fun areContentsTheSame(old: BookmarkRow, new: BookmarkRow) =
-                        old == new
+                    override fun areContentsTheSame(old: BookmarkRow, new: BookmarkRow) = old == new
                 }
         }
 

@@ -568,7 +568,9 @@ class ExoPlaybackStateHolder(
                         configuredRewind <= 0L -> 0L
                         elapsedPauseMs < 20_000L -> 0L
                         elapsedPauseMs < 5 * 60_000L ->
-                            (configuredRewind / 2).coerceAtLeast(3000L).coerceAtMost(configuredRewind)
+                            (configuredRewind / 2)
+                                .coerceAtLeast(3000L)
+                                .coerceAtMost(configuredRewind)
                         else -> configuredRewind
                     }
                 if (rewindMs > 0L) {

@@ -53,7 +53,6 @@ import com.auralis.player.audiobooks.AudiobookProgressRepository
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.databinding.FragmentHomeListBinding
 import com.auralis.player.home.HomeFragmentDirections
-import com.auralis.player.util.navigateSafe
 import com.auralis.player.home.HomeViewModel
 import com.auralis.player.image.CoverView
 import com.auralis.player.music.IndexingState
@@ -64,6 +63,7 @@ import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.ShuffleMode
 import com.auralis.player.util.collectImmediately
+import com.auralis.player.util.navigateSafe
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

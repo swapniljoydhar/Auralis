@@ -205,7 +205,8 @@ constructor(
                         amplified > SOFT_LIMIT_THRESHOLD -> {
                             val over = amplified - SOFT_LIMIT_THRESHOLD
                             val range = Short.MAX_VALUE - SOFT_LIMIT_THRESHOLD
-                            (SOFT_LIMIT_THRESHOLD + range * kotlin.math.tanh((over / range).toDouble()).toFloat())
+                            (SOFT_LIMIT_THRESHOLD +
+                                    range * kotlin.math.tanh((over / range).toDouble()).toFloat())
                                 .toInt()
                                 .coerceAtMost(Short.MAX_VALUE.toInt())
                                 .toShort()
@@ -213,7 +214,8 @@ constructor(
                         amplified < -SOFT_LIMIT_THRESHOLD -> {
                             val over = -amplified - SOFT_LIMIT_THRESHOLD
                             val range = Short.MAX_VALUE - SOFT_LIMIT_THRESHOLD
-                            (-SOFT_LIMIT_THRESHOLD - range * kotlin.math.tanh((over / range).toDouble()).toFloat())
+                            (-SOFT_LIMIT_THRESHOLD -
+                                    range * kotlin.math.tanh((over / range).toDouble()).toFloat())
                                 .toInt()
                                 .coerceAtLeast(Short.MIN_VALUE.toInt())
                                 .toShort()

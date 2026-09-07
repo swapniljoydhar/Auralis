@@ -163,7 +163,8 @@ private constructor(
                     val positionMs = playbackManager.progression.calculateElapsedPositionMs()
                     scope.launch {
                         val embeddedChapterStartMs =
-                            embeddedChapterReader.read(currentSong)
+                            embeddedChapterReader
+                                .read(currentSong)
                                 .lastOrNull { it.startMs <= positionMs }
                                 ?.startMs
                         audiobookBookmarkRepository.add(

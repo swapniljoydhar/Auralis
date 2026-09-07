@@ -277,10 +277,11 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
         // Set up the mapping between the ViewPager and TabLayout.
         tabMediator =
             TabLayoutMediator(
-                binding.homeTabs,
-                binding.homePager,
-                NamedTabStrategy(homeModel.currentTabTypes),
-            ).also { it.attach() }
+                    binding.homeTabs,
+                    binding.homePager,
+                    NamedTabStrategy(homeModel.currentTabTypes),
+                )
+                .also { it.attach() }
     }
 
     private fun updateCurrentTab(tabType: MusicType) {
