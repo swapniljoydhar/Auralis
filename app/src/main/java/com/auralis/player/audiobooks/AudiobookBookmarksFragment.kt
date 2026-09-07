@@ -2,9 +2,10 @@
  * Copyright (c) 2026 Auralis Contributors
  * AudiobookBookmarksFragment.kt is part of Auralis.
  *
- * Auralis is a derivative work of the Auxio Project and incorporates
- * audiobook-oriented work inspired by Voice. Original copyright and GPL
- * attribution are retained in PROVENANCE.md and the repository history.
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,9 +99,7 @@ class AudiobookBookmarksFragment : Fragment() {
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(20.dp(), 24.dp(), 20.dp(), 24.dp())
-            setBackgroundColor(
-                MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK)
-            )
+            setBackgroundColor(MaterialColors.getColor(context, MR.attr.colorSurface, Color.BLACK))
             addView(title)
             addView(empty)
             addView(recycler, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
@@ -213,15 +212,14 @@ class AudiobookBookmarksFragment : Fragment() {
                     }
                     .orEmpty()
             holder.title.text = chapterTitle
-            holder.subtitle.text =
-                buildString {
-                    append(row.bookmark.positionMs.formatDurationMs(true))
-                    append(embedded)
-                    if (row.bookmark.note.isNotBlank()) {
-                        append('\n')
-                        append(row.bookmark.note)
-                    }
+            holder.subtitle.text = buildString {
+                append(row.bookmark.positionMs.formatDurationMs(true))
+                append(embedded)
+                if (row.bookmark.note.isNotBlank()) {
+                    append('\n')
+                    append(row.bookmark.note)
                 }
+            }
             holder.resume.isEnabled = row.chapter != null
             holder.resume.text = context.getString(R.string.lbl_audiobook_resume)
             holder.resume.setOnClickListener { onResume(row) }
@@ -282,8 +280,7 @@ class AudiobookBookmarksFragment : Fragment() {
                             old.bookmark.chapterUid == new.bookmark.chapterUid &&
                             old.bookmark.createdMs == new.bookmark.createdMs
 
-                    override fun areContentsTheSame(old: BookmarkRow, new: BookmarkRow) =
-                        old == new
+                    override fun areContentsTheSame(old: BookmarkRow, new: BookmarkRow) = old == new
                 }
         }
 

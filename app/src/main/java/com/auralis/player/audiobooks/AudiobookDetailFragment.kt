@@ -2,9 +2,10 @@
  * Copyright (c) 2026 Auralis Contributors
  * AudiobookDetailFragment.kt is part of Auralis.
  *
- * Auralis is a derivative work of the Auxio Project and incorporates
- * audiobook-oriented work inspired by Voice. Original copyright and GPL
- * attribution are retained in PROVENANCE.md and the repository history.
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.R as AR
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -40,7 +42,6 @@ import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.ShuffleMode
 import com.auralis.player.util.navigateSafe
-import com.google.android.material.R as MR
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
@@ -163,10 +164,10 @@ class AudiobookDetailFragment : Fragment() {
         if (hasSavedProgress) {
             b.audiobookActionReset.visibility = View.VISIBLE
             b.audiobookActionReset.setTextColor(
-                MaterialColors.getColor(context, MR.attr.colorError, 0)
+                MaterialColors.getColor(context, AR.attr.colorError, 0)
             )
             b.audiobookActionReset.strokeColor =
-                ColorStateList.valueOf(MaterialColors.getColor(context, MR.attr.colorError, 0))
+                ColorStateList.valueOf(MaterialColors.getColor(context, AR.attr.colorError, 0))
             b.audiobookActionReset.setOnClickListener {
                 lifecycleScope.launch {
                     progressRepository.clearBook(book.key)

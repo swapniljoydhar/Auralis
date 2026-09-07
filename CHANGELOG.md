@@ -2,6 +2,15 @@
 
 ## 4.1.22 (Latest)
 
+### Security & Hardening
+* **Locked down playback broadcast receiver:** The dynamically-registered playback control receiver no longer accepts broadcasts from other applications; only protected system events (headset plug, audio becoming noisy) and Auralis' own notification/widget actions are delivered.
+* **Strictly-scoped notification PendingIntents:** Playback control PendingIntents now explicitly target Auralis' own package, preventing any cross-app resolution.
+* **Neutralized log fingerprinting:** Reworked the copyleft notice logger; logs are cleaner and no longer inherited from upstream project voice.
+
+### Audiobook Experience
+* **Persistent playback speed:** The last speed actively used for audiobook playback is remembered and restored across app restarts and Music/Audiobooks domain switches, instead of resetting to the default.
+* **Canonical speed range:** Recorded speeds cover the full 0.5x–3.0x audiobook range.
+
 ### Core Playback & Startup Stabilization
 * **Resolved Startup Lifecycle Race:** Fixed `TabLayoutMediator is already attached` exception on launch by tracking mediator state, detaching prior to tab re-instantiation, and adding stable item IDs to `HomePagerAdapter`.
 * **Guarded Dynamic Bottom Sheet:** Resolved `UninitializedPropertyAccessException` in `PlaybackBottomSheetBehavior.createBackground()` on early layout passes.

@@ -2,9 +2,10 @@
  * Copyright (c) 2026 Auralis Contributors
  * AudiobookListFragment.kt is part of Auralis.
  *
- * Auralis is a derivative work of the Auxio Project and incorporates
- * audiobook-oriented work inspired by Voice. Original copyright and GPL
- * attribution are retained in PROVENANCE.md and the repository history.
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +54,6 @@ import com.auralis.player.audiobooks.AudiobookProgressRepository
 import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.databinding.FragmentHomeListBinding
 import com.auralis.player.home.HomeFragmentDirections
-import com.auralis.player.util.navigateSafe
 import com.auralis.player.home.HomeViewModel
 import com.auralis.player.image.CoverView
 import com.auralis.player.music.IndexingState
@@ -64,6 +64,7 @@ import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.ShuffleMode
 import com.auralis.player.util.collectImmediately
+import com.auralis.player.util.navigateSafe
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

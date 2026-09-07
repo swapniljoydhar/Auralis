@@ -2,9 +2,10 @@
  * Copyright (c) 2021 Auralis Contributors
  * PlaybackPanelFragment.kt is part of Auralis.
  *
- * Auralis is a derivative work of the Auxio Project and incorporates
- * audiobook-oriented work inspired by Voice. Original copyright and GPL
- * attribution are retained in PROVENANCE.md and the repository history.
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +24,6 @@
 package com.auralis.player.playback
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AlertDialog
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
 import android.media.audiofx.AudioEffect
@@ -40,6 +39,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.updatePadding
 import androidx.dynamicanimation.animation.SpringForce
@@ -84,7 +84,9 @@ import com.auralis.player.util.recycler
 import com.auralis.player.util.showToast
 import com.auralis.player.util.smoothScrollByPageTo
 import com.auralis.player.util.systemBarInsetsCompat
+import com.google.android.material.R as MR
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -391,8 +393,7 @@ class PlaybackPanelFragment :
         val labels =
             speeds
                 .map { speed ->
-                    if (speed == 1.0f) "1.0× (${getString(R.string.lbl_normal)})"
-                    else "${speed}×"
+                    if (speed == 1.0f) "1.0× (${getString(R.string.lbl_normal)})" else "${speed}×"
                 }
                 .toTypedArray()
         val currentSpeed = playbackManager.playbackSpeed

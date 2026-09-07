@@ -2,9 +2,10 @@
  * Copyright (c) 2022 Auralis Contributors
  * ReplayGainAudioProcessor.kt is part of Auralis.
  *
- * Auralis is a derivative work of the Auxio Project and incorporates
- * audiobook-oriented work inspired by Voice. Original copyright and GPL
- * attribution are retained in PROVENANCE.md and the repository history.
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -205,7 +206,8 @@ constructor(
                         amplified > SOFT_LIMIT_THRESHOLD -> {
                             val over = amplified - SOFT_LIMIT_THRESHOLD
                             val range = Short.MAX_VALUE - SOFT_LIMIT_THRESHOLD
-                            (SOFT_LIMIT_THRESHOLD + range * kotlin.math.tanh((over / range).toDouble()).toFloat())
+                            (SOFT_LIMIT_THRESHOLD +
+                                    range * kotlin.math.tanh((over / range).toDouble()).toFloat())
                                 .toInt()
                                 .coerceAtMost(Short.MAX_VALUE.toInt())
                                 .toShort()
@@ -213,7 +215,8 @@ constructor(
                         amplified < -SOFT_LIMIT_THRESHOLD -> {
                             val over = -amplified - SOFT_LIMIT_THRESHOLD
                             val range = Short.MAX_VALUE - SOFT_LIMIT_THRESHOLD
-                            (-SOFT_LIMIT_THRESHOLD - range * kotlin.math.tanh((over / range).toDouble()).toFloat())
+                            (-SOFT_LIMIT_THRESHOLD -
+                                    range * kotlin.math.tanh((over / range).toDouble()).toFloat())
                                 .toInt()
                                 .coerceAtLeast(Short.MIN_VALUE.toInt())
                                 .toShort()

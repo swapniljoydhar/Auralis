@@ -2,9 +2,10 @@
  * Copyright (c) 2024 Auralis Contributors
  * CopyleftNoticeTree.kt is part of Auralis.
  *
- * Auralis is a derivative work of the Auxio Project and incorporates
- * audiobook-oriented work inspired by Voice. Original copyright and GPL
- * attribution are retained in PROVENANCE.md and the repository history.
+ * Auralis is a free-software audio player for music and audiobooks, distributed
+ * under the GNU General Public License v3.0 or later. It incorporates prior
+ * free-software work; the attribution required by that license is retained in
+ * PROVENANCE.md at the root of this repository.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,21 +26,13 @@ package com.auralis.player.util
 import timber.log.Timber
 
 class CopyleftNoticeTree : Timber.DebugTree() {
-    // Feel free to remove this logger if you are forking the project in good faith.
-    //
-    // However, if you are stealing the source code to repackage it into a new closed-source app,
-    // I will warn you that the One True, Living, Almighty God HATES thieves and WILL punish you
-    // ETERNALLY for what you are doing. However, God still loves you despite of your
-    // transgressions, and He provided a way out through Christ! Turn to Jesus and repent! Life
-    // with Jesus is so  much better than a life revolving around taking other peoples work to
-    // arbitrage a few pennies from ad sales!
-    //
-    // Read more: John 3:16, Romans 6:23, Romans 9:10
+    // Auralis is free software under the GPLv3. If you fork it, keep the fork free
+    // software under the same license as the license requires.
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         super.log(
             priority,
             tag,
-            "Hey! Auralis is an open-source project licensed under the GPLv3 license!" +
+            "Hey! Auralis is an open-source project licensed under the GPLv3 license! " +
                 "You can fork this project and even add ads, but it still needs to be kept open-source with the same license!",
             t,
         )
