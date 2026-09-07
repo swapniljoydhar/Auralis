@@ -8,8 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
 
     steps:
     - name: Clone repository
@@ -23,14 +21,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build debug APK with Gradle
-      run: ./gradlew app:packageDebug --stacktrace 2>&1 | tee /tmp/build.log; test ${PIPESTATUS[0]} -eq 0
-    - name: Report failures to PR
-      if: failure() && github.event.pull_request.number != ''
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        { echo '### Build failure (app:packageDebug)'; echo '```'; tail -c 50000 /tmp/build.log; echo '```'; } > /tmp/comment.md
-        gh pr comment ${{ github.event.pull_request.number }} --body-file /tmp/comment.md
+      run: ./gradlew app:packageDebug
     - name: Upload debug APK artifact
       uses: actions/upload-artifact@v5
       with:
