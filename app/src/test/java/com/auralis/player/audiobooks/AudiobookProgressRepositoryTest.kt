@@ -75,10 +75,16 @@ class AudiobookProgressRepositoryTest {
 
         override suspend fun getForChapter(chapterUid: String): AudiobookProgressEntity? = null
 
+        override suspend fun getForChapters(
+            chapterUids: List<String>
+        ): List<AudiobookProgressEntity> = emptyList()
+
         override suspend fun upsert(progress: AudiobookProgressEntity) {
             saved = progress
         }
 
         override suspend fun deleteForBook(bookKey: String) = Unit
+
+        override suspend fun deleteForChapters(chapterUids: List<String>) = Unit
     }
 }

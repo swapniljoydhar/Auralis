@@ -39,7 +39,11 @@ android {
 
     signingConfigs {
         debugConfig {
-            storeFile file("${rootDir}/debug.keystore")
+            // A checked-in debug keystore keeps install/update continuity on local
+            // machines, but fresh clones and CI do not have it; fall back to AGP's
+            // auto-generated debug key, which uses the same credentials.
+            def customDebugKeystore = file("${rootDir}/debug.keystore")
+            storeFile customDebugKeystore.exists() ? customDebugKeystore : android.signingConfigs.debug.storeFile
             storePassword "android"
             keyAlias "androiddebugkey"
             keyPassword "android"
