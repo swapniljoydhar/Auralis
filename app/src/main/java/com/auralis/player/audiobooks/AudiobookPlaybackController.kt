@@ -23,8 +23,14 @@
  
 package com.auralis.player.audiobooks
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import androidx.core.content.ContextCompat
 import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -39,14 +45,24 @@ import org.oxycblt.musikr.Song
 class AudiobookPlaybackController
 @Inject
 constructor(
+    @ApplicationContext private val context: Context,
     private val playbackManager: PlaybackStateManager,
     private val embeddedChapterReader: EmbeddedChapterReader,
+    private val audiobookSettings: AudiobookSettings,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var sleepTimerJob: Job? = null
     private var scheduledDomain: PlaybackDomain? = null
     private var sleepAtChapterEnd = false
     private var embeddedSleepBoundary: EmbeddedSleepBoundary? = null
+    private var lastScheduledDurationMs: Long = 0L
+
+    private val shakeDetector =
+        ShakeDetector(context) {
+            if (isSleepTimerActive && audiobookSettings.shakeToResetSleepTimer) {
+                onShakeReset()
+            }
+        }
 
     val isSleepTimerActive: Boolean
         get() = scheduledDomain == PlaybackDomain.AUDIOBOOKS
@@ -56,6 +72,10 @@ constructor(
         if (domain != PlaybackDomain.AUDIOBOOKS) return
         cancelSleepTimer()
         scheduledDomain = domain
+        lastScheduledDurationMs = durationMs
+        if (audiobookSettings.shakeToResetSleepTimer) {
+            shakeDetector.start()
+        }
         sleepTimerJob =
             scope.launch {
                 delay(durationMs.coerceAtLeast(0L))
@@ -74,6 +94,10 @@ constructor(
         cancelSleepTimer()
         scheduledDomain = PlaybackDomain.AUDIOBOOKS
         sleepAtChapterEnd = true
+        lastScheduledDurationMs = 0L
+        if (audiobookSettings.shakeToResetSleepTimer) {
+            shakeDetector.start()
+        }
         scope.launch {
             val chapters = embeddedChapterReader.read(song)
             if (
@@ -85,6 +109,31 @@ constructor(
                 return@launch
             embeddedSleepBoundary = EmbeddedSleepBoundary(song, chapters)
             refreshEmbeddedSleepBoundary(playbackManager.progression.calculateElapsedPositionMs())
+        }
+    }
+
+    private fun onShakeReset() {
+        vibrateFeedback()
+        if (lastScheduledDurationMs > 0L) {
+            scheduleSleepTimer(lastScheduledDurationMs)
+        } else if (sleepAtChapterEnd) {
+            scheduleSleepAtChapterEnd()
+        }
+    }
+
+    private fun vibrateFeedback() {
+        try {
+            val vibrator = ContextCompat.getSystemService(context, Vibrator::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator?.vibrate(
+                    VibrationEffect.createOneShot(120L, VibrationEffect.DEFAULT_AMPLITUDE)
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(120L)
+            }
+        } catch (_: Exception) {
+            // Ignore if vibration is not supported or permission denied
         }
     }
 
@@ -140,10 +189,12 @@ constructor(
     }
 
     private fun clearSleepTimer() {
+        shakeDetector.stop()
         sleepTimerJob = null
         scheduledDomain = null
         sleepAtChapterEnd = false
         embeddedSleepBoundary = null
+        lastScheduledDurationMs = 0L
     }
 
     private fun refreshEmbeddedSleepBoundary(positionMs: Long) {
@@ -152,9 +203,12 @@ constructor(
             AudiobookSleepTimerPolicy.nextEmbeddedChapterStart(boundary.chapters, positionMs)
                 ?: return
         sleepTimerJob?.cancel()
+        val speed = playbackManager.playbackSpeed.coerceAtLeast(0.1f)
+        val remainingAudioMs = (nextStartMs - positionMs).coerceAtLeast(0L)
+        val wallDelayMs = (remainingAudioMs / speed).toLong()
         sleepTimerJob =
             scope.launch {
-                delay((nextStartMs - positionMs).coerceAtLeast(0L))
+                delay(wallDelayMs)
                 val currentSong = playbackManager.currentSong
                 if (
                     scheduledDomain == PlaybackDomain.AUDIOBOOKS &&

@@ -53,6 +53,12 @@
             app:key="@string/set_key_audiobook_skip_silence"
             app:summary="@string/set_audiobook_skip_silence_desc"
             app:title="@string/set_audiobook_skip_silence" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="@string/set_key_audiobook_shake_reset"
+            app:summary="@string/set_audiobook_shake_reset_desc"
+            app:title="@string/set_audiobook_shake_reset" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/set_audiobook_appearance">

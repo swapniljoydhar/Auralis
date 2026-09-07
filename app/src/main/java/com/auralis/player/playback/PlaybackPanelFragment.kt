@@ -210,8 +210,12 @@ class PlaybackPanelFragment :
         audiobookControls.findViewById<View>(R.id.audiobook_chapters_button).setOnClickListener {
             showChapterPicker()
         }
-        audiobookControls.findViewById<View>(R.id.audiobook_bookmark_button).setOnClickListener {
-            bookmarkCurrentPosition()
+        audiobookControls.findViewById<View>(R.id.audiobook_bookmark_button).apply {
+            setOnClickListener { bookmarkCurrentPosition() }
+            setOnLongClickListener {
+                showBookmarksList()
+                true
+            }
         }
         audiobookSleepButton?.setOnClickListener { showSleepPicker() }
         audiobookSpeedButton?.setOnClickListener { showSpeedPicker() }
@@ -453,6 +457,38 @@ class PlaybackPanelFragment :
         }
     }
 
+    private fun showBookmarksList() {
+        val currentSong = playbackManager.currentSong ?: return
+        if (playbackManager.domain != PlaybackDomain.AUDIOBOOKS) return
+        val bookKey = AudiobookCatalog.bookKey(currentSong)
+        val bookmarks = audiobookBookmarkRepository.getForBook(bookKey)
+        if (bookmarks.isEmpty()) {
+            requireContext().showToast(R.string.msg_audiobook_no_bookmarks)
+            return
+        }
+        val items =
+            bookmarks
+                .map { bookmark ->
+                    val time = bookmark.positionMs.formatDurationMs(false)
+                    if (bookmark.note.isNotBlank()) "$time — ${bookmark.note}" else time
+                }
+                .toTypedArray()
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.lbl_audiobook_bookmarks)
+            .setItems(items) { _, which ->
+                val selected = bookmarks[which]
+                val targetIndex =
+                    playbackManager.queue.indexOfFirst { it.uid == selected.chapterUid }
+                if (targetIndex >= 0 && targetIndex != playbackManager.index) {
+                    playbackManager.goto(targetIndex)
+                }
+                playbackManager.seekTo(selected.positionMs)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
     private fun showSleepPicker() {
         val labels =
             arrayOf(
@@ -497,8 +533,7 @@ class PlaybackPanelFragment :
             return
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val embeddedChapters =
-                if (queue.size == 1) embeddedChapterReader.read(currentSong) else emptyList()
+            val embeddedChapters = embeddedChapterReader.read(currentSong)
             showChapterNavigator(queue, currentSong, embeddedChapters)
         }
     }

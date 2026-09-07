@@ -25,7 +25,7 @@ package org.oxycblt.musikr.metadata
 
 import android.content.ContentResolver
 import android.content.Context
-import java.io.FileInputStream
+import android.media.MediaMetadataRetriever
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.oxycblt.musikr.fs.File
@@ -53,9 +53,63 @@ private class MetadataExtractorImpl(private val contentResolver: ContentResolver
     MetadataExtractor {
     override suspend fun extract(deviceFile: File): MetadataResult =
         withContext(Dispatchers.IO) {
-            contentResolver.openFileDescriptor(deviceFile.uri, "r")?.use { fd ->
-                val fis = FileInputStream(fd.fileDescriptor)
-                TagLibJNI.open(deviceFile, fis).also { fis.close() }
-            } ?: MetadataResult.ProviderFailed
+            try {
+                contentResolver.openFileDescriptor(deviceFile.uri, "r")?.use { pfd ->
+                    val retriever = MediaMetadataRetriever()
+                    try {
+                        retriever.setDataSource(pfd.fileDescriptor)
+                        val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                        val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                        val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                        val albumArtist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
+                        val genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
+                        val date = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE)
+                            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)
+                        val track = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)
+                        val disc = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)
+                        val compilation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPILATION)
+                        val mimeType = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE) ?: "audio/mpeg"
+                        val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
+                        val bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)?.toIntOrNull()?.let { it / 1000 } ?: 0
+                        val sampleRate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_SAMPLERATE)?.toIntOrNull() ?: 44100
+                        val cover = retriever.embeddedPicture
+
+                        val id3v2 = mutableMapOf<String, List<String>>()
+                        title?.let { id3v2["TIT2"] = listOf(it) }
+                        artist?.let { id3v2["TPE1"] = listOf(it) }
+                        album?.let { id3v2["TALB"] = listOf(it) }
+                        albumArtist?.let { id3v2["TPE2"] = listOf(it) }
+                        genre?.let { id3v2["TCON"] = listOf(it) }
+                        date?.let { id3v2["TDRC"] = listOf(it) }
+                        track?.let { id3v2["TRCK"] = listOf(it) }
+                        disc?.let { id3v2["TPOS"] = listOf(it) }
+                        compilation?.let { id3v2["TCMP"] = listOf(it) }
+
+                        val properties = Properties(
+                            mimeType = mimeType,
+                            durationMs = duration,
+                            bitrateKbps = bitrate,
+                            sampleRateHz = sampleRate,
+                        )
+
+                        MetadataResult.Success(
+                            Metadata(
+                                id3v2 = id3v2,
+                                xiph = emptyMap(),
+                                mp4 = emptyMap(),
+                                cover = cover,
+                                properties = properties,
+                            )
+                        )
+                    } finally {
+                        try {
+                            retriever.release()
+                        } catch (_: Throwable) {}
+                    }
+                } ?: MetadataResult.ProviderFailed
+            } catch (e: Exception) {
+                MetadataResult.NoMetadata
+            }
         }
 }
+

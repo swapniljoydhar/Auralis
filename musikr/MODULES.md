@@ -61,7 +61,7 @@ org.oxycblt.musikr/
 
 ### `ExtractStep.kt`
 - Second pipeline stage
-- Calls native metadata extraction
+- Extracts metadata via `MetadataExtractor`
 - Manages metadata caching
 - Handles extraction failures
 
@@ -99,12 +99,8 @@ org.oxycblt.musikr/
 
 ## Metadata Module (`metadata/`)
 
-### `TagLibJNI.kt`
-- JNI interface to native code
-- Native method declarations
-
 ### `MetadataExtractor.kt`
-- High-level metadata extraction
+- High-level metadata extraction using Android's MediaMetadataRetriever
 - Format-specific extraction routing
 - Error handling and fallbacks
 
@@ -112,10 +108,6 @@ org.oxycblt.musikr/
 - Metadata container classes
 - Properties and tag maps
 - Type-safe metadata access
-
-### Native Integration
-- `NativeInputStream.kt`: Java InputStream to C++ bridge
-- `NativeTagMap.kt`: Tag data transfer object
 
 ## Cache Module (`cache/`)
 

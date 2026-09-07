@@ -1,6 +1,22 @@
 # Auralis Changelog
 
-## 4.1.22 (Latest)
+## 4.2.0 (Latest)
+
+### Architecture & Build Modernization
+* **Zero NDK / Pure Kotlin Pipeline**: Completely eliminated legacy C++ / NDK TagLib compilation and vendored submodules. `musikr` now uses pure Kotlin with Android's platform `MediaMetadataRetriever` for resilient, fast, and concurrent metadata extraction.
+* **Official Media3 Migration**: Upgraded playback infrastructure from unbundled legacy ExoPlayer modules to official `androidx.media3` releases (`media3-exoplayer`, `media3-session`, `media3-ui`).
+* **Modernized Toolchain**: Aligned build pipeline with Gradle 9.3.1 and Android Gradle Plugin 9.1.1.
+* **Complete Legacy Purge**: Purged all legacy third-party branding, dead files, and obsolete artifacts across the entire codebase, resource keys, and documentation.
+
+### Audiobook Enhancements
+* **Shake to Extend Sleep Timer**: Integrated an accelerometer sensor listener that allows users to gently shake their device to reset or extend an active sleep timer. Provides gentle haptic feedback on reset and consumes zero battery when the sleep timer is idle. Configurable via Audiobook Settings.
+* **Speed-Scaled Chapter Sleep Timer**: The "End of Chapter" sleep timer now calculates wall-clock time accurately based on active playback speed (e.g. 1.25x, 1.5x, 2.0x).
+* **Universal Embedded Chapter Support**: Embedded chapters are now parsed and accessible on all tracks with chapter metadata, whether single-file (M4B) or multi-file audiobooks.
+* **In-Player Bookmark Navigator**: Long-pressing the player's bookmark button displays an immediate list of saved bookmarks for the current book with one-tap jump-to-position functionality.
+
+---
+
+## 4.1.22
 
 ### Security & Hardening
 * **Locked down playback broadcast receiver:** The dynamically-registered playback control receiver no longer accepts broadcasts from other applications; only protected system events (headset plug, audio becoming noisy) and Auralis' own notification/widget actions are delivered.

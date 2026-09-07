@@ -1,46 +1,44 @@
 # Musikr Architecture Overview
 
-Musikr is a highly opinionated, multi-threaded music loading library for Android that bypasses Android's MediaStore and uses the Storage Access Framework (SAF) with TagLib for enhanced music indexing capabilities.
+`musikr` is a multi-threaded, local music loading library for Android that works with Android's Storage Access Framework (SAF) and platform media extraction to provide robust, local-first music indexing.
 
 ## Core Design Principles
 
 1. **Stateless API**: Side-effects are contained within the Storage layer
-2. **No Defaults**: All parameters must be explicitly configured
+2. **Explicit Configuration**: All parameters must be explicitly configured
 3. **Pipeline Architecture**: Three-step processing pipeline for music loading
-4. **Native Integration**: JNI bridge to TagLib for metadata extraction
-5. **Coroutine-Based**: Uses Kotlin coroutines for async operations
+4. **Platform Media Engine**: Concurrent metadata extraction using Android's `MediaMetadataRetriever`
+5. **Coroutine-Based**: Uses Kotlin coroutines and Flows for efficient async operations
 
 ## High-Level Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                       Application Layer                       │
-│                    (Auralis or other apps)                     │
+│                       Application Layer                     │
+│                           (Auralis)                         │
 └───────────────────────────┬─────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                         Musikr API                           │
-│                    (Musikr.kt interface)                     │
+│                         Musikr API                          │
+│                    (Musikr.kt interface)                    │
 └───────────────────────────┬─────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Pipeline Architecture                      │
-│  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   │
-│  │ ExploreStep  │ → │ ExtractStep  │ → │ EvaluateStep │   │
-│  └──────────────┘   └──────────────┘   └──────────────┘   │
+│                    Pipeline Architecture                    │
+│  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐     │
+│  │ ExploreStep  │ → │ ExtractStep  │ → │ EvaluateStep │     │
+│  └──────────────┘   └──────────────┘   └──────────────┘     │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       Storage Layer                         │
+│  - Cache (Room database)                                    │
+│  - Covers (Cover art storage and retrieval)                 │
+│  - Playlists (User playlist management)                     │
 └─────────────────────────────────────────────────────────────┘
-                            │
-                ┌───────────┴───────────┐
-                │                       │
-                ▼                       ▼
-┌──────────────────────┐   ┌──────────────────────────────┐
-│   Storage Layer      │   │     Native Layer (JNI)       │
-│  - Cache             │   │  - TagLib integration        │
-│  - Covers            │   │  - Metadata extraction       │
-│  - Playlists         │   │  - Format support            │
-└──────────────────────┘   └──────────────────────────────┘
 ```
 
 ## Pipeline Steps
@@ -57,9 +55,9 @@ Musikr is a highly opinionated, multi-threaded music loading library for Android
 ### 2. ExtractStep
 - **Purpose**: Extract metadata from discovered files
 - **Process**:
-  - Uses JNI bridge to TagLib for metadata extraction
-  - Handles multiple tag formats (ID3v1/v2, MP4, Xiph, etc.)
-  - Extracts audio properties (bitrate, duration, etc.)
+  - Uses `MetadataExtractor` with Android's `MediaMetadataRetriever`
+  - Handles multiple tag formats (ID3v1/v2, MP4, Vorbis, FLAC)
+  - Extracts audio properties (bitrate, duration, track numbers)
   - Manages cover art extraction
 - **Output**: Stream of `Extracted` items with full metadata
 
@@ -79,19 +77,16 @@ Musikr is a highly opinionated, multi-threaded music loading library for Android
   - `fs`: File system access configuration
   - `storage`: Persistent storage components
   - `interpretation`: Tag interpretation rules
-
 - **Storage**: Side-effect laden components
   - `cache`: Metadata caching (Room database)
   - `covers`: Cover art storage and retrieval
   - `storedPlaylists`: User playlist management
 
 ### Data Models
-- **Music**: Base interface for all music items
-  - Uses UID system for unique identification
-  - Supports MusicBrainz IDs
+- **Music**: Base interface for all music items with UID system
 - **Song**: Individual track with full metadata
 - **Album**: Collection of songs (includes EPs, singles, etc.)
-- **Artist**: Can have explicit (album artist) and implicit (track artist) albums
+- **Artist**: Explicit (album artist) and implicit (track artist) albums
 - **Genre**: Grouping by musical genre
 - **Playlist**: User-created or imported playlists
 
@@ -100,26 +95,14 @@ Musikr is a highly opinionated, multi-threaded music loading library for Android
 - Supports multiple storage locations
 - Handles permissions and URI management
 
-### Native Layer (C++)
-- TagLib integration for metadata extraction
-- JNI wrappers for Java/Kotlin interop
-- Support for various audio formats
-- Custom patches for enhanced functionality
-
 ## Threading Model
 - **Coroutine-based**: All operations use Kotlin coroutines
 - **Multi-threaded extraction**: Parallel metadata extraction
 - **Buffered channels**: For efficient pipeline communication
 - **Dispatcher control**: Explicit IO dispatcher usage
 
-## Error Handling
-- **Pipeline exceptions**: Custom exception types
-- **Graceful degradation**: Continue on individual file errors
-- **Logging**: Comprehensive error logging
-- **Cache invalidation**: Automatic stale cache detection
-
 ## Performance Optimizations
-- **Caching**: Aggressive metadata caching
+- **Caching**: Persistent Room metadata caching
 - **Parallel processing**: Multi-threaded file processing
 - **Lazy evaluation**: On-demand cover loading
 - **Memory efficiency**: Streaming pipeline architecture

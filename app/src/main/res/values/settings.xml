@@ -50,6 +50,7 @@
     <string name="set_key_audiobook_last_speed" translatable="false">auralis_audiobook_last_speed</string>
     <string name="set_key_audiobook_auto_rewind" translatable="false">auralis_audiobook_auto_rewind</string>
     <string name="set_key_audiobook_skip_silence" translatable="false">auralis_audiobook_skip_silence</string>
+    <string name="set_key_audiobook_shake_reset" translatable="false">auralis_audiobook_shake_reset</string>
     <string name="set_key_audiobook_selected_folders_enabled" translatable="false">auralis_audiobook_selected_folders_enabled</string>
     <string name="set_key_audiobook_selected_folders" translatable="false">auralis_audiobook_selected_folders</string>
     <string name="set_key_audiobook_folder_organization" translatable="false">auralis_audiobook_folder_organization</string>

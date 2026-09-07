@@ -17,9 +17,6 @@ dependencyResolutionManagement {
     }
 }
 
-gradle.ext.androidxMediaModulePrefix = 'media-'
-gradle.ext.androidxMediaProjectName = 'media-'
-apply from: file("media/core_settings.gradle")
 
 rootProject.name = "Auralis"
 include ':app'

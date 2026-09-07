@@ -58,6 +58,9 @@ interface AudiobookSettings : Settings<AudiobookSettings.Listener> {
     /** Whether long silent sections should be skipped during audiobook playback. */
     val skipSilence: Boolean
 
+    /** Whether shaking the device extends or resets the active sleep timer. */
+    val shakeToResetSleepTimer: Boolean
+
     /** Whether the Audiobooks library should include only the user-selected local folders. */
     val useSelectedFolders: Boolean
 
@@ -96,6 +99,7 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
     private val lastSpeedKey = context.getString(R.string.set_key_audiobook_last_speed)
     private val autoRewindKey = context.getString(R.string.set_key_audiobook_auto_rewind)
     private val skipSilenceKey = context.getString(R.string.set_key_audiobook_skip_silence)
+    private val shakeResetKey = context.getString(R.string.set_key_audiobook_shake_reset)
     private val selectedFoldersEnabledKey =
         context.getString(R.string.set_key_audiobook_selected_folders_enabled)
     private val selectedFoldersKey = context.getString(R.string.set_key_audiobook_selected_folders)
@@ -138,6 +142,9 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
     override val skipSilence: Boolean
         get() = sharedPreferences.getBoolean(skipSilenceKey, false)
 
+    override val shakeToResetSleepTimer: Boolean
+        get() = sharedPreferences.getBoolean(shakeResetKey, true)
+
     override val useSelectedFolders: Boolean
         get() = sharedPreferences.getBoolean(selectedFoldersEnabledKey, false)
 
@@ -171,6 +178,7 @@ class AudiobookSettingsImpl @Inject constructor(@ApplicationContext context: Con
         if (
             key == autoRewindKey ||
                 key == skipSilenceKey ||
+                key == shakeResetKey ||
                 key == skipDurationKey ||
                 key == defaultSpeedKey
         ) {

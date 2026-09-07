@@ -1,27 +1,34 @@
-# Auralis troubleshooting
+# Auralis Troubleshooting
 
-## Build setup
+## Build Setup
 
-Initialize every nested dependency before building:
+Auralis builds with standard Gradle and the Android SDK:
 
 ```bash
-git submodule update --init --recursive
+# Build the application
+gradle :app:assembleDebug
+
+# Run unit test suites
+gradle :app:testDebugUnitTest :musikr:test
 ```
 
-The Android build requires the SDK platform and build tools declared by the root Gradle configuration, NDK `28.2.13676358`, and a CMake installation on `PATH`. Do not commit `local.properties`; it is machine-specific.
+The Android build requires the standard Android SDK platform and build tools. NDK or CMake installations are not required as metadata extraction utilizes high-performance platform media APIs.
 
-## Empty library
+## Library Indexing
 
-Confirm that Auralis has permission to read local audio and that at least one Music location has been selected. Storage Access Framework locations can be revoked by Android or the document provider; remove and re-add a location if it no longer opens. Audiobook grouping changes the projection only and does not move files.
+- **Grant Storage Permission**: Ensure Auralis is granted storage/audio permissions to read local media files.
+- **Select Library Folders**: In Settings, verify that your music and/or audiobook directories are selected.
+- **Scoped Storage**: Storage Access Framework (SAF) folder permissions can occasionally be revoked by Android when storage volumes are unmounted; if a folder stops loading, simply re-select it in Settings.
+- **Audiobook Folders**: Verify whether folder organization is set to separate folders or unified directory in Audiobook Settings.
 
-## Playback and resume
+## Playback and Resume
 
-If playback resumes from an unexpected point, stop playback, reopen the book or song, and verify that the current item is still present in the local library. Auralis persists a coherent snapshot of the current queue and position; a file moved or deleted outside the app cannot be restored by the player.
+- **Accurate Position Restore**: Auralis continuously saves audiobook positions in an ACID Room database. If a file is moved, renamed, or deleted outside of Auralis, the player will safely report the missing track without crashing.
+- **Sleep Timer Shake-to-Reset**: Shake gesture sensitivity is calibrated for gentle bed/nightstand motion. Ensure the "Shake to extend sleep timer" toggle is enabled in Audiobook Settings.
 
-## Crash reports
+## Defect Reports
 
-Include the Auralis version, Android version, device model, exact reproduction steps, and a sanitized logcat or Android bug-report archive. Remove personal file paths, account identifiers, and private media before uploading. For metadata or playback failures, provide a short non-copyrighted sample that reproduces the issue when possible.
-
-## Reporting a defect
-
-Search existing issues first, then open a report in the repository. A good report distinguishes the observed behavior from the expected behavior and identifies whether the failure is in Music, Audiobooks, shared playback, indexing, or persistence.
+When opening an issue or contributing:
+1. Provide device manufacturer, model, and Android OS version.
+2. Clearly distinguish whether the issue affects the Music domain, Audiobook domain, or the shared media service.
+3. Include relevant sanitized logcat output.

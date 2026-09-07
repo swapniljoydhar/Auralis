@@ -426,6 +426,8 @@
     <string name="set_audiobook_rewind_10">10 seconds</string>
     <string name="set_audiobook_skip_silence">Skip silence</string>
     <string name="set_audiobook_skip_silence_desc">Automatically reduce long silent sections during audiobook playback</string>
+    <string name="set_audiobook_shake_reset">Shake to extend sleep timer</string>
+    <string name="set_audiobook_shake_reset_desc">Gently shake device while sleep timer is running to extend it</string>
     <string name="set_audiobook_speed_075">0.75×</string>
     <string name="set_audiobook_speed_100">1.00×</string>
     <string name="set_audiobook_speed_125">1.25×</string>

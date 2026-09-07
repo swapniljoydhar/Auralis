@@ -1,0 +1,6 @@
+{
+  "name": "Auralis",
+  "description": "A calm, focused player for music and audiobooks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
