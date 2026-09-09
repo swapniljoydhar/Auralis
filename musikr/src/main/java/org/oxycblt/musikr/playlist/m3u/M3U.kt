@@ -275,7 +275,7 @@ private class M3UImpl(private val volumeManager: VolumeManager) : M3U() {
             }
             commonIndex == components.size -> {
                 // The working directory is deeper in the path, backtrack.
-                for (i in 0..<workingDirectory.components.size - commonIndex) {
+                for (i in 0 ..< workingDirectory.components.size - commonIndex) {
                     relativeComponents = relativeComponents.child("..")
                 }
             }
@@ -286,7 +286,7 @@ private class M3UImpl(private val volumeManager: VolumeManager) : M3U() {
             }
             else -> {
                 // The paths are siblings. Backtrack and append as needed.
-                for (i in 0..<workingDirectory.components.size - commonIndex) {
+                for (i in 0 ..< workingDirectory.components.size - commonIndex) {
                     relativeComponents = relativeComponents.child("..")
                 }
                 relativeComponents = relativeComponents.child(depth(commonIndex))

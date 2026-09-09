@@ -129,8 +129,7 @@ constructor(
                     VibrationEffect.createOneShot(120L, VibrationEffect.DEFAULT_AMPLITUDE)
                 )
             } else {
-                @Suppress("DEPRECATION")
-                vibrator?.vibrate(120L)
+                @Suppress("DEPRECATION") vibrator?.vibrate(120L)
             }
         } catch (_: SecurityException) {
             // Vibration permission not granted
@@ -164,8 +163,12 @@ constructor(
         val boundary = embeddedSleepBoundary ?: return
         if (song?.uid != boundary.song.uid) return
         if (isPlaying) {
+            if (audiobookSettings.shakeToResetSleepTimer && isSleepTimerActive) {
+                shakeDetector.start()
+            }
             refreshEmbeddedSleepBoundary(positionMs)
         } else {
+            shakeDetector.stop()
             sleepTimerJob?.cancel()
             sleepTimerJob = null
         }

@@ -69,43 +69,41 @@ class BetterShuffleOrder(private val shuffled: IntArray) : ShuffleOrder {
         return if (shuffled.isNotEmpty()) shuffled[0] else C.INDEX_UNSET
     }
 
-    @Suppress("KotlinConstantConditions") // Bugged for this function
     override fun cloneAndInsert(insertionIndex: Int, insertionCount: Int): ShuffleOrder {
+        if (insertionCount <= 0) {
+            return BetterShuffleOrder(shuffled)
+        }
         if (shuffled.isEmpty()) {
-            return BetterShuffleOrder(insertionCount, -1)
+            val newShuffled = IntArray(insertionCount) { it }
+            return BetterShuffleOrder(newShuffled)
         }
 
-        // TODO: Fix this scuffed hacky logic
-        // TODO: Play next ordering needs to persist in unshuffle
-
         val newShuffled = IntArray(shuffled.size + insertionCount)
-        val pivot: Int =
+        // Find where in the shuffled sequence the element at insertionIndex currently sits.
+        val pivotPosition =
             if (insertionIndex < shuffled.size) {
                 indexInShuffled[insertionIndex]
             } else {
-                indexInShuffled.size
-            }
-        for (i in shuffled.indices) {
-            var currentIndex = shuffled[i]
-            if (currentIndex > insertionIndex) {
-                currentIndex += insertionCount
+                shuffled.size - 1
             }
 
-            if (i <= pivot) {
-                newShuffled[i] = currentIndex
-            } else if (i > pivot) {
-                newShuffled[i + insertionCount] = currentIndex
-            }
+        var newIndex = 0
+        for (i in 0..pivotPosition) {
+            val element = shuffled[i]
+            newShuffled[newIndex++] =
+                if (element >= insertionIndex) element + insertionCount else element
         }
-        if (insertionIndex < shuffled.size) {
-            for (i in 0 until insertionCount) {
-                newShuffled[pivot + i + 1] = insertionIndex + i + 1
-            }
-        } else {
-            for (i in 0 until insertionCount) {
-                newShuffled[pivot + i] = insertionIndex + i
-            }
+
+        for (i in 0 until insertionCount) {
+            newShuffled[newIndex++] = insertionIndex + i
         }
+
+        for (i in (pivotPosition + 1) until shuffled.size) {
+            val element = shuffled[i]
+            newShuffled[newIndex++] =
+                if (element >= insertionIndex) element + insertionCount else element
+        }
+
         return BetterShuffleOrder(newShuffled)
     }
 
@@ -115,14 +113,14 @@ class BetterShuffleOrder(private val shuffled: IntArray) : ShuffleOrder {
         var foundElementsCount = 0
         for (i in shuffled.indices) {
             val element = shuffled[i]
-            // Optimize: Use direct integer comparisons instead of `in indexFrom until indexToExclusive`
+            // Optimize: Use direct integer comparisons instead of `in indexFrom until
+            // indexToExclusive`
             // to avoid allocating an `IntRange` object on every iteration during queue removals.
             if (element >= indexFrom && element < indexToExclusive) {
                 foundElementsCount++
             } else {
                 newShuffled[i - foundElementsCount] =
-                    if (element >= indexFrom) element - numberOfElementsToRemove
-                    else element
+                    if (element >= indexFrom) element - numberOfElementsToRemove else element
             }
         }
         return BetterShuffleOrder(newShuffled)
@@ -142,7 +140,8 @@ class BetterShuffleOrder(private val shuffled: IntArray) : ShuffleOrder {
                 shuffled[i] = shuffled[swapIndex]
                 shuffled[swapIndex] = i
 
-                // Optimize: Track startIndex position during shuffling to eliminate O(N) linear search
+                // Optimize: Track startIndex position during shuffling to eliminate O(N) linear
+                // search
                 if (i == startIndex) {
                     startIndexInShuffled = swapIndex
                 } else if (shuffled[i] == startIndex) {

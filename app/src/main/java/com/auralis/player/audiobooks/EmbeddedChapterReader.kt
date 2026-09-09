@@ -25,7 +25,6 @@ package com.auralis.player.audiobooks
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,17 +35,21 @@ data class EmbeddedChapter(val startMs: Long, val title: String)
 /** Reads embedded chapters from local ID3v2 `CHAP` and MP4 `chpl` metadata. */
 class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val context: Context) {
     // LRU-bounded cache to prevent unbounded memory growth for large libraries.
-    private val cache = object : LinkedHashMap<String, List<EmbeddedChapter>>(64, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<EmbeddedChapter>>?): Boolean {
-            return size > MAX_CACHE_ENTRIES
+    private val cache =
+        object : LinkedHashMap<String, List<EmbeddedChapter>>(64, 0.75f, true) {
+            override fun removeEldestEntry(
+                eldest: MutableMap.MutableEntry<String, List<EmbeddedChapter>>?
+            ): Boolean {
+                return size > MAX_CACHE_ENTRIES
+            }
         }
-    }
 
     suspend fun read(song: Song): List<EmbeddedChapter> {
         val key = song.uid.toString()
-        synchronized(cache) { cache[key] }?.let {
-            return it
-        }
+        synchronized(cache) { cache[key] }
+            ?.let {
+                return it
+            }
         return withContext(Dispatchers.IO) {
             val chapters =
                 runCatching {
@@ -161,7 +164,7 @@ class EmbeddedChapterReader @Inject constructor(@ApplicationContext private val 
             (bytes[offset + 3].toInt() and 0xFF)
 
     private companion object {
-        const val MAX_TAG_BYTES = 16 * 1024 * 1024
+        const val MAX_TAG_BYTES = 2 * 1024 * 1024
         const val ID3_HEADER_BYTES = 10
         const val FRAME_HEADER_BYTES = 10
         const val CHAPTER_HEADER_BYTES = 17

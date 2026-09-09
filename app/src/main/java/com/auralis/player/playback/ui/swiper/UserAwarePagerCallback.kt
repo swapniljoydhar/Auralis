@@ -45,11 +45,9 @@ class UserAwarePagerCallback(
             ViewPager2.SCROLL_STATE_DRAGGING -> {
                 user = !viewPager.isFakeDragging
             }
-
             ViewPager2.SCROLL_STATE_IDLE -> {
                 user = false
             }
-
             else -> {
                 // ignore
             }

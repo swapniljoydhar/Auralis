@@ -195,17 +195,14 @@ class StepperOverlay(context: Context, attrs: AttributeSet?) :
             is OverlayState.Invisible -> {
                 enter(tappedSecondsView, tappedTapView, setTappedOverlayState)
             }
-
             is OverlayState.Entering -> {
                 // do nothing
             }
-
             is OverlayState.Wait -> {
                 // refresh the exit timeout
                 removeCallbacks(tappedOverlayState.runnable)
                 postDelayed(tappedOverlayState.runnable, EXIT_DELAY_MS)
             }
-
             is OverlayState.Exiting -> {
                 // cancel exit and re-enter
                 tappedOverlayState.seconds.cancel()
@@ -219,20 +216,17 @@ class StepperOverlay(context: Context, attrs: AttributeSet?) :
             is OverlayState.Invisible -> {
                 // nothing to clear
             }
-
             is OverlayState.Entering -> {
                 // cancel enter and exit immediately
                 idleOverlayState.seconds.cancel()
                 idleOverlayState.tap.cancel()
                 exit(idleSecondsView, idleTapView, setIdleOverlayState)
             }
-
             is OverlayState.Wait -> {
                 // dont wait for an exit, exit immediately
                 removeCallbacks(idleOverlayState.runnable)
                 exit(idleSecondsView, idleTapView, setIdleOverlayState)
             }
-
             is OverlayState.Exiting -> {
                 // nothing to clear
             }
@@ -271,7 +265,6 @@ class StepperOverlay(context: Context, attrs: AttributeSet?) :
                     { rightOverlayState = it },
                 )
             }
-
             Direction.FORWARDS -> {
                 // forwards, we tap on the right
                 tap(

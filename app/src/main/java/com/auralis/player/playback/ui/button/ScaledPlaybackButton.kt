@@ -133,9 +133,7 @@ constructor(
     private fun ShapeAppearance.scale(scale: Float): ShapeAppearance =
         when (this) {
             is StateListShapeAppearanceModel -> withTransformedCornerSizes { it.scale(scale) }
-
             is ShapeAppearanceModel -> withTransformedCornerSizes { it.scale(scale) }
-
             else -> this
         }
 
