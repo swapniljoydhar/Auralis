@@ -281,7 +281,6 @@ private constructor(
                     // trashes performance. If I remember correctly this is somehow still higher
                     // quality than the URI loading.
                     builder
-                        .size(MediaSessionCompat.getBitmapDimensionLimit())
                         .memoryCachePolicy(CachePolicy.READ_ONLY)
                         .allowHardware(Build.VERSION.SDK_INT < 37)
 

@@ -40,4 +40,6 @@
         <attr name="entryIcons" format="reference" />
         <attr name="offValue" format="reference" />
     </declare-styleable>
+
+    <attr name="textAppearanceLabelLargeEmphasized" format="reference" />
 </resources>
