@@ -114,12 +114,15 @@ class BetterShuffleOrder(private val shuffled: IntArray) : ShuffleOrder {
         val newShuffled = IntArray(shuffled.size - numberOfElementsToRemove)
         var foundElementsCount = 0
         for (i in shuffled.indices) {
-            if (shuffled[i] in indexFrom until indexToExclusive) {
+            val element = shuffled[i]
+            // Optimize: Use direct integer comparisons instead of `in indexFrom until indexToExclusive`
+            // to avoid allocating an `IntRange` object on every iteration during queue removals.
+            if (element >= indexFrom && element < indexToExclusive) {
                 foundElementsCount++
             } else {
                 newShuffled[i - foundElementsCount] =
-                    if (shuffled[i] >= indexFrom) shuffled[i] - numberOfElementsToRemove
-                    else shuffled[i]
+                    if (element >= indexFrom) element - numberOfElementsToRemove
+                    else element
             }
         }
         return BetterShuffleOrder(newShuffled)
@@ -132,13 +135,22 @@ class BetterShuffleOrder(private val shuffled: IntArray) : ShuffleOrder {
     companion object {
         private fun createShuffledList(length: Int, startIndex: Int): IntArray {
             val shuffled = IntArray(length)
+            var startIndexInShuffled = -1
+
             for (i in 0 until length) {
                 val swapIndex = (0..i).random()
                 shuffled[i] = shuffled[swapIndex]
                 shuffled[swapIndex] = i
+
+                // Optimize: Track startIndex position during shuffling to eliminate O(N) linear search
+                if (i == startIndex) {
+                    startIndexInShuffled = swapIndex
+                } else if (shuffled[i] == startIndex) {
+                    startIndexInShuffled = i
+                }
             }
-            if (startIndex != -1) {
-                val startIndexInShuffled = shuffled.indexOf(startIndex)
+
+            if (startIndex != -1 && startIndexInShuffled != -1) {
                 val temp = shuffled[0]
                 shuffled[0] = shuffled[startIndexInShuffled]
                 shuffled[startIndexInShuffled] = temp
