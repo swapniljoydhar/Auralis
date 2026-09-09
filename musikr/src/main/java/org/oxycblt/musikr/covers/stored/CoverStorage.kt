@@ -102,11 +102,26 @@ private class FSCoverStorage(private val dir: File) : CoverStorage {
         return mapMutex.withLock { fileMutexes.getOrPut(file) { Mutex() } }
     }
 
+    private fun resolveChild(name: String): File {
+        require(name.isNotBlank() && name != "." && name != "..") {
+            "Invalid cover file name"
+        }
+        require('/' !in name && '\\' !in name && !File(name).isAbsolute) {
+            "Cover file name must not contain a path"
+        }
+        val root = dir.canonicalFile
+        val child = File(root, name).canonicalFile
+        require(child.parentFile == root) { "Cover file escaped storage directory" }
+        return child
+    }
+
     override suspend fun find(name: String): FDCover? =
         withContext(Dispatchers.IO) {
             try {
-                File(dir, name).takeIf { it.exists() }?.let { FSStoredCover(it) }
+                resolveChild(name).takeIf { it.isFile }?.let { FSStoredCover(it) }
             } catch (e: IOException) {
+                null
+            } catch (e: IllegalArgumentException) {
                 null
             }
         }
@@ -114,10 +129,10 @@ private class FSCoverStorage(private val dir: File) : CoverStorage {
     override suspend fun write(name: String, block: suspend (OutputStream) -> Unit): FDCover {
         val fileMutex = getMutexForFile(name)
         return fileMutex.withLock {
-            val targetFile = File(dir, name)
+            val targetFile = resolveChild(name)
             if (!targetFile.exists()) {
                 withContext(Dispatchers.IO) {
-                    val tempFile = File(dir, "$name.tmp")
+                    val tempFile = resolveChild("$name.tmp")
 
                     try {
                         tempFile.outputStream().use { block(it) }
@@ -140,7 +155,15 @@ private class FSCoverStorage(private val dir: File) : CoverStorage {
         }
 
     override suspend fun rm(name: String) {
-        withContext(Dispatchers.IO) { File(dir, name).deleteRecursively() }
+        withContext(Dispatchers.IO) {
+            try {
+                resolveChild(name).deleteRecursively()
+            } catch (e: IOException) {
+                // Invalid or unavailable paths are already absent from storage.
+            } catch (e: IllegalArgumentException) {
+                // Never allow a malformed identifier to escape the storage root.
+            }
+        }
     }
 }
 

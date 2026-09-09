@@ -152,7 +152,7 @@ fun Song.toMediaDescription(context: Context, vararg sugar: Sugar): MediaDescrip
         .setTitle(name.resolve(context))
         .setSubtitle(artists.resolveNames(context))
         .setDescription(album.name.resolve(context))
-        .setIconUri(cover?.let { Uri.withAppendedPath(CoverProvider.CONTENT_URI, it.id) })
+        .setIconUri(cover?.let { CoverProvider.uriForCover(it.id) })
         .setMediaUri(uri)
         .setExtras(extras)
         .build()
@@ -171,7 +171,7 @@ fun AudiobookBook.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem 
             .setDescription(context.getString(R.string.fmt_number, chapterCount))
             .setIconUri(
                 chapters.firstOrNull()?.song?.cover?.let {
-                    Uri.withAppendedPath(CoverProvider.CONTENT_URI, it.id)
+                    CoverProvider.uriForCover(it.id)
                 }
             )
             .setExtras(makeExtras(context, *sugar))
@@ -191,7 +191,7 @@ fun Album.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
             .setDescription(counts)
             .setIconUri(
                 covers.covers.firstOrNull()?.let {
-                    Uri.withAppendedPath(CoverProvider.CONTENT_URI, it.id)
+                    CoverProvider.uriForCover(it.id)
                 }
             )
             .setExtras(extras)
@@ -224,7 +224,7 @@ fun Artist.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
             .setDescription(genres.resolveNames(context))
             .setIconUri(
                 covers.covers.firstOrNull()?.let {
-                    Uri.withAppendedPath(CoverProvider.CONTENT_URI, it.id)
+                    CoverProvider.uriForCover(it.id)
                 }
             )
             .setExtras(extras)
@@ -248,7 +248,7 @@ fun Genre.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
             .setSubtitle(counts)
             .setIconUri(
                 covers.covers.firstOrNull()?.let {
-                    Uri.withAppendedPath(CoverProvider.CONTENT_URI, it.id)
+                    CoverProvider.uriForCover(it.id)
                 }
             )
             .setExtras(extras)
@@ -273,7 +273,7 @@ fun Playlist.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
             .setDescription(durationMs.formatDurationDs(true))
             .setIconUri(
                 covers.covers.firstOrNull()?.let {
-                    Uri.withAppendedPath(CoverProvider.CONTENT_URI, it.id)
+                    CoverProvider.uriForCover(it.id)
                 }
             )
             .setExtras(extras)
