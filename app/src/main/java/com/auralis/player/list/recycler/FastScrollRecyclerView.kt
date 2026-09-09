@@ -70,7 +70,6 @@ import com.auralis.player.util.scale
 import com.auralis.player.util.systemBarInsetsCompat
 import com.google.android.material.R as MR
 import com.google.android.material.textview.MaterialTextView
-import androidx.dynamicanimation.animation.SpringForce
 import kotlin.math.abs
 import kotlin.math.hypot
 import kotlin.math.max
