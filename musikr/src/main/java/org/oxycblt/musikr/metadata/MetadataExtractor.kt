@@ -58,20 +58,51 @@ private class MetadataExtractorImpl(private val contentResolver: ContentResolver
                     val retriever = MediaMetadataRetriever()
                     try {
                         retriever.setDataSource(pfd.fileDescriptor)
-                        val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                        val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                        val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-                        val albumArtist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
-                        val genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
-                        val date = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE)
-                            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)
-                        val track = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)
-                        val disc = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)
-                        val compilation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPILATION)
-                        val mimeType = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE) ?: "audio/mpeg"
-                        val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
-                        val bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)?.toIntOrNull()?.let { it / 1000 } ?: 0
-                        val sampleRate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_SAMPLERATE)?.toIntOrNull() ?: 44100
+                        val title =
+                            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                        val artist =
+                            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+                        val album =
+                            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                        val albumArtist =
+                            retriever.extractMetadata(
+                                MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST
+                            )
+                        val genre =
+                            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
+                        val date =
+                            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE)
+                                ?: retriever.extractMetadata(
+                                    MediaMetadataRetriever.METADATA_KEY_YEAR
+                                )
+                        val track =
+                            retriever.extractMetadata(
+                                MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER
+                            )
+                        val disc =
+                            retriever.extractMetadata(
+                                MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER
+                            )
+                        val compilation =
+                            retriever.extractMetadata(
+                                MediaMetadataRetriever.METADATA_KEY_COMPILATION
+                            )
+                        val mimeType =
+                            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
+                                ?: "audio/mpeg"
+                        val duration =
+                            retriever
+                                .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                                ?.toLongOrNull() ?: 0L
+                        val bitrate =
+                            retriever
+                                .extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
+                                ?.toIntOrNull()
+                                ?.let { it / 1000 } ?: 0
+                        val sampleRate =
+                            retriever
+                                .extractMetadata(MediaMetadataRetriever.METADATA_KEY_SAMPLERATE)
+                                ?.toIntOrNull() ?: 44100
                         val cover = retriever.embeddedPicture
 
                         val id3v2 = mutableMapOf<String, List<String>>()
@@ -85,12 +116,13 @@ private class MetadataExtractorImpl(private val contentResolver: ContentResolver
                         disc?.let { id3v2["TPOS"] = listOf(it) }
                         compilation?.let { id3v2["TCMP"] = listOf(it) }
 
-                        val properties = Properties(
-                            mimeType = mimeType,
-                            durationMs = duration,
-                            bitrateKbps = bitrate,
-                            sampleRateHz = sampleRate,
-                        )
+                        val properties =
+                            Properties(
+                                mimeType = mimeType,
+                                durationMs = duration,
+                                bitrateKbps = bitrate,
+                                sampleRateHz = sampleRate,
+                            )
 
                         MetadataResult.Success(
                             Metadata(
@@ -112,4 +144,3 @@ private class MetadataExtractorImpl(private val contentResolver: ContentResolver
             }
         }
 }
-

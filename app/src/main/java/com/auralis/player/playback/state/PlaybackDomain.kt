@@ -36,5 +36,6 @@ enum class PlaybackDomain {
      * music queues. Audiobook queues are explicitly chosen by the Audiobooks flow and therefore do
      * not reclassify each local chapter by filename or tags.
      */
-    fun accepts(song: Song) = this == AUDIOBOOKS || !AudiobookClassifier.isAudiobook(song)
+    fun accepts(song: Song, isManualAudiobook: Boolean = false) =
+        this == AUDIOBOOKS || (!isManualAudiobook && !AudiobookClassifier.isAudiobook(song))
 }

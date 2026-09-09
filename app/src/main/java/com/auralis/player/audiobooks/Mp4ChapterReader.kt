@@ -124,6 +124,6 @@ internal object Mp4ChapterReader {
     private const val CHAPTER_LIST_HEADER_BYTES = 9
     private const val CHAPTER_TIMESTAMP_BYTES = 8
     private const val TICKS_PER_MILLISECOND = 10_000L
-    private const val MAX_SCAN_BYTES = Long.MAX_VALUE
+    private const val MAX_SCAN_BYTES = 64L * 1024 * 1024
     private const val MAX_CHAPTER_LIST_BYTES = 1L * 1024 * 1024
 }

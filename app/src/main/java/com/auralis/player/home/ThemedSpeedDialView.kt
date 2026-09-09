@@ -50,7 +50,6 @@ import com.auralis.player.util.getAttrColorCompat
 import com.auralis.player.util.getAttrResourceId
 import com.auralis.player.util.getDimen
 import com.auralis.player.util.getDimenPixels
-import com.google.android.material.R as MR
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.leinardi.android.speeddial.FabWithLabelView
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -306,9 +305,7 @@ class ThemedSpeedDialView : SpeedDialView {
                 (getChildAt(0) as TextView).apply {
                     TextViewCompat.setTextAppearance(
                         this,
-                        context.getAttrResourceId(
-                            R.attr.textAppearanceLabelLargeEmphasized
-                        ),
+                        context.getAttrResourceId(R.attr.textAppearanceLabelLargeEmphasized),
                     )
                 }
             }

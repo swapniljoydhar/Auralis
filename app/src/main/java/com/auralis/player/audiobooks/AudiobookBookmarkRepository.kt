@@ -50,6 +50,7 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
         preferences
             .getStringSet(KEY_BOOKMARKS, emptySet())
             .orEmpty()
+            .toSet()
             .mapNotNull(::decode)
             .filter { it.bookKey == bookKey }
             .sortedBy { it.createdMs }
@@ -70,7 +71,8 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
                 embeddedChapterStartMs = embeddedChapterStartMs?.coerceAtLeast(0L),
                 note = note.trim().take(MAX_NOTE_LENGTH),
             )
-        val encoded = preferences.getStringSet(KEY_BOOKMARKS, emptySet()).orEmpty().toMutableSet()
+        val encoded =
+            preferences.getStringSet(KEY_BOOKMARKS, emptySet()).orEmpty().toSet().toMutableSet()
         if (
             encoded.any {
                 decode(it)?.let { existing ->
