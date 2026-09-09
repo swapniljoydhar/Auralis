@@ -30,8 +30,10 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
+import android.os.Binder
 import android.os.ParcelFileDescriptor
 import android.util.LruCache
+import java.util.concurrent.ConcurrentHashMap
 import com.auralis.player.BuildConfig
 import com.auralis.player.image.covers.SettingCovers
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +50,8 @@ class CoverProvider : ContentProvider() {
             return null
         }
         val id = uri.lastPathSegment ?: return null
-        if (id.contains("..")) {
+        val callerUid = Binder.getCallingUid()
+        if (!isSafeCoverId(id, callerUid)) {
             return null
         }
         return openPipeHelper(uri, "image/*", null, id) { output, _, _, _, coverId ->
@@ -69,10 +72,15 @@ class CoverProvider : ContentProvider() {
                                             .obtain(requestedId)
                                 ) {
                                     is CoverResult.Hit -> {
-                                        val bytes = result.cover.open()?.use { it.readBytes() }
+                                        val bytes: ByteArray? =
+                                            result.cover.open()?.use {
+                                                it.readBoundedBytes(MAX_COVER_BYTES)
+                                            }
                                         if (bytes != null) {
-                                            coverMemoryCache.put(requestedId, bytes)
-                                            outputStream.write(bytes)
+                                            if (bytes.isNotEmpty()) {
+                                                coverMemoryCache.put(requestedId, bytes)
+                                                outputStream.write(bytes)
+                                            }
                                         }
                                     }
                                     else -> Unit
@@ -114,6 +122,7 @@ class CoverProvider : ContentProvider() {
         private const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.image.CoverProvider"
         private const val IMAGES_PATH = "covers"
         private const val COVER_LOAD_TIMEOUT_MS = 3000L
+        private const val MAX_COVER_BYTES = 8 * 1024 * 1024
         private val uriMatcher =
             UriMatcher(UriMatcher.NO_MATCH).apply { addURI(AUTHORITY, "$IMAGES_PATH/*", 1) }
 
@@ -121,6 +130,7 @@ class CoverProvider : ContentProvider() {
             object : LruCache<String, ByteArray>(4 * 1024 * 1024) {
                 override fun sizeOf(key: String, value: ByteArray): Int = value.size
             }
+        private val publishedFolderCovers = ConcurrentHashMap.newKeySet<String>()
 
         val CONTENT_URI: Uri =
             Uri.Builder()
@@ -128,5 +138,42 @@ class CoverProvider : ContentProvider() {
                 .authority(AUTHORITY)
                 .appendPath(IMAGES_PATH)
                 .build()
+
+        fun uriForCover(id: String): Uri {
+            if (id.startsWith("mcf:")) {
+                publishedFolderCovers.add(id)
+            }
+            return Uri.withAppendedPath(CONTENT_URI, id)
+        }
+    }
+
+    private fun isSafeCoverId(id: String, callerUid: Int): Boolean {
+        if (id.isBlank() || id.contains("..") || id.contains('\u0000')) {
+            return false
+        }
+        if (!id.startsWith("mcf:")) {
+            return true
+        }
+        // Only expose folder covers that Auralis has published in a media
+        // description. This preserves Android Auto/widget artwork without
+        // turning the provider into an arbitrary SAF URI reader.
+        return callerUid == android.os.Process.myUid() || publishedFolderCovers.contains(id)
+    }
+}
+
+private fun java.io.InputStream.readBoundedBytes(maxBytes: Int): ByteArray? {
+    val output = java.io.ByteArrayOutputStream(minOf(maxBytes, 64 * 1024))
+    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+    var total = 0
+    while (true) {
+        val read = read(buffer)
+        if (read < 0) {
+            return output.toByteArray()
+        }
+        total += read
+        if (total > maxBytes) {
+            return null
+        }
+        output.write(buffer, 0, read)
     }
 }

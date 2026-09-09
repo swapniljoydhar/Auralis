@@ -90,6 +90,7 @@
             android:name=".image.CoverProvider"
             android:authorities="@string/pkg_authority_cover"
             android:exported="true"
+            android:grantUriPermissions="false"
             tools:ignore="ExportedContentProvider" />
 
         <!--
