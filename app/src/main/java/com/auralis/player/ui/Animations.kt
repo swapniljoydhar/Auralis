@@ -37,10 +37,11 @@ import com.google.android.material.shape.MaterialShapeDrawable
 private const val MIN_VISIBLE_CHANGE_DRAWABLE_ALPHA = 1f
 
 /**
- * Spring animation presets for spatial transitions (scale, translate, elevation).
- * Uses Material 3 spring constants for consistent motion.
+ * Spring animation presets for spatial transitions (scale, translate, elevation). Uses Material 3
+ * spring constants for consistent motion.
  */
-class Spatial private constructor(
+class Spatial
+private constructor(
     private val dampingRatio: Float,
     private val stiffness: Float,
 ) {
@@ -153,10 +154,11 @@ class Spatial private constructor(
 }
 
 /**
- * Spring animation presets for effect transitions (alpha, color).
- * Uses Material 3 spring constants for consistent motion.
+ * Spring animation presets for effect transitions (alpha, color). Uses Material 3 spring constants
+ * for consistent motion.
  */
-class Effect private constructor(
+class Effect
+private constructor(
     private val dampingRatio: Float,
     private val stiffness: Float,
 ) {

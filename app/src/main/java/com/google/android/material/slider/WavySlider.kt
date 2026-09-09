@@ -43,9 +43,9 @@ import androidx.core.graphics.withSave
 import androidx.core.view.isVisible
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import com.auralis.player.R
 import com.google.android.material.R as MR
-import androidx.dynamicanimation.animation.SpringForce
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

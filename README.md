@@ -1,6 +1,6 @@
 # Auralis
 
-**The modern, private, local-first player for Music and Audiobooks on Android.**
+**The ultimate local audio app for Android: Combining high-fidelity music playback and dedicated audiobook studio into a single cohesive experience.**
 
 [![API](https://img.shields.io/badge/API-24%2B-1450A8?style=flat)](https://developer.android.com)
 [![License](https://img.shields.io/badge/license-GPL%20v3-2B6DBE.svg?style=flat)](LICENSE)
@@ -8,20 +8,20 @@
 
 ---
 
-## 🌟 Vision & Architecture
+## 🌟 Vision & Dual-Domain Isolation
 
-**Auralis** is an audio player engineered to provide an uncompromising experience for both **music enthusiasts** and **audiobook listeners**. Rather than forcing audiobooks into music queues or treating music as long-form speech, Auralis uses an explicit **Dual-Domain Architecture (`PlaybackDomain.MUSIC` and `PlaybackDomain.AUDIOBOOKS`)**.
+**Auralis** is a standalone, local-first audio player built for Android. Rather than forcing audiobooks into music queues or treating music as long-form speech, Auralis features a strict **Dual-Domain Architecture (`PlaybackDomain.MUSIC` and `PlaybackDomain.AUDIOBOOKS`)**.
 
 Each domain maintains its own distinct:
-* **Playback State & Queue**: Listening to an audiobook never clears or interrupts your current music queue, and playing an album never loses your audiobook position.
+* **Playback State & Queue**: Listening to an audiobook never clears or interrupts your current music queue, and playing an album never overwrites your exact audiobook reading position.
 * **Specialized UI & Controls**: Music features album artwork, repeat, and ReplayGain preamp options; Audiobooks feature chapter navigation, sleep timers, bookmarks, variable speed, and auto-rewind.
 * **State Persistence**: Audiobook progress is continuously persisted down to the exact millisecond in a transactional Room database.
 
 ---
 
-## 🎵 Music Experience
+## 🎵 Music Section
 
-* **High-Performance Metadata Engine (`musikr`)**: Robust, asynchronous scanning pipeline parsing ID3v2, Vorbis, MP4, and FLAC metadata using pure Android media APIs without heavy native NDK dependencies.
+* **High-Performance Metadata Engine (`musikr`)**: Asynchronous scanning pipeline parsing ID3v2, Vorbis, MP4, and FLAC metadata using pure Android media APIs without native NDK overhead.
 * **Audiophile Playback**: True gapless playback, full ReplayGain track and album gain normalization with custom pre-amp controls, and system equalizer integration.
 * **Comprehensive Library Organization**: Fast browsing by Songs, Albums, Artists, Genres, and Playlists with fast alphabetic index scrolling and customizable navigation tabs.
 * **Dynamic Queue Management**: Drag-and-drop queue reordering, non-repeating shuffle algorithms, and flexible repeat modes.
@@ -30,7 +30,7 @@ Each domain maintains its own distinct:
 
 ---
 
-## 📚 Dedicated Audiobook Studio
+## 📚 Dedicated Audiobook Section
 
 * **Unified Book Cataloging**: Automatically groups M4B audiobooks and multi-track MP3/M4A/OGG/OPUS folder hierarchies into coherent, organized books.
 * **Durable Millisecond Progress Persistence**: Transactional Room database persistence guarantees that resume positions are never lost across app restarts or device reboots.
@@ -88,44 +88,10 @@ Auralis/
 
 # Run unit tests
 ./gradlew app:testDebugUnitTest musikr:testDebugUnitTest
-
-# Check linting
-./gradlew app:lintDebug musikr:lintDebug
-
-# Check code formatting
-./gradlew spotlessCheck
-
-# Auto-format code
-./gradlew spotlessApply
 ```
-
----
-
-## 🏗 Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Language | Kotlin 2.0 |
-| DI | Hilt (Dagger) |
-| Database | Room |
-| Playback | ExoPlayer (Media3) |
-| Images | Coil 3 |
-| UI | Material 3 Expressive |
-| Navigation | AndroidX Navigation |
-| Testing | JUnit, MockK, Robolectric |
 
 ---
 
 ## 📜 License
 
 Auralis is distributed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)**. See [`LICENSE`](LICENSE) and [`PROVENANCE.md`](PROVENANCE.md) for full licensing information.
-
----
-
-## 🙏 Credits
-
-Auralis builds upon the work of:
-- [Auxio](https://github.com/OxygenCobalt/Auxio) — Music player foundation
-- [Voice](https://github.com/PaulWoitaschek/Voice) — Audiobook player inspiration
-
-See [`PROVENANCE.md`](PROVENANCE.md) for detailed attribution.

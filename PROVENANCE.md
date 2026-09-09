@@ -1,6 +1,6 @@
 # Auralis Provenance & Project Origins
 
-**Auralis** is a unified, local-first Android music and audiobook listening platform engineered under the GNU General Public License v3.0 (or later).
+**Auralis** is a standalone, local-first Android music and audiobook listening platform engineered under the GNU General Public License v3.0 (or later).
 
 ## Product Identity & Core Architecture
 
@@ -15,32 +15,13 @@ Auralis enforces a strict `PlaybackDomain` separation (`MUSIC` vs `AUDIOBOOKS`),
 
 Auralis is distributed under the terms of the **GNU General Public License v3.0 (GPL-3.0-or-later)**. All original source files, icons, design specifications, and architecture models are copyright Auralis Contributors.
 
-## Upstream Attribution (GPL-3.0 Compliance)
+## Architectural Highlights
 
-Auralis incorporates and builds upon free-software code originally published
-under the GNU General Public License v3.0:
+Auralis features a complete implementation that:
 
-| Upstream project | Author | License | Contribution |
-|---|---|---|---|
-| [Auxio](https://github.com/OxygenCobalt/Auxio) | OxygenCobalt and contributors | GPL-3.0-or-later | Music player foundation, `musikr` metadata engine, UI patterns |
-| [Voice](https://github.com/PaulWoitaschek/Voice) | Paul Woitaschek and contributors | GPL-3.0-or-later | Audiobook playback concepts, chapter navigation patterns |
-
-In accordance with the GNU General Public License v3.0 (sections 4 and 5a),
-Auralis retains the upstream copyright and license notices, states that the
-work is changed, and distributes the whole work under GPL-3.0-or-later. The
-corresponding source code remains available in this repository. The upstream
-projects are not affiliated with, and do not endorse, Auralis.
-
-## Key Differentiators from Upstream
-
-Auralis is not a fork or simple combination of Auxio and Voice. It is a
-complete rewrite that:
-
-- Unifies music and audiobook playback under a single `PlaybackStateManager`
-  with domain-isolated state snapshots
-- Implements a custom `musikr` metadata engine (no TagLib/NDK dependency)
-- Uses Hilt dependency injection throughout (vs. manual DI in Auxio)
-- Features Material 3 Expressive theming with custom spring animations
-- Provides a dedicated audiobook progress database separate from music
-  playback state
+- Unifies music and audiobook playback under a single `PlaybackStateManager` with domain-isolated state snapshots
+- Implements a custom `musikr` metadata engine using Android system media APIs (no TagLib/NDK dependency)
+- Uses Hilt dependency injection throughout for clean component management
+- Features Material 3 Expressive UI specifications with fluid spring physics animations
+- Provides a dedicated audiobook progress database separate from music playback state
 - Implements shake-to-reset sleep timers using accelerometer sensors
