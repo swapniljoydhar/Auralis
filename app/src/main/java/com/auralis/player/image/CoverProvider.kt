@@ -148,11 +148,18 @@ class CoverProvider : ContentProvider() {
     }
 
     private fun isSafeCoverId(id: String, callerUid: Int): Boolean {
-        if (id.isBlank() || id.contains("..") || id.contains('\u0000')) {
+        if (
+            id.isBlank() ||
+                id.contains("..") ||
+                id.contains('\u0000') ||
+                id.contains('/') ||
+                id.contains('\\')
+        ) {
             return false
         }
         if (!id.startsWith("mcf:")) {
-            return true
+            // Internal cover IDs are not published to other applications.
+            return callerUid == android.os.Process.myUid()
         }
         // Only expose folder covers that Auralis has published in a media
         // description. This preserves Android Auto/widget artwork without

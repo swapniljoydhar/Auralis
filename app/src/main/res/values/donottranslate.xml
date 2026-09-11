@@ -16,9 +16,6 @@
     <string name="cdc_wav">Microsoft WAVE</string>
     <string name="cnt_ogg">Ogg %s</string>
 
-    <!-- Pkg Namespace | Dynamic package names -->
-    <string name="pkg_authority_cover">com.auralis.player.image.CoverProvider</string>
-
     <!-- Supporter Namespace | Sponsor usernames  -->
     <string name="sup_bkkellyh">bkkellyh - $500!</string>
     <string name="sup_gruntstumper">gruntstumper - $100</string>
