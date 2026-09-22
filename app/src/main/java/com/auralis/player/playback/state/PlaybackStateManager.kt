@@ -24,6 +24,7 @@
 package com.auralis.player.playback.state
 
 import com.auralis.player.BuildConfig
+import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.player.playback.state.PlaybackStateManager.Listener
 import javax.inject.Inject
@@ -355,7 +356,9 @@ interface PlaybackStateManager {
     )
 }
 
-class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
+class PlaybackStateManagerImpl
+@Inject
+constructor(private val audiobookSettings: AudiobookSettings) : PlaybackStateManager {
     private data class StateMirror(
         val domain: PlaybackDomain,
         val progression: Progression,
@@ -519,10 +522,14 @@ class PlaybackStateManagerImpl @Inject constructor() : PlaybackStateManager {
 
     // --- PLAYING FUNCTIONS ---
 
+    /** Builds the group-aware queue entries used to validate a queued domain boundary. */
+    private fun PlaybackDomain.acceptsQueueOf(queue: List<Song>) =
+        acceptsQueue(queue.map { it.toQueueEntry(audiobookSettings.manualSongUids) })
+
     @Synchronized
     override fun play(command: PlaybackCommand) {
         val stateHolder = stateHolder ?: return
-        if (command.queue.isEmpty() || command.queue.any { !command.domain.accepts(it) }) {
+        if (command.queue.isEmpty() || !command.domain.acceptsQueueOf(command.queue)) {
             L.w("Rejecting invalid ${command.domain} playback queue")
             return
         }

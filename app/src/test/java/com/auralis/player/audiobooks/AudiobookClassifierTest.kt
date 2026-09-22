@@ -23,6 +23,7 @@
  
 package com.auralis.player.audiobooks
 
+import com.auralis.player.playback.state.PlaybackDomain
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -129,4 +130,54 @@ class AudiobookClassifierTest {
     fun ordinaryLengthMusicAlbumIsNotLongFormBook() {
         assertFalse(AudiobookCatalog.isLongFormBook(List(12) { 4 * 60_000L }))
     }
+
+    @Test
+    fun musicQueueRejectsBookChapters() {
+        assertFalse(PlaybackDomain.MUSIC.acceptsQueue(listOf(marked(60_000L))))
+        assertTrue(PlaybackDomain.MUSIC.acceptsQueue(listOf(unmarked(60_000L))))
+        assertTrue(PlaybackDomain.MUSIC.acceptsQueue(listOf(manual(60_000L))))
+    }
+
+    @Test
+    fun bookQueueRequiresMarkerManualOrLongForm() {
+        assertTrue(PlaybackDomain.AUDIOBOOKS.acceptsQueue(listOf(marked(60_000L))))
+        assertTrue(PlaybackDomain.AUDIOBOOKS.acceptsQueue(listOf(manual(60_000L))))
+        assertTrue(
+            PlaybackDomain.AUDIOBOOKS.acceptsQueue(
+                listOf(unmarked(45 * 60_000L), unmarked(42 * 60_000L))
+            )
+        )
+        assertFalse(
+            PlaybackDomain.AUDIOBOOKS.acceptsQueue(
+                listOf(unmarked(4 * 60_000L), unmarked(3 * 60_000L))
+            )
+        )
+    }
+
+    @Test
+    fun emptyQueueIsRejectedForBothDomains() {
+        assertFalse(PlaybackDomain.MUSIC.acceptsQueue(emptyList()))
+        assertFalse(PlaybackDomain.AUDIOBOOKS.acceptsQueue(emptyList()))
+    }
+
+    private fun marked(durationMs: Long) =
+        PlaybackDomain.QueueEntry(
+            isAudiobookMarked = true,
+            isManualAudiobook = false,
+            durationMs = durationMs,
+        )
+
+    private fun unmarked(durationMs: Long) =
+        PlaybackDomain.QueueEntry(
+            isAudiobookMarked = false,
+            isManualAudiobook = false,
+            durationMs = durationMs,
+        )
+
+    private fun manual(durationMs: Long) =
+        PlaybackDomain.QueueEntry(
+            isAudiobookMarked = false,
+            isManualAudiobook = true,
+            durationMs = durationMs,
+        )
 }

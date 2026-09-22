@@ -23,6 +23,7 @@
  
 package com.auralis.player.playback.state
 
+import com.auralis.player.audiobooks.AudiobookCatalog
 import com.auralis.player.audiobooks.AudiobookClassifier
 import org.oxycblt.musikr.Song
 
@@ -32,10 +33,33 @@ enum class PlaybackDomain {
     AUDIOBOOKS;
 
     /**
-     * Music keeps its existing metadata filter so audiobook-tagged files cannot leak into ordinary
-     * music queues. Audiobook queues are explicitly chosen by the Audiobooks flow and therefore do
-     * not reclassify each local chapter by filename or tags.
+     * A queue member reduced to the signals that decide domain ownership: whether metadata marks it
+     * as a book chapter, whether the listener assigned it manually, and its duration (used by the
+     * group-level long-form rule).
      */
-    fun accepts(song: Song, isManualAudiobook: Boolean = false) =
-        this == AUDIOBOOKS || (!isManualAudiobook && !AudiobookClassifier.isAudiobook(song))
+    data class QueueEntry(
+        val isAudiobookMarked: Boolean,
+        val isManualAudiobook: Boolean,
+        val durationMs: Long,
+    )
+
+    /**
+     * Validates an entire queue instead of single songs. A Music queue keeps rejecting
+     * metadata-marked book chapters; an Audiobooks queue must carry a book signal (marked chapter
+     * or manual assignment) or satisfy the long-form duration rule `AudiobookCatalog` already uses.
+     */
+    fun acceptsQueue(entries: List<QueueEntry>): Boolean {
+        if (entries.isEmpty()) return false
+        if (this == MUSIC) return entries.none(QueueEntry::isAudiobookMarked)
+        return entries.any { it.isAudiobookMarked || it.isManualAudiobook } ||
+            AudiobookCatalog.isLongFormBook(entries.map(QueueEntry::durationMs))
+    }
 }
+
+/** Reduces a local song to the signals [PlaybackDomain.acceptsQueue] evaluates. */
+fun Song.toQueueEntry(manualSongUids: Set<String> = emptySet()) =
+    PlaybackDomain.QueueEntry(
+        isAudiobookMarked = AudiobookClassifier.isAudiobook(this),
+        isManualAudiobook = uid.toString() in manualSongUids,
+        durationMs = durationMs,
+    )

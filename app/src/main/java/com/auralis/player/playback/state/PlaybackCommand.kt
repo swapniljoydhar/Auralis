@@ -23,6 +23,7 @@
  
 package com.auralis.player.playback.state
 
+import com.auralis.player.audiobooks.AudiobookSettings
 import com.auralis.player.list.ListSettings
 import com.auralis.player.list.sort.Sort
 import com.auralis.player.music.MusicRepository
@@ -105,6 +106,7 @@ constructor(
     val playbackSettings: PlaybackSettings,
     val listSettings: ListSettings,
     val musicRepository: MusicRepository,
+    val audiobookSettings: AudiobookSettings,
 ) : PlaybackCommand.Factory {
     data class PlaybackCommandImpl(
         override val domain: PlaybackDomain,
@@ -148,7 +150,9 @@ constructor(
         if (
             songs.isEmpty() ||
                 (startSong != null && startSong !in songs) ||
-                songs.any { !domain.accepts(it) }
+                !domain.acceptsQueue(
+                    songs.map { it.toQueueEntry(audiobookSettings.manualSongUids) }
+                )
         ) {
             return null
         }
@@ -212,7 +216,9 @@ constructor(
         sort: Sort,
         shuffle: ShuffleMode,
     ): PlaybackCommand? {
-        val musicQueue = queue.filter(PlaybackDomain.MUSIC::accepts)
+        // Keep the established Music filter exactly as-is: only metadata-marked book chapters are
+        // dropped, so manually assigned files stay playable from Music.
+        val musicQueue = queue.filterNot { it.toQueueEntry().isAudiobookMarked }
         if (musicQueue.isEmpty() || (song != null && song !in musicQueue)) {
             return null
         }

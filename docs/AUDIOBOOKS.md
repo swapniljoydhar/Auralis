@@ -21,7 +21,7 @@ This rule prevents ordinary M4A, OGG/OGA, or OPUS music albums from leaking into
 
 The Audiobooks library starts with a local preparation state while indexing is active. When complete, it presents books in **In progress**, **Not started**, and **Finished** groups. Listeners can use compact rows or a cover grid, open a book, resume its next unfinished chapter, inspect progress, navigate chapters, manage local bookmarks, adjust speed and auto-rewind, and use the Audiobooks-only sleep timer.
 
-Every audiobook command is created with `PlaybackDomain.AUDIOBOOKS`. The shared service saves a domain-specific snapshot and refuses mixed-domain queue behavior. Switching to Music therefore preserves the Audiobooks queue and progress, and Audiobooks folder selection creates a copied projection rather than modifying the shared Music snapshot.
+Every audiobook command is created with `PlaybackDomain.AUDIOBOOKS`. The shared service saves a domain-specific snapshot and refuses mixed-domain queue behavior. Domain boundaries are validated per queue, not per file: a Music queue is rejected when it contains metadata-marked book chapters, and an Audiobooks queue is rejected unless it carries a book signal (marker or manual assignment) or satisfies the long-form duration rule. Manual assignments and folder-based long-form books therefore keep playing, while ordinary music albums cannot be queued as books. Switching to Music preserves the Audiobooks queue and progress, and Audiobooks folder selection creates a copied projection rather than modifying the shared Music snapshot.
 
 ## Chapters and long-form context
 
