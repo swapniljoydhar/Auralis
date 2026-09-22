@@ -31,7 +31,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.oxycblt.musikr.Music
-
 /** Offline audiobook bookmarks stored independently from global Music playback state. */
 data class AudiobookBookmark(
     val bookKey: String,
@@ -45,13 +44,10 @@ data class AudiobookBookmark(
 @Singleton
 class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext context: Context) {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val lock = Any()
 
     fun getForBook(bookKey: String): List<AudiobookBookmark> =
-        preferences
-            .getStringSet(KEY_BOOKMARKS, emptySet())
-            .orEmpty()
-            .toSet()
-            .mapNotNull(::decode)
+        synchronized(lock) { readAllLocked() }
             .filter { it.bookKey == bookKey }
             .sortedBy { it.createdMs }
 
@@ -71,27 +67,43 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
                 embeddedChapterStartMs = embeddedChapterStartMs?.coerceAtLeast(0L),
                 note = note.trim().take(MAX_NOTE_LENGTH),
             )
-        val encoded =
-            preferences.getStringSet(KEY_BOOKMARKS, emptySet()).orEmpty().toSet().toMutableSet()
-        if (
-            encoded.any {
-                decode(it)?.let { existing ->
-                    existing.bookKey == bookmark.bookKey &&
-                        existing.chapterUid == bookmark.chapterUid &&
-                        existing.positionMs == bookmark.positionMs
-                } == true
-            }
-        ) {
-            return
+        synchronized(lock) {
+            val current = readAllLocked().toMutableList()
+            val duplicate =
+                current.any {
+                    it.bookKey == bookmark.bookKey &&
+                        it.chapterUid == bookmark.chapterUid &&
+                        it.positionMs == bookmark.positionMs
+                }
+            if (duplicate) return
+            current.add(bookmark)
+            writeEncodedLocked(dropOldestBeyondCap(current))
         }
-        encoded.add(encode(bookmark))
-        preferences.edit { putStringSet(KEY_BOOKMARKS, encoded) }
     }
 
     fun remove(bookmark: AudiobookBookmark) {
-        val encoded = preferences.getStringSet(KEY_BOOKMARKS, emptySet()).orEmpty().toMutableSet()
-        encoded.remove(encode(bookmark))
-        preferences.edit { putStringSet(KEY_BOOKMARKS, encoded) }
+        synchronized(lock) {
+            val remaining =
+                readAllLocked().filterNot { it == bookmark }.toSet().map(::encode).toSet()
+            preferences.edit { putStringSet(KEY_BOOKMARKS, remaining) }
+        }
+    }
+
+    private fun readAllLocked(): List<AudiobookBookmark> = decodeAll(readEncodedLocked())
+
+    private fun readEncodedLocked(): Set<String> =
+        preferences.getStringSet(KEY_BOOKMARKS, emptySet()).orEmpty().toSet()
+
+    private fun writeEncodedLocked(bookmarks: List<AudiobookBookmark>) {
+        preferences.edit { putStringSet(KEY_BOOKMARKS, bookmarks.map(::encode).toSet()) }
+    }
+
+    private fun decodeAll(encoded: Set<String>): List<AudiobookBookmark> =
+        encoded.mapNotNull(::decode)
+
+    private fun dropOldestBeyondCap(all: List<AudiobookBookmark>): List<AudiobookBookmark> {
+        if (all.size <= MAX_BOOKMARKS) return all
+        return all.sortedBy { it.createdMs }.takeLast(MAX_BOOKMARKS)
     }
 
     private fun encode(bookmark: AudiobookBookmark) =
@@ -109,32 +121,29 @@ class AudiobookBookmarkRepository @Inject constructor(@ApplicationContext contex
         val parts = value.split(DELIMITER)
         if (parts.size !in 4..6) return null
         val uid = Music.UID.fromString(parts[1]) ?: return null
-        val bookKey =
-            runCatching { String(Base64.decode(parts[0], Base64.NO_WRAP), Charsets.UTF_8) }
-                .getOrNull() ?: return null
+        val bookKey = decodeBase64(parts[0]) ?: return null
         return AudiobookBookmark(
             bookKey = bookKey,
             chapterUid = uid,
             positionMs = parts[2].toLongOrNull()?.coerceAtLeast(0L) ?: return null,
             createdMs = parts[3].toLongOrNull() ?: return null,
             embeddedChapterStartMs = parts.getOrNull(4)?.toLongOrNull()?.coerceAtLeast(0L),
-            note =
-                parts
-                    .getOrNull(5)
-                    ?.takeIf(String::isNotEmpty)
-                    ?.let { encoded ->
-                        runCatching {
-                                String(Base64.decode(encoded, Base64.NO_WRAP), Charsets.UTF_8)
-                            }
-                            .getOrNull()
-                    }
-                    .orEmpty(),
+            note = decodeNote(parts),
         )
     }
+
+    private fun decodeNote(parts: List<String>): String {
+        val encoded = parts.getOrNull(5)?.takeIf(String::isNotEmpty) ?: return ""
+        return decodeBase64(encoded).orEmpty()
+    }
+
+    private fun decodeBase64(value: String): String? =
+        runCatching { String(Base64.decode(value, Base64.NO_WRAP), Charsets.UTF_8) }.getOrNull()
 
     private companion object {
         const val KEY_BOOKMARKS = "auralis_audiobook_bookmarks"
         const val DELIMITER = "|"
         const val MAX_NOTE_LENGTH = 280
+        const val MAX_BOOKMARKS = 500
     }
 }

@@ -23,12 +23,16 @@
  
 package com.auralis.player.home
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -90,6 +94,7 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
     private val homeModel: HomeViewModel by activityViewModels()
     private val detailModel: DetailViewModel by activityViewModels()
     private var storagePermissionLauncher: ActivityResultLauncher<String>? = null
+    private var notificationPermissionLauncher: ActivityResultLauncher<String>? = null
     private var getContentLauncher: ActivityResultLauncher<String>? = null
     private var pendingImportTarget: Playlist? = null
     private var tabMediator: TabLayoutMediator? = null
@@ -116,6 +121,12 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
             registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                 musicModel.refresh()
             }
+
+        notificationPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ ->
+                // No follow-up needed; notifications simply appear if granted.
+            }
+        requestNotificationPermissionIfNeeded()
 
         getContentLauncher =
             registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -187,9 +198,19 @@ class HomeFragment : SelectionFragment<FragmentHomeBinding>() {
         updateModeAction(homeModel.currentTabType.value)
     }
 
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        val permission = Manifest.permission.POST_NOTIFICATIONS
+        val granted =
+            ContextCompat.checkSelfPermission(requireContext(), permission) ==
+                PackageManager.PERMISSION_GRANTED
+        if (!granted) notificationPermissionLauncher?.launch(permission)
+    }
+
     override fun onDestroyBinding(binding: FragmentHomeBinding) {
         super.onDestroyBinding(binding)
         storagePermissionLauncher = null
+        notificationPermissionLauncher = null
         tabMediator?.detach()
         tabMediator = null
         binding.homePager.adapter = null

@@ -37,17 +37,21 @@ android {
     }
 
     signingConfigs {
-        debugConfig {
-            storeFile file("${rootDir}/debug.keystore")
-            storePassword "android"
-            keyAlias "androiddebugkey"
-            keyPassword "android"
+        debug {
+            // Use the shared debug keystore when checked out; otherwise keep
+            // Gradle's default SDK debug keystore so fresh clones still build.
+            def debugKeystoreFile = file("${rootDir}/debug.keystore")
+            if (debugKeystoreFile.exists()) {
+                storeFile debugKeystoreFile
+                storePassword "android"
+                keyAlias "androiddebugkey"
+                keyPassword "android"
+            }
         }
     }
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.debugConfig
             applicationIdSuffix ".debug"
             versionNameSuffix "-DEBUG"
         }

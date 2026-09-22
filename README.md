@@ -53,7 +53,7 @@ Each domain maintains its own distinct:
 
 ## 🛠 Project Structure
 
-```
+```text
 Auralis/
 ├── app/                  # Main Android application module
 │   ├── src/main/java/com/auralis/player/
@@ -69,8 +69,29 @@ Auralis/
 │       ├── metadata/     # MediaMetadataRetriever metadata parsing
 │       ├── model/        # Graph models for songs, albums, artists, genres
 │       └── pipeline/     # Asynchronous file extraction and evaluation pipeline
+├── docs/                 # [Architecture](docs/ARCHITECTURE.md), [Audiobooks](docs/AUDIOBOOKS.md), [Security review](docs/SECURITY_REVIEW.md)
 └── design/               # Material 3 specifications and design tokens
 ```
+
+---
+
+## 🖥 Platform Compatibility
+
+| Platform | Status | Minimum version |
+|----------|--------|-----------------|
+| Android | ✅ Supported (sole target) | API 24 (Android 7.0), target/compile SDK 35 |
+| Windows / macOS / Linux (PC) | ❌ Not supported — no JVM-desktop, CMake, or Gradle desktop target exists | N/A |
+| iOS | ❌ Not supported — no Xcode project, SPM package, or Podfile exists | N/A |
+
+Known limitations: this repository contains only the `com.android.application` (`:app`) and
+`com.android.library` (`:musikr`) Gradle modules (see [`settings.gradle`](settings.gradle)).
+There is no PC installer and no TestFlight/App Store distribution. Do not follow generic
+PC/iOS build guides for this project.
+
+Permissions used (see [`app/src/main/AndroidManifest.xml`](app/src/main/AndroidManifest.xml)):
+`READ_MEDIA_AUDIO` (API 33+), `READ_EXTERNAL_STORAGE` (maxSdkVersion 32),
+`FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `WAKE_LOCK`,
+`POST_NOTIFICATIONS`, `VIBRATE`. The app is local-first and offline.
 
 ---
 
@@ -89,6 +110,16 @@ Auralis/
 # Run unit tests
 ./gradlew app:testDebugUnitTest musikr:testDebugUnitTest
 ```
+
+### Install
+- Debug APK: after building, install `app/build/outputs/apk/debug/app-debug.apk` on an
+  Android 7.0+ device (see the [Android build workflow](.github/workflows/android.yml)).
+- No Play Store / TestFlight release is documented in this repository.
+
+See also: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md),
+[`docs/AUDIOBOOKS.md`](docs/AUDIOBOOKS.md),
+[`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md), and
+[`docs/RELEASE.md`](docs/RELEASE.md).
 
 ---
 
