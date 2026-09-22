@@ -20,11 +20,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package com.auralis.player.audiobooks
 
 import androidx.test.core.app.ApplicationProvider
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.oxycblt.musikr.Music
@@ -40,8 +40,10 @@ class AudiobookBookmarkCapTest {
         val repo = AudiobookBookmarkRepository(context)
         val uid = requireNotNull(Music.UID.fromString("uas00000000-0000-0000-0000-000000000001"))
         repeat(510) { index -> repo.add("book", uid, index.toLong(), null, "n$index") }
+
         val rows = repo.getForBook("book")
-        assertTrue(rows.size <= 500)
-        assertTrue(rows.sortedBy { it.createdMs } == rows)
+
+        assertEquals(500, rows.size)
+        assertEquals(rows.sortedBy { it.createdMs }, rows)
     }
 }

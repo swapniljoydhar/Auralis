@@ -31,6 +31,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import org.oxycblt.musikr.Music
+
 /** Offline audiobook bookmarks stored independently from global Music playback state. */
 data class AudiobookBookmark(
     val bookKey: String,

@@ -25,7 +25,6 @@ package com.auralis.player.music.service
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat
@@ -170,9 +169,7 @@ fun AudiobookBook.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem 
             .setSubtitle(author ?: context.getString(R.string.lbl_audiobooks))
             .setDescription(context.getString(R.string.fmt_number, chapterCount))
             .setIconUri(
-                chapters.firstOrNull()?.song?.cover?.let {
-                    CoverProvider.uriForCover(it.id)
-                }
+                chapters.firstOrNull()?.song?.cover?.let { CoverProvider.uriForCover(it.id) }
             )
             .setExtras(makeExtras(context, *sugar))
             .build()
@@ -189,11 +186,7 @@ fun Album.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
             .setTitle(name.resolve(context))
             .setSubtitle(artists.resolveNames(context))
             .setDescription(counts)
-            .setIconUri(
-                covers.covers.firstOrNull()?.let {
-                    CoverProvider.uriForCover(it.id)
-                }
-            )
+            .setIconUri(covers.covers.firstOrNull()?.let { CoverProvider.uriForCover(it.id) })
             .setExtras(extras)
             .build()
     return MediaItem(description, MediaItem.FLAG_BROWSABLE)
@@ -222,11 +215,7 @@ fun Artist.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
             .setTitle(name.resolve(context))
             .setSubtitle(counts)
             .setDescription(genres.resolveNames(context))
-            .setIconUri(
-                covers.covers.firstOrNull()?.let {
-                    CoverProvider.uriForCover(it.id)
-                }
-            )
+            .setIconUri(covers.covers.firstOrNull()?.let { CoverProvider.uriForCover(it.id) })
             .setExtras(extras)
             .build()
     return MediaItem(description, MediaItem.FLAG_BROWSABLE)
@@ -246,11 +235,7 @@ fun Genre.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
             .setMediaId(mediaSessionUID.toString())
             .setTitle(name.resolve(context))
             .setSubtitle(counts)
-            .setIconUri(
-                covers.covers.firstOrNull()?.let {
-                    CoverProvider.uriForCover(it.id)
-                }
-            )
+            .setIconUri(covers.covers.firstOrNull()?.let { CoverProvider.uriForCover(it.id) })
             .setExtras(extras)
             .build()
     return MediaItem(description, MediaItem.FLAG_BROWSABLE)
@@ -271,11 +256,7 @@ fun Playlist.toMediaItem(context: Context, vararg sugar: Sugar): MediaItem {
             .setTitle(name.resolve(context))
             .setSubtitle(counts)
             .setDescription(durationMs.formatDurationDs(true))
-            .setIconUri(
-                covers.covers.firstOrNull()?.let {
-                    CoverProvider.uriForCover(it.id)
-                }
-            )
+            .setIconUri(covers.covers.firstOrNull()?.let { CoverProvider.uriForCover(it.id) })
             .setExtras(extras)
             .build()
     return MediaItem(description, MediaItem.FLAG_BROWSABLE)

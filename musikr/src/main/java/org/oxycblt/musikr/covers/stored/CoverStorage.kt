@@ -103,9 +103,7 @@ private class FSCoverStorage(private val dir: File) : CoverStorage {
     }
 
     private fun resolveChild(name: String): File {
-        require(name.isNotBlank() && name != "." && name != "..") {
-            "Invalid cover file name"
-        }
+        require(name.isNotBlank() && name != "." && name != "..") { "Invalid cover file name" }
         require('/' !in name && '\\' !in name && !File(name).isAbsolute) {
             "Cover file name must not contain a path"
         }

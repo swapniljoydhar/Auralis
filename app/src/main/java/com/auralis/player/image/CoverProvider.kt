@@ -33,9 +33,9 @@ import android.net.Uri
 import android.os.Binder
 import android.os.ParcelFileDescriptor
 import android.util.LruCache
-import java.util.concurrent.ConcurrentHashMap
 import com.auralis.player.BuildConfig
 import com.auralis.player.image.covers.SettingCovers
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
