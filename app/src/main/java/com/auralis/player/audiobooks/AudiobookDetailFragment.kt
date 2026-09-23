@@ -75,6 +75,9 @@ class AudiobookDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.audiobookToolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
         lifecycleScope.launch {
             val book = audiobookRepository.book(args.bookKey) ?: return@launch
             currentBook = book
@@ -205,7 +208,7 @@ class AudiobookDetailFragment : Fragment() {
                 }
             chapterBinding.chapterCheck.visibility =
                 if (isComplete) View.VISIBLE else View.INVISIBLE
-            (chapterBinding.root as MaterialCardView).setOnClickListener {
+            chapterBinding.root.setOnClickListener {
                 startChapter(book, chapter, progress)
             }
             b.audiobookChaptersContainer.addView(chapterBinding.root)

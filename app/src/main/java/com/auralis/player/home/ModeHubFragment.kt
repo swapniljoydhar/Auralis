@@ -53,7 +53,14 @@ class ModeHubFragment : Fragment(R.layout.fragment_mode_hub) {
         // Keep the choice visible on a first launch. Later launches go straight
         // back to the library the listener last used.
         if (savedInstanceState == null) {
-            homeModel.preferredMode?.let(::open)
+            val preferred = homeModel.preferredMode
+            if (preferred != null) {
+                view.post {
+                    if (isAdded && !isDetached && findNavController().currentDestination?.id == R.id.mode_hub_fragment) {
+                        open(preferred)
+                    }
+                }
+            }
         }
     }
 

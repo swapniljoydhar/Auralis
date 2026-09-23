@@ -213,8 +213,8 @@ object AudiobookCatalog {
 
     private const val MIN_CHAPTER_COUNT = 2
     private const val MIN_CHAPTER_DURATION_MS = 10 * 60_000L
-    private const val MIN_BOOK_DURATION_MS = 2 * 60 * 60_000L
-    private const val MIN_SINGLE_FILE_DURATION_MS = 2 * 60 * 60_000L
+    private const val MIN_BOOK_DURATION_MS = 80 * 60_000L
+    private const val MIN_SINGLE_FILE_DURATION_MS = 80 * 60_000L
 }
 
 private fun Name?.asRawOrNull(): String? =

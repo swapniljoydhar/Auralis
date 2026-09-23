@@ -25,6 +25,7 @@ package com.auralis.player
 
 import android.app.Application
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -61,29 +62,39 @@ class Auralis : Application() {
             Timber.plant(Timber.DebugTree())
         }
 
+        // Set night mode at application level to prevent activity recreation during startup.
+        runCatching {
+            AppCompatDelegate.setDefaultNightMode(uiSettings.theme)
+        }
+
         // Migrate any settings that may have changed in an app update.
-        imageSettings.migrate()
-        playbackSettings.migrate()
-        uiSettings.migrate()
-        homeSettings.migrate()
+        runCatching { imageSettings.migrate() }
+        runCatching { playbackSettings.migrate() }
+        runCatching { uiSettings.migrate() }
+        runCatching { homeSettings.migrate() }
+
         // Adding static shortcuts in a dynamic manner is better than declaring them
         // manually, as it will properly handle the difference between debug and release
         // Auralis instances.
         // TODO: Switch to static shortcuts
-        ShortcutManagerCompat.addDynamicShortcuts(
-            this,
-            listOf(
-                ShortcutInfoCompat.Builder(this, SHORTCUT_SHUFFLE_ID)
-                    .setShortLabel(getString(R.string.lbl_shuffle_shortcut_short))
-                    .setLongLabel(getString(R.string.lbl_shuffle_shortcut_long))
-                    .setIcon(IconCompat.createWithResource(this, R.drawable.ic_shortcut_shuffle_24))
-                    .setIntent(
-                        Intent(this, MainActivity::class.java)
-                            .setAction(INTENT_KEY_SHORTCUT_SHUFFLE)
-                    )
-                    .build()
-            ),
-        )
+        try {
+            ShortcutManagerCompat.addDynamicShortcuts(
+                this,
+                listOf(
+                    ShortcutInfoCompat.Builder(this, SHORTCUT_SHUFFLE_ID)
+                        .setShortLabel(getString(R.string.lbl_shuffle_shortcut_short))
+                        .setLongLabel(getString(R.string.lbl_shuffle_shortcut_long))
+                        .setIcon(IconCompat.createWithResource(this, R.drawable.ic_shortcut_shuffle_24))
+                        .setIntent(
+                            Intent(this, MainActivity::class.java)
+                                .setAction(INTENT_KEY_SHORTCUT_SHUFFLE)
+                        )
+                        .build()
+                ),
+            )
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to initialize dynamic shortcuts")
+        }
     }
 
     companion object {

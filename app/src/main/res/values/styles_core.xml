@@ -120,8 +120,7 @@
         <item name="colorControlActivated">?attr/colorPrimary</item>
 
         <!-- Work around hard-coded text highlight colors in the default Material3 theme -->
-        <item name="android:textColorHighlight">@color/overlay_text_highlight</item>
-        <item name="android:textColorHighlightInverse">@color/overlay_text_highlight_inverse</item>
+        <item name="android:textColorHighlight">?attr/colorPrimaryContainer</item>
 
         <item name="preferenceTheme">@style/PreferenceTheme.Auralis</item>
         <item name="preferenceStyle">@style/Preference.Auralis</item>

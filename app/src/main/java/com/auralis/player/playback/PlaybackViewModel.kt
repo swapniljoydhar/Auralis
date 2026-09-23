@@ -29,6 +29,7 @@ import com.auralis.player.list.ListSettings
 import com.auralis.player.list.adapter.UpdateInstructions
 import com.auralis.player.playback.state.DeferredPlayback
 import com.auralis.player.playback.state.PlaybackCommand
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.PlaybackStateManager
 import com.auralis.player.playback.state.Progression
 import com.auralis.player.playback.state.QueueChange
@@ -132,6 +133,10 @@ constructor(
      */
     val currentAudioSessionId: Int?
         get() = playbackManager.currentAudioSessionId
+
+    /** The current local playback domain (Music or Audiobooks). */
+    val currentPlaybackDomain: PlaybackDomain
+        get() = playbackManager.domain
 
     init {
         playbackManager.addListener(this)

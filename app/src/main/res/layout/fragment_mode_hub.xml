@@ -94,6 +94,8 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/action_music_button"
                     style="@style/Widget.Auralis.Button.Icon.Small"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:contentDescription="@string/action_open_music"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
@@ -157,6 +159,8 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/action_audiobooks_button"
                     style="@style/Widget.Auralis.Button.Icon.Small"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:contentDescription="@string/action_open_audiobooks"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"

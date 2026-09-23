@@ -31,6 +31,7 @@ import com.auralis.player.databinding.FragmentPlaybackBarBinding
 import com.auralis.player.detail.DetailViewModel
 import com.auralis.player.music.resolve
 import com.auralis.player.music.resolveNames
+import com.auralis.player.playback.state.PlaybackDomain
 import com.auralis.player.playback.state.RepeatMode
 import com.auralis.player.ui.ViewBindingFragment
 import com.auralis.player.util.collectImmediately
@@ -102,9 +103,14 @@ class PlaybackBarFragment : ViewBindingFragment<FragmentPlaybackBarBinding>() {
 
         val context = requireContext()
         val binding = requireBinding()
+        val isAudiobook = playbackModel.currentPlaybackDomain == PlaybackDomain.AUDIOBOOKS
         binding.playbackCover.bind(song)
         binding.playbackSong.text = song.name.resolve(context)
-        binding.playbackInfo.text = song.artists.resolveNames(context)
+        binding.playbackInfo.text = if (isAudiobook) {
+            song.album.name.resolve(context)
+        } else {
+            song.artists.resolveNames(context)
+        }
         binding.playbackProgressBar.max = song.durationMs.msToDs().toInt()
     }
 
@@ -122,6 +128,17 @@ class PlaybackBarFragment : ViewBindingFragment<FragmentPlaybackBarBinding>() {
         isShuffled: Boolean,
     ) {
         val binding = requireBinding()
+        val isAudiobook = playbackModel.currentPlaybackDomain == PlaybackDomain.AUDIOBOOKS
+        if (isAudiobook) {
+            binding.playbackSecondaryAction.apply {
+                setIconResource(R.drawable.ic_skip_next_24)
+                contentDescription = getString(R.string.desc_skip_next)
+                setOnClickListener { playbackModel.next() }
+                isChecked = false
+                tag = "AUDIOBOOK_FORWARD"
+            }
+            return
+        }
         when (actionMode) {
             ActionMode.NEXT -> {
                 L.d("Using skip next action")

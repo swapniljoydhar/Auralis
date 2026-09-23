@@ -104,7 +104,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupTheme() {
         // Apply the theme configuration.
-        AppCompatDelegate.setDefaultNightMode(uiSettings.theme)
+        if (AppCompatDelegate.getDefaultNightMode() != uiSettings.theme) {
+            AppCompatDelegate.setDefaultNightMode(uiSettings.theme)
+        }
         // Apply the color scheme. The black theme requires it's own set of themes since
         // it's not possible to modify the themes at run-time.
         if (isNight && uiSettings.useBlackTheme) {
